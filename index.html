@@ -1097,10 +1097,10 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 </div>
 
 <!-- ══ RESET ══ -->
-<div class="screen" id="s-streaks"><div class="streaks-page" id="streaks-page"></div></div>
-<div class="screen" id="s-history"><div class="history-page" id="history-page"></div></div>
-<div class="screen" id="s-weekly"><div class="weekly-page" id="weekly-page"></div></div>
-<div class="screen" id="s-plan">
+<div class="screen" id="screen-streaks"><div class="streaks-page" id="streaks-page"></div></div>
+<div class="screen" id="screen-history"><div class="history-page" id="history-page"></div></div>
+<div class="screen" id="screen-weekly"><div class="weekly-page" id="weekly-page"></div></div>
+<div class="screen" id="screen-plan">
   <div class="plan-screen">
     <div class="notif-banner" id="notif-banner-plan">
       <strong>Enable reminders to stay on track</strong>Tap below to allow notifications.<br>
@@ -2800,6 +2800,8 @@ function initPlanner(){
   const {all,key,day}=getToday();
   if(day.dayType)currentDay=day.dayType;
   renderGlasses();renderSteps();renderSchedule();updateSummary();
+  // Auto-schedule task reminders if permission already granted
+  if(Notification.permission==='granted'){notifGranted=true;scheduleAllNotifs();}
 }
 function getToday(){const all=loadAll();const key=todayKey();if(!all[key])all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};if(all[key].steps===undefined)all[key].steps=0;return{all,key,day:all[key]};}
 function getToday2(){const all=loadAll();const key=todayKey();if(!all[key])all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};if(all[key].steps===undefined)all[key].steps=0;return{all,key,day2:all[key]};}
@@ -2826,7 +2828,7 @@ function renderSchedule(){const{day}=getToday();const blocks=getBlocks();const e
         <div class="block-check${blockDone?' done':''}" id="bchk_${b.id}"></div>
       </div>
       <div class="sub-list${isOpen?' open':''}" id="sub_${b.id}">
-        ${b.subs.map((s,si)=>{const sd=!!(day.subs&&day.subs[b.id+'_'+si]);return`<div class="sub-item" onclick="toggleSub('${b.id}',${si},event)"><div class="sub-chk${sd?' done':''}" id="sc_${b.id}_${si}"></div><div class="sub-label${sd?' done-txt':''}">${s}</div>${si===0&&b.bell?`<button class="bell-btn${(scheduledNotifs[b.id])?' on':''}" onclick="toggleBell('${b.id}',event)">🔔</button>`:''}</div>`;}).join('')}
+        ${b.subs.map((s,si)=>{const sd=!!(day.subs&&day.subs[b.id+'_'+si]);return`<div class="sub-item" onclick="toggleSub('${b.id}',${si},event)"><div class="sub-chk${sd?' done':''}" id="sc_${b.id}_${si}"></div><div class="sub-label${sd?' done-txt':''}">${s}</div>${si===0&&b.bell?`<button class="bell-btn${(scheduledNotifs[b.id])?' on':''}" data-id="${b.id}" onclick="toggleBell('${b.id}',event)">🔔</button>`:''}</div>`;}).join('')}
       </div>`;
     div.querySelector('.block-hdr').addEventListener('click',()=>toggleBlock(b.id));
     el.appendChild(div);
@@ -2848,9 +2850,67 @@ function resetToday(){if(!confirm('Reset today\'s progress?'))return;const all=l
 // PLANNER NOTIFICATIONS
 // ═══════════════════════════════════════════════════════
 function parseTime(t){const m=t.match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return null;let h=parseInt(m[1]),min=parseInt(m[2]),ap=m[3].toUpperCase();if(ap==='PM'&&h!==12)h+=12;if(ap==='AM'&&h===12)h=0;return{h,min};}
-function scheduleAllNotifs(){if(!notifGranted)return;const blocks=getBlocks();const now=new Date();blocks.filter(b=>b.bell).forEach(b=>{const t=parseTime(b.time);if(!t)return;const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);const ms=fire-now;if(ms>0&&ms<86400000){if(scheduledNotifs[b.id])clearTimeout(scheduledNotifs[b.id]);scheduledNotifs[b.id]=setTimeout(()=>{new Notification('My Day — '+b.name,{body:b.desc,tag:b.id});},ms);}});showToast('Reminders set for today ✓');}
-function requestNotifPermission(){if(!('Notification' in window)){showToast('Notifications not supported');return;}if(Notification.permission==='granted'){notifGranted=true;scheduleAllNotifs();return;}if(Notification.permission==='denied'){showToast('Enable notifications in Chrome settings');return;}Notification.requestPermission().then(p=>{if(p==='granted'){notifGranted=true;scheduleAllNotifs();const b=document.getElementById('notif-banner-plan');if(b)b.classList.remove('show');}else{showToast('Notifications blocked');}});}
-function toggleBell(bid,e){e.stopPropagation();if(!notifGranted){requestNotifPermission();return;}if(scheduledNotifs[bid]){clearTimeout(scheduledNotifs[bid]);delete scheduledNotifs[bid];showToast('Reminder off');}else{const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);if(!b)return;const t=parseTime(b.time);if(!t)return;const now=new Date();const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);const ms=fire-now;if(ms>0){scheduledNotifs[bid]=setTimeout(()=>{new Notification('My Day — '+b.name,{body:b.desc});},ms);showToast('Reminder set for '+b.time);}else{showToast('That time has already passed today');}}}
+function scheduleAllNotifs(){
+  // Sync with main app notification permission
+  notifGranted = Notification.permission==='granted';
+  if(!notifGranted){requestNotifPermission();return;}
+  const blocks=getBlocks();const now=new Date();let count=0;
+  blocks.filter(b=>b.bell).forEach(b=>{
+    const t=parseTime(b.time);if(!t)return;
+    const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);
+    const ms=fire-now;
+    if(ms>0&&ms<86400000){
+      if(scheduledNotifs[b.id])clearTimeout(scheduledNotifs[b.id]);
+      scheduledNotifs[b.id]=setTimeout(()=>{
+        showSwNotif('⏰ '+b.name, b.desc+'\n'+b.time);
+      },ms);
+      count++;
+    }
+  });
+  showToast(count+' task reminders set ✓');
+}
+function requestNotifPermission(){
+  if(!('Notification' in window)){showToast('Notifications not supported');return;}
+  if(Notification.permission==='granted'){notifGranted=true;scheduleAllNotifs();return;}
+  if(Notification.permission==='denied'){showToast('Go to Chrome Settings → Site Settings → Notifications → Allow');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){
+      notifGranted=true;
+      S.set('notif_on',true);notifEnabled=true;updateNotifBtn();
+      scheduleAllNotifs();
+      const b=document.getElementById('notif-banner-plan');if(b)b.classList.remove('show');
+      showSwNotif('My Buttons ✦','Task reminders active for today!');
+    } else {
+      showToast('Notifications blocked — go to Chrome Settings to allow');
+    }
+  });
+}
+function toggleBell(bid,e){
+  e.stopPropagation();
+  notifGranted=Notification.permission==='granted';
+  if(!notifGranted){requestNotifPermission();return;}
+  if(scheduledNotifs[bid]){
+    clearTimeout(scheduledNotifs[bid]);delete scheduledNotifs[bid];
+    // re-render bell state
+    const btn=document.querySelector('.bell-btn[data-id="'+bid+'"]');
+    if(btn)btn.classList.remove('on');
+    showToast('Reminder off');
+  } else {
+    const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);if(!b)return;
+    const t=parseTime(b.time);if(!t)return;
+    const now=new Date();
+    const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);
+    const ms=fire-now;
+    if(ms>0){
+      scheduledNotifs[bid]=setTimeout(()=>{showSwNotif('⏰ '+b.name, b.desc);},ms);
+      const btn=document.querySelector('.bell-btn[data-id="'+bid+'"]');
+      if(btn)btn.classList.add('on');
+      showToast('⏰ Reminder set for '+b.time);
+    } else {
+      showToast('That time has already passed today');
+    }
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // STREAKS / HISTORY / WEEKLY
