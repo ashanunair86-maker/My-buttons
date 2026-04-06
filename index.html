@@ -30,9 +30,9 @@
   --pred:#c0392b;--pgold:#b8860b;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html{height:100%;overflow-y:scroll;-webkit-overflow-scrolling:touch}
 body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-ui,sans-serif;
-  min-height:100dvh;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom)+56px)}
+  min-height:100%;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom)+72px)}
 
 /* ── HEADER ── */
 .header{background:var(--wine);padding:.85rem 1.1rem .7rem;display:flex;align-items:center;
@@ -1088,10 +1088,12 @@ function renderDash(){
   const evDone=evD.steps?evD.steps.filter(Boolean).length:0;
   const waterD=S.get('water_'+new Date().toDateString())||{ml:0};
   const waterPct=Math.min(100,Math.round(waterD.ml/WATER_GOAL*100));
-  const emotions=S.get('emotions')||{};
-  const todayEmotions=Object.entries(emotions).filter(([k])=>k.startsWith(new Date().toDateString()));
-  const posCount=todayEmotions.filter(([,v])=>v.type==='pos').length;
-  const negCount=todayEmotions.filter(([,v])=>v.type==='neg').length;
+  // use new emlog format
+  const emlog=getEmotionLog();
+  const todayPrefix=new Date().toDateString();
+  const todayEntries=Object.entries(emlog).filter(([k])=>k.startsWith(todayPrefix)).flatMap(([,v])=>v);
+  const posCount=todayEntries.filter(e=>e.type==='pos').length;
+  const negCount=todayEntries.filter(e=>e.type==='neg').length;
   const n=new Date();const h=n.getHours();
   const greeting=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -1356,44 +1358,166 @@ function renderWater(){
 }
 
 // ═══════════════════════════════════════════════════════
-// CHECK-IN
+// EMOTION TRACKER — multi-log per slot, pos + neg together
 // ═══════════════════════════════════════════════════════
 function getCurrentSlot(){const h=new Date().getHours();for(let i=emSlots.length-1;i>=0;i--)if(h>=emSlots[i].h)return emSlots[i];return emSlots[0];}
 function getSlotKey(){return new Date().toDateString()+'-'+getCurrentSlot().h;}
 
+// emotions stored as: { 'datestring-h': [{emotion, type, time}, ...], ... }
+function getEmotionLog(){return S.get('emlog')||{};}
+function saveEmotionLog(d){S.set('emlog',d);}
+function getSlotEntries(key){const log=getEmotionLog();return log[key]||[];}
+
 function renderCheckin(){
-  const slot=getCurrentSlot();const key=getSlotKey();
-  const emotions=S.get('emotions')||{};const existing=emotions[key];
-  selectedEmotion=null;
-  const liftHTML=happyTriggers.map(t=>`<div class="lift-card ${t.color}" style="background:var(--white);border:.5px solid var(--border);border-radius:8px;padding:.75rem .85rem;cursor:pointer;position:relative;overflow:hidden" onclick="void(0)"><div style="position:absolute;top:0;left:0;width:3px;height:100%;background:${t.color==='lc-green'?'var(--green)':t.color==='lc-gold'?'var(--gold)':t.color==='lc-teal'?'var(--teal)':'var(--wine)'}"></div><div style="font-size:17px;margin-bottom:2px">${t.icon}</div><div style="font-size:11.5px;font-weight:700;color:var(--ink)">${t.title}</div><div style="font-size:10px;color:var(--muted);font-style:italic">${t.phrase}</div></div>`).join('');
-  const posChips=allEmotions.pos.map(e=>`<div class="ep-chip ep-pos${existing&&existing.emotion===e?' selected':''}" onclick="pickEm(this,'${e}','pos')">${e}</div>`).join('');
-  const negChips=allEmotions.neg.map(e=>`<div class="ep-chip ep-neg${existing&&existing.emotion===e?' selected':''}" onclick="pickEm(this,'${e}','neg')">${e}</div>`).join('');
+  const slot=getCurrentSlot();
+  const key=getSlotKey();
+  const entries=getSlotEntries(key);
+  const hasNeg=entries.some(e=>e.type==='neg');
+
   document.getElementById('ci-content').innerHTML=`
-    <div class="ci-hero"><div><div class="ci-lbl">${slot.label}</div><div class="ci-slot">How am I doing?</div></div><div class="ci-clock" id="liveClock">--:--</div></div>
-    <div class="dash-section-title" style="padding:0 .1rem;margin-bottom:.45rem">Lift Me Now</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem">${liftHTML}</div>
-    <div class="logger-box">
-      <div class="logger-lbl">My emotion — last 2 hours</div>
-      <div class="logger-q">${existing?'Logged: <strong>'+existing.emotion+'</strong> — tap to update':'What was I mostly feeling?'}</div>
-      <div class="ep-wrap">
-        <div style="width:100%;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green);padding:.25rem 0 .12rem">Positive</div>
-        ${posChips}
-        <div style="width:100%;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);padding:.35rem 0 .12rem">Negative — tap to fix</div>
-        ${negChips}
-      </div>
-      <div class="neg-strip" id="negStrip"><div class="neg-strip-title">⚠ Negative detected — fix it now</div><div class="neg-strip-btns"><div class="neg-strip-btn" onclick="navTo('negative','nb-more')">→ Fix It</div><div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div><div class="neg-strip-btn g" onclick="navTo('hopo','nb-more')">Ho'opo</div></div></div>
-      <button class="log-save-btn" id="saveBtn" onclick="saveEmotion('${key}')" style="${existing?'display:block':'display:none'}">Save Check-In ✓</button>
+    <div class="ci-hero">
+      <div><div class="ci-lbl">${slot.label}</div><div class="ci-slot">Log emotions — tap all that apply</div></div>
+      <div class="ci-clock" id="liveClock">--:--</div>
     </div>
-    ${buildTimeline()}`;
+
+    <!-- Current slot logged emotions -->
+    <div id="slotLogBox" style="margin-bottom:.75rem">${buildSlotLog(entries,key)}</div>
+
+    <!-- Emotion picker -->
+    <div class="logger-box">
+      <div class="logger-lbl">Add an emotion — tap any chip</div>
+      <div class="logger-q" style="font-size:12px;color:var(--muted)">Tap to log instantly. Add as many as you feel.</div>
+      <div class="ep-wrap">
+        <div style="width:100%;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green);padding:.3rem 0 .1rem">✓ Positive</div>
+        ${allEmotions.pos.map(e=>`<div class="ep-chip ep-pos" onclick="logEmotion('${e}','pos','${key}')">${e}</div>`).join('')}
+        <div style="width:100%;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);padding:.35rem 0 .1rem">⚠ Negative — tap to log + fix</div>
+        ${allEmotions.neg.map(e=>`<div class="ep-chip ep-neg" onclick="logEmotion('${e}','neg','${key}')">${e}</div>`).join('')}
+      </div>
+    </div>
+
+    ${hasNeg?`<div class="neg-strip" style="display:block">
+      <div class="neg-strip-title">⚠ Negative emotions logged — act on them</div>
+      <div class="neg-strip-btns">
+        <div class="neg-strip-btn" onclick="navTo('negative','nb-more')">→ Fix It</div>
+        <div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div>
+        <div class="neg-strip-btn g" onclick="navTo('hopo','nb-more')">Ho'opo</div>
+      </div>
+    </div>`:''}
+
+    <!-- Full day timeline -->
+    ${buildFullDayTimeline()}
+
+    <!-- Lift cards -->
+    <div class="dash-section-title" style="padding:0 .1rem;margin:.75rem 0 .45rem">Lift Me Now</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem">
+      ${happyTriggers.map(t=>`<div style="background:var(--white);border:.5px solid var(--border);border-radius:8px;padding:.7rem .85rem;cursor:pointer;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;width:3px;height:100%;background:${t.color==='lc-green'?'var(--green)':t.color==='lc-gold'?'var(--gold)':t.color==='lc-teal'?'var(--teal)':'var(--wine)'}"></div>
+        <div style="font-size:16px;margin-bottom:2px">${t.icon}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--ink)">${t.title}</div>
+        <div style="font-size:9.5px;color:var(--muted);font-style:italic">${t.phrase}</div>
+      </div>`).join('')}
+    </div>`;
   startClock();
-  if(existing)selectedEmotion=existing.emotion;
 }
 
-function pickEm(el,name,type){document.querySelectorAll('.ep-chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');selectedEmotion=name;const btn=document.getElementById('saveBtn');if(btn)btn.style.display='block';const strip=document.getElementById('negStrip');if(strip)strip.style.display=type==='neg'?'block':'none';}
-function saveEmotion(key){if(!selectedEmotion)return;const n=new Date();const isPos=allEmotions.pos.includes(selectedEmotion);const emotions=S.get('emotions')||{};emotions[key]={emotion:selectedEmotion,type:isPos?'pos':'neg',time:n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),slot:getCurrentSlot().label};S.set('emotions',emotions);const btn=document.getElementById('saveBtn');if(btn){btn.textContent='Saved ✓';btn.style.background='var(--green)';}if(!isPos)setTimeout(()=>navTo('negative','nb-more'),800);setTimeout(()=>{const box=document.getElementById('timelineBox');if(box)box.innerHTML=buildTimelineRows();},300);}
+function buildSlotLog(entries, key){
+  if(!entries.length) return `<div style="background:var(--cream-2);border:.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic">Nothing logged this slot yet — tap chips below</div>`;
+  const posEntries=entries.filter(e=>e.type==='pos');
+  const negEntries=entries.filter(e=>e.type==='neg');
+  return `<div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden">
+    <div style="background:var(--cream-2);padding:.5rem .9rem;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <span>This slot — ${entries.length} logged</span>
+      <span onclick="clearSlot('${key}')" style="color:var(--red);cursor:pointer;font-size:10px">Clear ✕</span>
+    </div>
+    <div style="padding:.65rem .9rem">
+      ${posEntries.length?`<div style="margin-bottom:.4rem"><span style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--green);letter-spacing:.1em">Positive</span><div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem">${posEntries.map(e=>`<div style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px">${e.emotion} <span style="opacity:.6;font-size:9px">${e.time}</span> <span onclick="removeEmotion('${key}','${e.emotion}','${e.time}')" style="cursor:pointer;color:var(--green);font-size:10px;margin-left:1px">✕</span></div>`).join('')}</div></div>`:''}
+      ${negEntries.length?`<div><span style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--red);letter-spacing:.1em">Negative</span><div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem">${negEntries.map(e=>`<div style="background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px">${e.emotion} <span style="opacity:.6;font-size:9px">${e.time}</span> <span onclick="removeEmotion('${key}','${e.emotion}','${e.time}')" style="cursor:pointer;color:var(--red);font-size:10px;margin-left:1px">✕</span></div>`).join('')}</div></div>`:''}
+    </div>
+  </div>`;
+}
 
-function buildTimeline(){return`<div class="tl-box" id="timelineBox"><div class="tl-title">Today's Frequency Log</div>${buildTimelineRows()}</div>`;}
-function buildTimelineRows(){const today=new Date().toDateString();const emotions=S.get('emotions')||{};return emSlots.map(s=>{const k=today+'-'+s.h;const e=emotions[k];if(!e)return`<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot empty"></div><div class="tl-em" style="color:var(--muted);font-style:italic">—</div></div>`;return`<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot ${e.type}"></div><div class="tl-em">${e.emotion}</div></div>`;}).join('');}
+function logEmotion(name, type, key){
+  const log=getEmotionLog();
+  if(!log[key])log[key]=[];
+  // avoid exact duplicate in same slot
+  const already=log[key].find(e=>e.emotion===name);
+  if(already){showToast(name+' already logged this slot');return;}
+  const time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  log[key].push({emotion:name,type,time});
+  saveEmotionLog(log);
+  // flash the chip briefly
+  showToast((type==='pos'?'✓ ':'⚠ ')+name+' logged');
+  // re-render slot log and timeline
+  const entries=getSlotEntries(key);
+  const slotBox=document.getElementById('slotLogBox');
+  if(slotBox)slotBox.innerHTML=buildSlotLog(entries,key);
+  const tlBox=document.getElementById('fullDayTl');
+  if(tlBox)tlBox.innerHTML=buildFullDayTimelineRows();
+  // if negative, show fix strip
+  const hasNeg=entries.some(e=>e.type==='neg');
+  let strip=document.getElementById('negStripLive');
+  if(hasNeg&&!strip){
+    const ci=document.getElementById('ci-content');
+    const loggerBox=ci.querySelector('.logger-box');
+    const div=document.createElement('div');
+    div.id='negStripLive';div.className='neg-strip';div.style.display='block';
+    div.innerHTML=`<div class="neg-strip-title">⚠ Negative emotions logged — act on them</div><div class="neg-strip-btns"><div class="neg-strip-btn" onclick="navTo('negative','nb-more')">→ Fix It</div><div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div><div class="neg-strip-btn g" onclick="navTo('hopo','nb-more')">Ho'opo</div></div>`;
+    loggerBox.after(div);
+  }
+  // update dashboard if visible
+  if(currentScreen==='dash')renderDash();
+}
+
+function removeEmotion(key,name,time){
+  const log=getEmotionLog();
+  if(!log[key])return;
+  log[key]=log[key].filter(e=>!(e.emotion===name&&e.time===time));
+  if(!log[key].length)delete log[key];
+  saveEmotionLog(log);
+  renderCheckin();
+}
+
+function clearSlot(key){
+  const log=getEmotionLog();
+  delete log[key];
+  saveEmotionLog(log);
+  renderCheckin();
+}
+
+function buildFullDayTimeline(){
+  return`<div class="tl-box"><div class="tl-title">Today's Full Emotion Log</div><div id="fullDayTl">${buildFullDayTimelineRows()}</div></div>`;
+}
+
+function buildFullDayTimelineRows(){
+  const today=new Date().toDateString();
+  const log=getEmotionLog();
+  return emSlots.map(s=>{
+    const k=today+'-'+s.h;
+    const entries=log[k]||[];
+    if(!entries.length) return `<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot empty"></div><div class="tl-em" style="color:var(--muted);font-style:italic">—</div></div>`;
+    const posCount=entries.filter(e=>e.type==='pos').length;
+    const negCount=entries.filter(e=>e.type==='neg').length;
+    const dominantType=posCount>=negCount?'pos':'neg';
+    const summary=entries.map(e=>e.emotion).join(', ');
+    return`<div class="tl-row" style="align-items:flex-start;padding:.2rem 0">
+      <div class="tl-time" style="padding-top:.1rem">${s.label}</div>
+      <div style="display:flex;gap:3px;margin-top:.15rem;flex-shrink:0">
+        ${posCount>0?`<div class="tl-dot pos"></div>`:''}
+        ${negCount>0?`<div class="tl-dot neg"></div>`:''}
+        ${posCount===0&&negCount===0?`<div class="tl-dot empty"></div>`:''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="tl-em" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px">${summary}</div>
+        ${posCount>0&&negCount>0?`<div style="font-size:9.5px;color:var(--muted);margin-top:1px">${posCount} pos · ${negCount} neg</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Keep backward compat for dashboard timeline
+function buildTimelineRows(){return buildFullDayTimelineRows();}
+function buildTimeline(){return buildFullDayTimeline();}
+
 
 // ═══════════════════════════════════════════════════════
 // AFFIRMATIONS SCREEN
