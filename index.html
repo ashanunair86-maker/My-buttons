@@ -526,6 +526,10 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
   <div class="tab"        id="tab-nudge"    onclick="switchTab('nudge')">Nudges</div>
   <div class="tab"        id="tab-habits"   onclick="switchTab('habits')">🎯 Habits</div>
   <div class="tab"        id="tab-vision"   onclick="switchTab('vision')">🌟 Vision</div>
+  <div class="tab"        id="tab-plan"     onclick="switchTab('plan')">📋 Planner</div>
+  <div class="tab"        id="tab-streaks"  onclick="switchTab('streaks')">🔥 Streaks</div>
+  <div class="tab"        id="tab-history"  onclick="switchTab('history')">📅 History</div>
+  <div class="tab"        id="tab-weekly"   onclick="switchTab('weekly')">📊 Weekly</div>
   <div class="tab"        id="tab-reset"    onclick="switchTab('reset')">Reset</div>
 </div>
 
@@ -750,20 +754,31 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 <div class="screen" id="screen-negative">
   <div class="grid-lbl">What am I feeling? Pick it — then fix it.</div>
   <div class="em-grid">
-    <div class="neg-tile" onclick="showNeg('self-doubt')"><div class="tn">Self-Doubt</div><div class="th">"Am I enough?"</div></div>
-    <div class="neg-tile" onclick="showNeg('fearful')"><div class="tn">Fearful / On Edge</div><div class="th">Dreading what hasn't happened</div></div>
-    <div class="neg-tile" onclick="showNeg('helpless')"><div class="tn">Helpless</div><div class="th">Nothing feels like it's moving</div></div>
-    <div class="neg-tile" onclick="showNeg('lazy')"><div class="tn">Lazy / Drained</div><div class="th">Not starting. Telling myself tired.</div></div>
-    <div class="neg-tile" onclick="showNeg('comparing')"><div class="tn">Comparing / Jealous</div><div class="th">Someone else's highlight reel</div></div>
-    <div class="neg-tile" onclick="showNeg('complaining')"><div class="tn">Complaining</div><div class="th">I hear myself going again</div></div>
-    <div class="neg-tile" onclick="showNeg('lonely')"><div class="tn">Lonely / Disconnected</div><div class="th">No one checks on me</div></div>
-    <div class="neg-tile" onclick="showNeg('reactive')"><div class="tn">Reactive</div><div class="th">Want to say the thing now</div></div>
-    <div class="neg-tile" onclick="showNeg('resentful')"><div class="tn">Resentful / Unseen</div><div class="th">Work not acknowledged</div></div>
-    <div class="neg-tile" onclick="showNeg('scattered')"><div class="tn">Scattered</div><div class="th">10 things. Can't land.</div></div>
-    <div class="neg-tile" onclick="showNeg('hatred')"><div class="tn">Hatred / Anger</div><div class="th">Strong, hot feeling</div></div>
-    <div class="neg-tile" onclick="showNeg('stressed')"><div class="tn">Stressed / Anxious</div><div class="th">Heart tight, mind racing</div></div>
-    <div class="neg-tile" onclick="showNeg('insecure')"><div class="tn">Insecure / Scared</div><div class="th">Feels unsafe or exposed</div></div>
-    <div class="neg-tile" onclick="showNeg('dramatic')"><div class="tn">Dramatic / Trapped</div><div class="th">Feels bigger than it is</div></div>
+    <div class="neg-tile" onclick="showNeg('anxious')"><div class="tn">Anxious / Overwhelmed</div><div class="th">Too much. Mind spinning.</div></div>
+    <div class="neg-tile" onclick="showNeg('self-doubt')"><div class="tn">Self-Doubt / Not Enough</div><div class="th">"Am I enough?"</div></div>
+    <div class="neg-tile" onclick="showNeg('sad')"><div class="tn">Sad / Low</div><div class="th">Flat. Heavy. Not sure why.</div></div>
+    <div class="neg-tile" onclick="showNeg('lonely')"><div class="tn">Lonely / Disconnected</div><div class="th">No one checks on me.</div></div>
+    <div class="neg-tile" onclick="showNeg('complaining')"><div class="tn">Complaining / Bitching</div><div class="th">I hear myself going again.</div></div>
+    <div class="neg-tile" onclick="showNeg('bored')"><div class="tn">Bored / Flat</div><div class="th">Nothing feels interesting.</div></div>
+    <div class="neg-tile" onclick="showNeg('stressed')"><div class="tn">Restless / Stressed</div><div class="th">Heart tight. Cannot settle.</div></div>
+    <div class="neg-tile" onclick="showNeg('fearful')"><div class="tn">Hopeless / Fearful</div><div class="th">Nothing will work out.</div></div>
+    <div class="neg-tile" onclick="showNeg('ashamed')"><div class="tn">Ashamed / Guilty</div><div class="th">I should have done better.</div></div>
+    <div class="neg-tile" onclick="showNeg('resentful')"><div class="tn">Bitter / Resentful</div><div class="th">It is unfair. I am unseen.</div></div>
+    <div class="neg-tile" onclick="showNeg('lazy')"><div class="tn">Lazy / Resistant</div><div class="th">Not starting. Telling myself tired.</div></div>
+    <div class="neg-tile" onclick="showNeg('stuck')"><div class="tn">Stuck / Stagnant</div><div class="th">Not moving. Same place.</div></div>
+    <div class="neg-tile" onclick="showNeg('scattered')"><div class="tn">Scattered / Unfocused</div><div class="th">10 things. Cannot land.</div></div>
+    <div class="neg-tile" onclick="showNeg('exhausted')"><div class="tn">Exhausted / Drained</div><div class="th">Nothing left. Running on empty.</div></div>
+    <div class="neg-tile" onclick="showNeg('scarcity')"><div class="tn">Scarcity / Never Enough</div><div class="th">Not enough money or time.</div></div>
+    <div class="neg-tile" onclick="showNeg('invisible')"><div class="tn">Ashamed of Self / Invisible</div><div class="th">No one sees me. I don't matter.</div></div>
+    <div class="neg-tile" onclick="showNeg('serious')"><div class="tn">Serious / Uptight</div><div class="th">Everything feels heavy.</div></div>
+    <div class="neg-tile" onclick="showNeg('judgmental')"><div class="tn">Judgmental / Critical</div><div class="th">Being harsh — to myself or others.</div></div>
+    <div class="neg-tile" onclick="showNeg('unseen')"><div class="tn">Unseen / Ignored</div><div class="th">I work hard. No one notices.</div></div>
+    <div class="neg-tile" onclick="showNeg('insecure')"><div class="tn">Fearful / On Edge</div><div class="th">Not safe. Something bad coming.</div></div>
+    <div class="neg-tile" onclick="showNeg('helpless')"><div class="tn">Helpless</div><div class="th">Nothing is in my control.</div></div>
+    <div class="neg-tile" onclick="showNeg('trapped')"><div class="tn">Trapped / Controlled</div><div class="th">No way out. No options.</div></div>
+    <div class="neg-tile" onclick="showNeg('irritated')"><div class="tn">Irritated / Frustrated</div><div class="th">Not going the way it should.</div></div>
+    <div class="neg-tile" onclick="showNeg('reactive')"><div class="tn">Reactive / Short-Tempered</div><div class="th">Want to fire back right now.</div></div>
+    <div class="neg-tile" onclick="showNeg('comparing')"><div class="tn">Comparing / Jealous</div><div class="th">Their life looks better than mine.</div></div>
   </div>
 </div>
 
@@ -771,20 +786,31 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 <div class="screen" id="screen-positive">
   <div class="grid-lbl">Choose where to go. Tap it. Feel it.</div>
   <div class="em-grid">
-    <div class="pos-tile" onclick="showPos('grateful')"><div class="tn">Grateful</div><div class="th">Say thanks. Feel it.</div></div>
-    <div class="pos-tile" onclick="showPos('happy')"><div class="tn">Happy</div><div class="th">Find what's good right now.</div></div>
     <div class="pos-tile" onclick="showPos('calm')"><div class="tn">Calm</div><div class="th">Breathe. Settle. Go.</div></div>
-    <div class="pos-tile" onclick="showPos('confident')"><div class="tn">Confident</div><div class="th">I've done hard things.</div></div>
-    <div class="pos-tile" onclick="showPos('rich')"><div class="tn">Feeling Rich</div><div class="th">It's flowing. Building.</div></div>
-    <div class="pos-tile" onclick="showPos('beautiful')"><div class="tn">Beautiful + Elegant</div><div class="th">Slow. Graceful. Me.</div></div>
-    <div class="pos-tile" onclick="showPos('loved')"><div class="tn">Loved</div><div class="th">I'm not alone in this.</div></div>
-    <div class="pos-tile" onclick="showPos('secure')"><div class="tn">Secure</div><div class="th">I am safe right now.</div></div>
-    <div class="pos-tile" onclick="showPos('magnetic')"><div class="tn">Magnetic</div><div class="th">People are drawn to me.</div></div>
-    <div class="pos-tile" onclick="showPos('trusted')"><div class="tn">Trusted</div><div class="th">I know what I'm doing.</div></div>
-    <div class="pos-tile" onclick="showPos('powerful')"><div class="tn">Powerful</div><div class="th">I own this moment.</div></div>
-    <div class="pos-tile" onclick="showPos('energetic')"><div class="tn">Energetic</div><div class="th">Walk or run. Move now.</div></div>
+    <div class="pos-tile" onclick="showPos('confident')"><div class="tn">Confident</div><div class="th">I have handled harder.</div></div>
+    <div class="pos-tile" onclick="showPos('happy')"><div class="tn">Happy</div><div class="th">Find what is good right now.</div></div>
+    <div class="pos-tile" onclick="showPos('loved')"><div class="tn">Loved</div><div class="th">My son. My parents. This life.</div></div>
+    <div class="pos-tile" onclick="showPos('grateful')"><div class="tn">Grateful</div><div class="th">Say thanks. Feel it.</div></div>
+    <div class="pos-tile" onclick="showPos('excited')"><div class="tn">Excited</div><div class="th">Something good is coming.</div></div>
+    <div class="pos-tile" onclick="showPos('peaceful')"><div class="tn">Peaceful</div><div class="th">I am exactly where I need to be.</div></div>
+    <div class="pos-tile" onclick="showPos('hopeful')"><div class="tn">Hopeful</div><div class="th">The best is still ahead.</div></div>
+    <div class="pos-tile" onclick="showPos('proud')"><div class="tn">Proud</div><div class="th">I did that. That was me.</div></div>
+    <div class="pos-tile" onclick="showPos('joyful')"><div class="tn">Joyful</div><div class="th">Find the lightness. Right now.</div></div>
     <div class="pos-tile" onclick="showPos('motivated')"><div class="tn">Motivated</div><div class="th">One step. Then another.</div></div>
-    <div class="pos-tile" onclick="showPos('selflove')"><div class="tn">Self-Love</div><div class="th">Mirror moment. Say it.</div></div>
+    <div class="pos-tile" onclick="showPos('inspired')"><div class="tn">Inspired</div><div class="th">I have something to build.</div></div>
+    <div class="pos-tile" onclick="showPos('focused')"><div class="tn">Focused</div><div class="th">One thing. Right now. That is all.</div></div>
+    <div class="pos-tile" onclick="showPos('energised')"><div class="tn">Energised</div><div class="th">Stand up. Move. Body first.</div></div>
+    <div class="pos-tile" onclick="showPos('abundant')"><div class="tn">Abundant / Feeling Rich</div><div class="th">It is flowing. Building.</div></div>
+    <div class="pos-tile" onclick="showPos('beautiful')"><div class="tn">Beautiful / Elegant</div><div class="th">Slow. Graceful. I mean it.</div></div>
+    <div class="pos-tile" onclick="showPos('playful')"><div class="tn">Playful</div><div class="th">Not everything needs to be serious.</div></div>
+    <div class="pos-tile" onclick="showPos('compassionate')"><div class="tn">Compassionate</div><div class="th">Everyone is fighting something.</div></div>
+    <div class="pos-tile" onclick="showPos('connected')"><div class="tn">Connected</div><div class="th">I am not alone. My people are there.</div></div>
+    <div class="pos-tile" onclick="showPos('safe')"><div class="tn">Safe / Secure</div><div class="th">I am safe right now.</div></div>
+    <div class="pos-tile" onclick="showPos('powerful')"><div class="tn">Powerful</div><div class="th">I own this moment.</div></div>
+    <div class="pos-tile" onclick="showPos('free')"><div class="tn">Free</div><div class="th">I always have a choice.</div></div>
+    <div class="pos-tile" onclick="showPos('content')"><div class="tn">Content</div><div class="th">I accept what is. I work toward what can be.</div></div>
+    <div class="pos-tile" onclick="showPos('enthusiastic')"><div class="tn">Enthusiastic</div><div class="th">I bring energy to this.</div></div>
+    <div class="pos-tile" onclick="showPos('optimistic')"><div class="tn">Optimistic</div><div class="th">My path is my path. It is working.</div></div>
   </div>
 </div>
 
@@ -956,6 +982,58 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 <!-- ══ RESET ══ -->
 <div class="screen" id="screen-habits"></div>
 <div class="screen" id="screen-vision"></div>
+<div class="screen" id="s-streaks"><div class="streaks-page" id="streaks-page"></div></div>
+<div class="screen" id="s-history"><div class="history-page" id="history-page"></div></div>
+<div class="screen" id="s-weekly"><div class="weekly-page" id="weekly-page"></div></div>
+<div class="screen" id="s-plan">
+  <div class="plan-screen">
+    <div class="notif-banner" id="notif-banner-plan">
+      <strong>Enable reminders to stay on track</strong>Tap below to allow notifications.<br>
+      <button class="enable-btn" onclick="requestNotifPermission()">Enable notifications</button>
+    </div>
+    <div class="plan-day-sw">
+      <button class="ds-btn active" id="ds-wd" onclick="setDay('weekday')">Mon – Fri</button>
+      <button class="ds-btn" id="ds-we" onclick="setDay('weekend')">Sat – Sun</button>
+    </div>
+    <div class="summary-strip">
+      <div class="ss"><div class="ss-val" id="s-done">0</div><div class="ss-lbl">Done</div></div>
+      <div class="ss"><div class="ss-val" id="s-total">0</div><div class="ss-lbl">Tasks</div></div>
+      <div class="ss"><div class="ss-val" id="s-pct">0%</div><div class="ss-lbl">Today</div></div>
+      <div class="ss"><div class="ss-val" id="s-water-p">0L</div><div class="ss-lbl">Water</div></div>
+      <div class="ss"><div class="ss-val" id="s-steps-p">0</div><div class="ss-lbl">Steps</div></div>
+    </div>
+    <div class="water-section">
+      <div class="water-hdr">
+        <div class="water-title">💧 Water — 5 litres (14 × 350ml)</div>
+        <div class="water-info" id="w-info">0 / 14 glasses</div>
+      </div>
+      <div class="glasses" id="glasses"></div>
+    </div>
+    <div class="steps-section">
+      <div class="steps-hdr">
+        <div class="steps-title">👟 Steps today</div>
+        <div class="steps-info" id="steps-info">0 / 8,000</div>
+      </div>
+      <div class="steps-row">
+        <button class="step-adj" onclick="adjustSteps(-500)">−500</button>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:23px;font-weight:700;color:var(--ink)" id="steps-display">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px">steps</div>
+        </div>
+        <button class="step-adj step-add" onclick="adjustSteps(500)">+500</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap">
+        <button class="step-quick" onclick="adjustSteps(1000)">+1k</button>
+        <button class="step-quick" onclick="adjustSteps(2000)">+2k</button>
+        <button class="step-quick" onclick="adjustSteps(5000)">+5k</button>
+        <button class="step-quick" onclick="setSteps(0)">Reset</button>
+      </div>
+      <div class="steps-bar-wrap"><div class="steps-bar-fill" id="steps-bar" style="width:0%"></div></div>
+      <div class="steps-goal-lbl"><span id="steps-pct">0%</span><span>Goal: 8,000</span></div>
+    </div>
+    <div class="sched" id="schedule"></div>
+  </div>
+</div>
 <div class="screen" id="screen-reset">
   <div class="reset-strip">
     <div class="rs-title">1-Minute Reset — 2S2C</div>
@@ -1130,121 +1208,185 @@ function _initApp(){
 // DATA
 // ═══════════════════════════════════════════════════════
 const negData = {
-  'self-doubt':{name:'Self-Doubt / Not Enough',trigger:'"Am I enough? Do they even see what I do here?"',
-    threshold:"I don't feel not enough until 3 people who actually know my work — not just Susan's mood — say my performance is genuinely falling short. One reaction is not a verdict.",
-    stop1:"I am 100% responsible for feeling not enough. Not Susan. Not the situation. Me.",
-    actions:['Name one thing I\'ve built or executed in the last 7 days. One is enough.'],
-    key:'"I\'m not the newcomer. I built this. I know what I\'m doing."',
-    posKey:'confident',posWhy:'Self-doubt dissolves when I step into confidence.'},
-  'fearful':{name:'Fearful / On Edge',trigger:'Dreading something. A financial worry. An unknown outcome.',
-    threshold:"I don't feel fear until the worst has actually happened. Not in my head. Actually happened. A feeling is not a fact.",
-    stop1:"I am 100% responsible for feeling fearful. Not the future. Not the outcome. Me.",
-    actions:['Ask: has the worst actually happened? No. Then this is imagination — not reality.'],
-    key:'"This is a thought. Not a fact. I stay here, in what\'s real."',
-    posKey:'calm',posWhy:'Fear lives in tomorrow. Calm brings me back to now.'},
-  'helpless':{name:'Helpless',trigger:'One blocked path. Nothing feels like it\'s moving.',
-    threshold:"I don't feel helpless until I've tried 3 different approaches and all 3 failed. One blocked door is not the end of the corridor.",
-    stop1:"I am 100% responsible for feeling helpless. Not the situation. Not what's blocked. Me.",
-    actions:['Name the next approach — even sideways. Take it.','What is one small thing I CAN move right now?'],
-    key:'"I\'ve only tried one door. There are two more I haven\'t touched yet."',
-    posKey:'powerful',posWhy:'Power replaces helplessness. I always have a next step.'},
-  'lazy':{name:'Lazy / Exhausted / Drained',trigger:'Telling myself I\'m too tired. Not starting.',
-    threshold:"Real talk — I'm not sleep deprived. I sleep. I just tell myself I haven't. I don't call myself lazy until I've missed commitments for 5 consecutive days. One bad afternoon is not my identity.",
-    stop1:"I am 100% responsible for feeling drained. Not sleep. Not the day. Me.",
-    actions:['5-minute rule: "Only 5 minutes." Set timer. I always continue.'],
-    nap:true,key:'"This is resistance. Not exhaustion. Not me." Stand up. Move first.',
-    posKey:'energetic',posWhy:'Energy is created by movement — not by waiting to feel ready.'},
-  'comparing':{name:'Comparing / Jealous',trigger:'Someone else\'s promotion. LinkedIn.',
-    threshold:"I don't spiral until I know their full story — every failure, every sacrifice. I never do. So I stay in my lane.",
-    stop1:"I am 100% responsible for feeling jealous. Not them. Not their success. Me.",
-    actions:['Their outside is not their inside. I only see the highlight reel.'],
-    key:'"Different path. My lane. My frequency."',
-    posKey:'rich',posWhy:'I run my race — from abundance, not lack.'},
+  'anxious':{name:'Anxious / Overwhelmed',trigger:'Too much. Mind spinning. Chest tight.',
+    threshold:'I do not spiral until I have written down every worry and checked: how many have actually happened? Usually zero.',
+    stop1:'I am 100% responsible for feeling anxious. Not the workload. Not the situation. Me.',
+    actions:['Write every worry down. Circle the ONE thing I can act on today.'],
+    breathe:true, key:'"One thing. Breathe. Go."', posKey:'calm', posWhy:'Calm is the only state I can think clearly from.'},
+  'self-doubt':{name:'Self-Doubt / Not Enough',trigger:'"Am I enough? Do they see what I do here?"',
+    threshold:'I do not feel not enough until 3 people who know my work say it is falling short. One mood is not a verdict.',
+    stop1:'I am 100% responsible for feeling not enough. Not Susan. Not the situation. Me.',
+    actions:['Name one thing I have built or executed in the last 7 days.'],
+    key:'"I built this. I know what I am doing."', posKey:'confident', posWhy:'Self-doubt dissolves when I step into confidence.'},
+  'sad':{name:'Sad / Low',trigger:'Flat. Heavy. Not sure why.',
+    threshold:'I allow myself to feel it for 10 minutes. Then I find one thing that is true and good.',
+    stop1:'I am 100% responsible for my emotional state. Not circumstances. Not people. Me.',
+    actions:['Name one true good thing. Hand on heart. Feel it for 10 seconds.'],
+    key:'"This is a feeling. It will pass. I am still standing."', posKey:'happy', posWhy:'Happiness starts with one small true thing.'},
+  'lonely':{name:'Lonely / Disconnected',trigger:'No one checks on me. Sitting alone.',
+    threshold:'I do not feel lonely until I have reached out to 3 people and got nothing back.',
+    stop1:'I am 100% responsible for feeling lonely. Not them. Not the silence. Me.',
+    actions:['Send one message to one person. Now. Before deciding I am alone.'],
+    key:'"I have not reached out yet. That is on me."', posKey:'loved', posWhy:'Connection starts with me.'},
   'complaining':{name:'Complaining / Bitching',trigger:'I hear myself going again.',
-    threshold:"2 minutes to vent — then one action or full acceptance. After that I'm draining my own frequency.",
-    stop1:"I am 100% responsible for complaining. Not the situation. Not the people. Me.",
-    actions:['Find one thing that\'s actually okay. Say it.'],
-    key:'"That\'s not my channel. Switching now."',
-    posKey:'grateful',posWhy:'One gratitude shifts my frequency instantly.'},
-  'lonely':{name:'Lonely / Disconnected',trigger:'Sitting alone. No one checks on me.',
-    threshold:"I don't feel lonely until I've reached out to 3 people and got nothing back. If I haven't reached out — that's a choice, not a condition.",
-    stop1:"I am 100% responsible for feeling lonely. Not them. Not the silence. Me.",
-    actions:['Send one message to one person. Now. Before deciding I\'m alone.'],
-    key:'"I haven\'t reached out. That\'s on me. I fix that first."',
-    posKey:'loved',posWhy:'Connection starts with me reaching out.'},
-  'reactive':{name:'Reactive / Short-tempered',trigger:'I want to respond right now. Defend.',
-    threshold:"I don't react until I've taken 5 seconds and one breath and it's still as strong. If it passes — it wasn't worth it.",
-    stop1:"I am 100% responsible for feeling reactive. Not them. Not what they said. Me.",
-    actions:['5 seconds. Hand on chest. One breath.','Respond from the version of me that\'ll feel proud tonight.'],
-    breathe:true,key:'"I decide how this goes."',
-    posKey:'calm',posWhy:'Calm is the only state from which I respond well.'},
-  'resentful':{name:'Resentful / Unseen',trigger:'My work isn\'t being acknowledged.',
-    threshold:"I'm not unseen — I'm invisible because I haven't made myself visible yet. I don't get to feel resentful until I've shown what I did clearly and it's still been dismissed.",
-    stop1:"I am 100% responsible for feeling unseen. Not them. Not the culture. Me.",
-    actions:['Have I shown my work to the right person, clearly? If not — that\'s my first step.'],
-    key:'"I haven\'t spoken up yet. That\'s on me. I fix that first."',
-    posKey:'confident',posWhy:'I don\'t need recognition to know my own value.'},
-  'scattered':{name:'Scattered / Unfocused',trigger:'10 things open. Phone in hand.',
-    threshold:"I don't call myself scattered until I've tried 25 minutes phone-face-down and still couldn't get there. One distraction is not my personality.",
-    stop1:"I am 100% responsible for feeling scattered. Not the workload. Not the notifications. Me.",
-    actions:['Phone face-down. One tab. Timer — 25 minutes. Just that.'],
-    key:'"One thing. Right now. That\'s all I\'m deciding."',
-    posKey:'calm',posWhy:'One breath. One task. Calm creates the focus.'},
-  'hatred':{name:'Hatred / Anger',trigger:'Strong hot feeling.',
-    threshold:"I don't act from hatred until I've sat with it for 5 minutes and it's still this strong. Hot reactions make permanent decisions from temporary feelings.",
-    stop1:"I am 100% responsible for feeling this. Not them. Not what happened. Me.",
-    actions:['Physical interrupt first. Find one thing that is not all bad.'],
-    key:'"I feel this. I own it. I choose what I do with it."',
-    posKey:'calm',posWhy:'Hatred → Love. That\'s the swap.'},
-  'stressed':{name:'Stressed / Anxious',trigger:'Heart tight. Mind racing.',
-    threshold:"I don't catastrophise until I've written down everything I'm worried about and checked: how many have actually happened? Usually zero.",
-    stop1:"I am 100% responsible for feeling stressed. Not the workload. Not the deadline. Me.",
+    threshold:'2 minutes to vent — then one action or full acceptance. After that I am draining my own frequency.',
+    stop1:'I am 100% responsible for complaining. Not the situation. Not the people. Me.',
+    actions:['Find one thing that is actually okay. Say it out loud.'],
+    key:'"That is not my channel. Switching now."', posKey:'grateful', posWhy:'One gratitude shifts my frequency instantly.'},
+  'bored':{name:'Bored / Flat',trigger:'Nothing feels interesting. Going through the motions.',
+    threshold:'Boredom is a signal — not a state. What am I avoiding?',
+    stop1:'I am 100% responsible for feeling flat. Not the day. Not the tasks. Me.',
+    actions:['Pick the one thing I have been avoiding. Start it for 5 minutes.'],
+    key:'"Boredom means I am not growing. What is the next step?"', posKey:'excited', posWhy:'Excitement follows action, not the other way around.'},
+  'stressed':{name:'Restless / Stressed',trigger:'Heart tight. Mind racing. Cannot settle.',
+    threshold:'I do not catastrophise until I have listed every worry and checked how many have happened. Usually zero.',
+    stop1:'I am 100% responsible for feeling stressed. Not the deadline. Not anyone else. Me.',
     actions:['"What is the ONE thing right now?" Do only that for 20 minutes.'],
-    breathe:true,key:'"One thing. Breathe. Go."',
-    posKey:'calm',posWhy:'Calm is always the first step out of stress.'},
-  'insecure':{name:'Insecure / Scared',trigger:'Feels unsafe. Exposed.',
-    threshold:"Is there actual danger right now? Usually no. This is a feeling from the past, not a fact of the present.",
-    stop1:"I am 100% responsible for feeling insecure. Not the past. Not the people. Me.",
+    breathe:true, key:'"One thing. Breathe. Go."', posKey:'peaceful', posWhy:'Peace comes from doing the next right thing.'},
+  'fearful':{name:'Hopeless / Fearful',trigger:'Nothing will work out. It is too hard.',
+    threshold:'I do not feel hopeless until the worst has actually happened. Not in my head. Actually happened.',
+    stop1:'I am 100% responsible for feeling fearful. Not the future. Not outcomes. Me.',
+    actions:['Ask: has the worst actually happened? No. Then this is imagination, not reality.'],
+    key:'"This is a thought. Not a fact."', posKey:'hopeful', posWhy:'Hope is a choice. I make it now.'},
+  'ashamed':{name:'Ashamed / Guilty',trigger:'I should have done better. I let someone down.',
+    threshold:'Guilt is useful once — it tells me what to fix. After that it is self-punishment, not growth.',
+    stop1:'I am 100% responsible for this feeling. I acknowledge it. I learn. I move forward.',
+    actions:['What is the one thing I can do to make it right? Do that. Then release it.'],
+    key:'"I acknowledge. I learn. I move forward."', posKey:'proud', posWhy:'Pride comes from taking action, not from punishing myself.'},
+  'resentful':{name:'Bitter / Resentful',trigger:'They got what I deserved. It is unfair.',
+    threshold:'Resentment hurts me more than them. I only carry it if I have not spoken up clearly.',
+    stop1:'I am 100% responsible for feeling resentful. Not them. Not the situation. Me.',
+    actions:['Have I spoken up clearly about what I need? If not — that is my first step.'],
+    key:'"I have not spoken up yet. That is on me."', posKey:'joyful', posWhy:'Joy is incompatible with bitterness. I choose joy.'},
+  'lazy':{name:'Lazy / Resistant',trigger:'Not starting. Telling myself I am tired.',
+    threshold:'I do not call myself lazy until I have missed commitments for 5 consecutive days. One bad afternoon is not my identity.',
+    stop1:'I am 100% responsible for feeling resistant. Not tiredness. Not the task. Me.',
+    actions:['5-minute rule — "Only 5 minutes." Set timer. I always continue.'],
+    nap:true, key:'"This is resistance, not exhaustion. Stand up. Move first."', posKey:'motivated', posWhy:'Motivation follows action.'},
+  'stuck':{name:'Stuck / Stagnant',trigger:'Not moving. Same place. Nothing is changing.',
+    threshold:'Stuck is a story I tell myself. There is always one door I have not tried.',
+    stop1:'I am 100% responsible for feeling stuck. Not circumstances. Not other people. Me.',
+    actions:['Name one small action I can take in the next 10 minutes. Just one. Take it.'],
+    key:'"I have only tried one door. There are more."', posKey:'inspired', posWhy:'Inspiration follows momentum. Take one step.'},
+  'scattered':{name:'Scattered / Unfocused',trigger:'10 things open. Cannot land on anything.',
+    threshold:'I do not call myself scattered until I have tried 25 minutes phone-face-down and still cannot get there.',
+    stop1:'I am 100% responsible for feeling scattered. Not the workload. Not notifications. Me.',
+    actions:['Phone face-down. One tab. Timer — 25 minutes. Just that one thing.'],
+    key:'"One thing. Right now. That is all I am deciding."', posKey:'focused', posWhy:'Focus is a decision. I make it now.'},
+  'exhausted':{name:'Exhausted / Drained',trigger:'Nothing left. Running on empty.',
+    threshold:'Am I actually sleep-deprived or am I emotionally depleted? Usually emotional. One action restores more than rest.',
+    stop1:'I am 100% responsible for feeling drained. Not sleep. Not the day. Me.',
+    actions:['10-minute power nap OR 5-minute walk. Then one small win.'],
+    nap:true, key:'"Rest is a tool. Use it. Then return."', posKey:'energised', posWhy:'Energy is created by movement, not waiting.'},
+  'scarcity':{name:'Scarcity / Never Enough',trigger:'Not enough money. Not enough time. Not enough anything.',
+    threshold:'Scarcity is a frequency, not a fact. I have always had enough to survive and build.',
+    stop1:'I am 100% responsible for feeling scarce. Not my bank balance. Not circumstances. Me.',
+    actions:['Name 3 things I have right now that are working. Say them out loud.'],
+    key:'"I have always had enough. I am building more."', posKey:'abundant', posWhy:'Abundance is a state I choose, not a number I reach.'},
+  'invisible':{name:'Ashamed of Self / Invisible',trigger:'No one sees me. I do not matter here.',
+    threshold:'Invisibility is not a fact — it is a signal I have not made myself visible yet.',
+    stop1:'I am 100% responsible for feeling invisible. Not them. Not the culture. Me.',
+    actions:['One visible action: speak up, share work, contribute. Do it today.'],
+    key:'"I have not shown up fully yet. That is on me."', posKey:'beautiful', posWhy:'I am seen when I show up fully.'},
+  'serious':{name:'Serious / Uptight',trigger:'Everything feels heavy and important.',
+    threshold:'I take myself too seriously when I forget that progress beats perfection.',
+    stop1:'I am 100% responsible for feeling uptight. Not the stakes. Not people. Me.',
+    actions:['Find one thing in this situation I can laugh at or take more lightly.'],
+    key:'"Progress over perfection. Lighten up."', posKey:'playful', posWhy:'Playfulness unlocks creativity and connection.'},
+  'judgmental':{name:'Judgmental / Critical',trigger:'I am being harsh — to myself or others.',
+    threshold:'Judgment is usually about me, not them. What am I really reacting to?',
+    stop1:'I am 100% responsible for feeling judgmental. Not their behaviour. Not mine. Me.',
+    actions:['Find one genuine good in this person or situation. Say it — even silently.'],
+    key:'"What I see in them is a mirror. What does it show me?"', posKey:'compassionate', posWhy:'Compassion dissolves judgment.'},
+  'unseen':{name:'Unseen / Ignored',trigger:'I work hard and no one notices.',
+    threshold:'I am not unseen — I am invisible because I have not made myself clearly visible yet.',
+    stop1:'I am 100% responsible for feeling unseen. Not them. Not the workplace. Me.',
+    actions:['Have I shown my work clearly to the right person? If not — that is my step.'],
+    key:'"I have not spoken up yet. That is on me."', posKey:'connected', posWhy:'Connection starts with showing up fully.'},
+  'insecure':{name:'Fearful / On Edge',trigger:'Something bad is about to happen. Not safe.',
+    threshold:'Is there actual danger right now? Usually no. This is a feeling from the past, not a fact of the present.',
+    stop1:'I am 100% responsible for feeling on edge. Not the situation. Not other people. Me.',
     actions:['Ground: name 5 things I can see right now. I am safe in this moment.'],
-    key:'"I am safe right now. This is a feeling, not a fact."',
-    posKey:'secure',posWhy:'Security comes from inside.'},
-  'dramatic':{name:'Dramatic / Trapped',trigger:'Feels huge. Feels stuck.',
-    threshold:"Will this matter in 5 years? Usually no. Physical interrupt first.",
-    stop1:"I am 100% responsible for feeling trapped. Not the situation. Not anyone else. Me.",
-    actions:['Jump, shake, move. What is ONE step I could take right now?'],
-    key:'"I am not trapped. I am in a moment. This moment will pass."',
-    posKey:'powerful',posWhy:'Power replaces helplessness. I always have a next step.'}
+    key:'"I am safe right now. This is a feeling, not a fact."', posKey:'safe', posWhy:'Safety comes from inside, not from circumstances.'},
+  'helpless':{name:'Helpless',trigger:'Nothing is in my control. I cannot do anything.',
+    threshold:'I do not feel helpless until I have tried 3 different approaches. One blocked door is not the end.',
+    stop1:'I am 100% responsible for feeling helpless. Not the situation. Not what is blocked. Me.',
+    actions:['Name one thing — even sideways — I can move right now.'],
+    key:'"I have only tried one door. There are more."', posKey:'powerful', posWhy:'Power replaces helplessness. I always have a next step.'},
+  'trapped':{name:'Trapped / Controlled',trigger:'No way out. No options. Stuck in this.',
+    threshold:'Will this situation exist in exactly this form in 5 years? Usually not. What is one exit?',
+    stop1:'I am 100% responsible for feeling trapped. Not the situation. Not anyone else. Me.',
+    actions:['Name one exit — even a small one. Even an imperfect one. Take one step toward it.'],
+    key:'"I am not trapped. I am in a moment. I always have a next step."', posKey:'free', posWhy:'Freedom starts with one small act of agency.'},
+  'irritated':{name:'Irritated / Frustrated',trigger:'This is not going the way it should.',
+    threshold:'Is this frustration about the actual situation or about my expectation of it?',
+    stop1:'I am 100% responsible for feeling irritated. Not them. Not the situation. Me.',
+    actions:['Breathe. Ask: what did I expect that did not happen? Is my expectation fair?'],
+    breathe:true, key:'"My frustration is about my expectation. I can adjust that."', posKey:'content', posWhy:'Contentment comes from accepting what is while working toward what can be.'},
+  'reactive':{name:'Reactive / Short-Tempered',trigger:'I want to say something now. Defend. Fire back.',
+    threshold:'I do not react until I have taken 5 seconds and one breath and it is still this strong.',
+    stop1:'I am 100% responsible for feeling reactive. Not them. Not what they said. Me.',
+    actions:['5 seconds. Hand on chest. One breath. Respond from the version of me who will feel proud tonight.'],
+    breathe:true, key:'"I decide how this goes."', posKey:'enthusiastic', posWhy:'Enthusiasm replaces reactivity — I channel that energy forward.'},
+  'comparing':{name:'Comparing / Jealous',trigger:'They have what I want. Their life looks better.',
+    threshold:'I do not spiral until I know their full story — every failure, every sacrifice. I never do.',
+    stop1:'I am 100% responsible for feeling jealous. Not them. Not their success. Me.',
+    actions:['Their outside is not their inside. I run my race.'],
+    key:'"Different path. My lane. My frequency."', posKey:'optimistic', posWhy:'Optimism about my own path replaces envy of theirs.'}
 };
 
 const posData = {
-  'grateful':{name:'Grateful',phrase:'"Thank you. For everything I have right now."',body:'Name 3 things — out loud. The farmhouse. My son. This job.',song:'Say thanks to the universe. Mean it.'},
-  'happy':{name:'Happy',phrase:'"What\'s actually good right now?"',body:'Find it. Even if tiny. Name it. Feel it for 10 seconds.',song:'Put on a happy song. Don\'t overthink.'},
-  'calm':{name:'Calm',phrase:'"I breathe. I settle. I go."',body:'One 4-2-6 breath. Feet on floor. Eyes soft.',breathe:true,song:'Effortless, slow song.'},
-  'confident':{name:'Confident',phrase:'"I\'ve handled harder. I\'ve got this one."',body:'Chin up. Shoulders back. Take up space.',song:'Power song. Something that changes your walk.'},
-  'rich':{name:'Feeling Rich',phrase:'"It\'s flowing. It\'s building. I am wealthy."',body:'Sit tall. Feel the expansion in the chest. It\'s already moving.',song:'Abundance song.'},
-  'beautiful':{name:'Beautiful + Elegant',phrase:'"Slow. Graceful. Me. I carry myself like I mean it."',body:'Slow down. Walk deliberately. Feel elegant in this body.',song:'Something classy and sensual.'},
-  'loved':{name:'Loved',phrase:'"I am held. My son. My parents. This life."',body:'Hand on heart. Three seconds. Think of my son\'s face.',song:'Love song. Anything that warms your chest.'},
-  'secure':{name:'Secure',phrase:'"I am safe right now. Everything I need — I have."',body:'Feet flat on floor. Feel the ground. Breathe slow.',song:'Grounding, slow song.'},
-  'magnetic':{name:'Magnetic',phrase:'"People are drawn to me. I attract what I want."',body:'Smile. Make eye contact with yourself in a mirror.',song:'Song that makes you feel irresistible.'},
-  'trusted':{name:'Trusted',phrase:'"I know what I\'m doing. My word is good. I deliver."',body:'Straight back. Calm face. Deliberate pace.',song:'Something steady and strong.'},
+  'calm':{name:'Calm',phrase:'"I breathe. I settle. I go."',body:'One 4-2-6 breath. Feet on floor. Eyes soft. Let the body lead.',breathe:true,song:'Something slow and effortless.'},
+  'confident':{name:'Confident',phrase:'"I have handled harder. I have got this one."',body:'Chin up. Shoulders back. Take up space. Own the room.',song:'Power song. Something that changes your walk.'},
+  'happy':{name:'Happy',phrase:'"What is actually good right now?"',body:'Find it. Even if tiny. Name it. Feel it for 10 seconds.',song:'Put on a happy song. Do not overthink it.'},
+  'loved':{name:'Loved',phrase:'"I am held. My son. My parents. This life."',body:'Hand on heart. Three seconds. Think of my son\'s face.',song:'Something that warms your chest.'},
+  'grateful':{name:'Grateful',phrase:'"Thank you. For everything I have right now."',body:'Name 3 things out loud. The farmhouse. My son. This job.',song:'Say thanks to the universe. Mean it.'},
+  'excited':{name:'Excited',phrase:'"Something good is coming. I can feel it."',body:'Sit tall. Feel the anticipation. Let it energise you.',song:'Fast, upbeat. Something that makes you want to move.'},
+  'peaceful':{name:'Peaceful',phrase:'"I am exactly where I need to be."',body:'Slow breath. Soft eyes. Release the need to control.',breathe:true,song:'Something gentle and slow.'},
+  'hopeful':{name:'Hopeful',phrase:'"The best is genuinely still ahead."',body:'Picture one good outcome. Hold it for 10 seconds. Feel it as real.',song:'Something that opens the chest.'},
+  'proud':{name:'Proud',phrase:'"I did that. That was me."',body:'Sit tall. Chin up. Let the acknowledgment land. You earned it.',song:'Something triumphant and steady.'},
+  'joyful':{name:'Joyful',phrase:'"Right now, in this moment, there is good."',body:'Smile — real or fake, the body responds. Find the lightness.',song:'Something that makes you feel alive.'},
+  'motivated':{name:'Motivated',phrase:'"One step. Then another. That is all this is."',body:'Write the ONE next step on paper. Then do it.',song:'Song that makes you want to start something.'},
+  'inspired':{name:'Inspired',phrase:'"I have something to build. Something to say."',body:'Write one idea. One sentence. Let it be rough.',song:'Something expansive and building.'},
+  'focused':{name:'Focused',phrase:'"One thing. Right now. That is all."',body:'Phone face-down. One tab. Timer 25 minutes. Just that.',song:'No lyrics. Instrumental only.'},
+  'energised':{name:'Energised',phrase:'"My body creates energy through movement."',body:'Stand up NOW. Walk fast for 2 minutes. Body first.',song:'Fast upbeat. Put it on immediately.'},
+  'abundant':{name:'Abundant / Feeling Rich',phrase:'"It is flowing. It is building. I am wealthy."',body:'Sit tall. Feel the expansion in the chest. It is already moving.',song:'Abundance song. Something expansive.'},
+  'beautiful':{name:'Beautiful / Elegant',phrase:'"Slow. Graceful. Me. I carry myself like I mean it."',body:'Slow down. Walk deliberately. Feel elegant in this body today.',song:'Something classy and sensual.'},
+  'playful':{name:'Playful',phrase:'"Not everything needs to be serious. I can be light."',body:'Find one thing to laugh at. Deliberately lighten your posture.',song:'Something fun. Something silly even.'},
+  'compassionate':{name:'Compassionate',phrase:'"Everyone is fighting something I cannot see."',body:'Take one breath. Find one genuine good in this person.',song:'Something warm and human.'},
+  'connected':{name:'Connected',phrase:'"I am not alone. My people are there when I reach out."',body:'Send one message. Make one real connection today.',song:'Something that makes you feel part of something.'},
+  'safe':{name:'Safe / Secure',phrase:'"I am safe right now. Everything I need — I have."',body:'Feet flat on floor. Feel the ground under you. Breathe slow.',song:'Grounding, slow song.'},
   'powerful':{name:'Powerful',phrase:'"I own this moment. I decide what happens next."',body:'Stand. Feet wide. Hands on hips. 30 seconds. Power pose.',song:'Something that makes you feel unstoppable.'},
-  'energetic':{name:'Energetic',phrase:'"My body creates energy through movement."',body:'Stand up NOW. Walk fast for 2 minutes. Body first.',song:'Fast, upbeat song. Put it on immediately.'},
-  'motivated':{name:'Motivated',phrase:'"One step. Then another. That\'s all this is."',body:'Write the ONE next step on paper. Then do it.',song:'Song that makes you want to start something.'},
-  'selflove':{name:'Self-Love',phrase:'"I love you. I trust you. You are my person."',body:'Come close to a mirror. Look into your own eyes. Say it.',song:'I Love Me — Demi Lovato.'}
+  'free':{name:'Free',phrase:'"I always have a choice. I am never truly trapped."',body:'Stand up. Open your arms wide. Take a full breath.',song:'Something open and expansive.'},
+  'content':{name:'Content',phrase:'"I accept what is. I work toward what can be."',body:'Settle in. Feel what is right about this moment.',song:'Something warm and steady.'},
+  'enthusiastic':{name:'Enthusiastic',phrase:'"I bring energy to this. I choose to show up fully."',body:'Stand tall. Smile. Channel the reactive energy into forward momentum.',song:'Something that makes you want to go.'},
+  'optimistic':{name:'Optimistic',phrase:'"My path is my path. It is working."',body:'Look at where you are vs where you started. Name one real win.',song:'Something hopeful and building.'}
 };
 
 const negToPos = {
-  'self-doubt':'confident','fearful':'calm','helpless':'powerful','lazy':'energetic',
-  'comparing':'rich','complaining':'grateful','lonely':'loved','reactive':'calm',
-  'resentful':'confident','scattered':'calm','hatred':'calm','stressed':'calm',
-  'insecure':'secure','dramatic':'powerful'
+  'anxious':'calm','self-doubt':'confident','sad':'happy','lonely':'loved',
+  'complaining':'grateful','bored':'excited','stressed':'peaceful','fearful':'hopeful',
+  'ashamed':'proud','resentful':'joyful','lazy':'motivated','stuck':'inspired',
+  'scattered':'focused','exhausted':'energised','scarcity':'abundant','invisible':'beautiful',
+  'serious':'playful','judgmental':'compassionate','unseen':'connected','insecure':'safe',
+  'helpless':'powerful','trapped':'free','irritated':'content','reactive':'enthusiastic',
+  'comparing':'optimistic'
 };
 
-// Mitesh Khatri 5-category affirmations
+const allEmotions = {
+  pos:['Calm','Confident','Happy','Loved','Grateful','Excited','Peaceful','Hopeful','Proud','Joyful','Motivated','Inspired','Focused','Energised','Abundant','Beautiful','Playful','Compassionate','Connected','Safe','Powerful','Free','Content','Enthusiastic','Optimistic'],
+  neg:['Anxious','Self-Doubt','Sad','Lonely','Complaining','Bored','Stressed','Fearful','Ashamed','Resentful','Lazy','Stuck','Scattered','Exhausted','Scarcity','Invisible','Serious','Judgmental','Unseen','On Edge','Helpless','Trapped','Irritated','Reactive','Comparing']
+};
+
+
+// ── AFFIRM_CATS — Personalised DMP-format affirmations ──
 const AFFIRM_CATS = [
-  {label:'💚 Health',key:'health',items:[
-    'Thank you, Universe. I am so happy and satisfied now that I maintain my perfect body weight and an excellent immune system.',
-    'Thank you, Universe. I am now achieving my ideal body weight and vibrant health.',
+  {label:'💚 Health', key:'health', items:[
+    'Thank you, Universe, for my healthy body.',
+    'Thank you, Universe, for my strong immune system.',
+    'Thank you, Universe, for the energy I feel every day.',
+    'I am so happy and satisfied now that I maintain my perfect body weight of 60kg and an excellent immune system.',
+    'I am now achieving my ideal body weight of 60kg.',
     'I love exercising. I love eating healthy food.',
     'I treat my body like a temple.',
     'I love taking care of my health.',
@@ -1253,86 +1395,64 @@ const AFFIRM_CATS = [
     'I am always motivated to take care of my health.',
     'I am a massive action taker.'
   ]},
-  {label:'❤️ Relationships',key:'relationships',items:[
-    'I love myself the way I am.',
-    'I have an excellent relationship with myself and love spending time with myself.',
-    'Thank you, Universe. I have amazing relationships with my parents and family.',
-    'I love spending time with my family regularly.',
-    'I have an extraordinary relationship with my life partner.',
-    'There is love, respect, and intimacy in my relationship.',
-    'We are best friends and enjoy quality time together.',
-    'I have a beautiful relationship with my children — they love me and look up to me.',
-    'Thank you, Universe, for amazing friendships in my life.',
-    'I attract trustworthy people into my life.',
-    'I have wonderful relationships with my colleagues and customers.',
-    'I am an excellent listener with strong people skills.',
-    'I am a loving, kind, and accepting human being.',
-    'I attract loving, kind, and positive people into my life.'
+  {label:'💰 Money', key:'money', items:[
+    'Thank you, Universe, for the money and financial stability I already have in my life.',
+    'Thank you, Universe, for my ability to earn, grow, and manage money wisely.',
+    'Thank you, Universe, for the opportunities available to me to create multiple sources of income.',
+    'I am so happy and grateful now that I own a beautiful 1-acre land with a peaceful farmhouse that I love spending time in.',
+    'I am so happy and grateful now that I earn consistent additional income through my tuition classes and my YouTube channel.',
+    'I am financially secure, with multiple streams of income flowing to me easily and steadily.',
+    'I take consistent steps to plan, save, and invest towards buying my land and building my farmhouse.',
+    'I dedicate focused time to starting and growing my tuition classes with commitment and care.',
+    'I show up consistently to create and share valuable content on my YouTube channel.',
+    'I manage my money wisely and make decisions that support my long-term financial growth.',
+    'I am a wealth creator who builds assets and multiple income streams.',
+    'I am disciplined, consistent, and confident in managing and growing my money.',
+    'I build assets, not just income.'
   ]},
-  {label:'🚀 Career',key:'career',items:[
-    'Thank you, Universe, for my wonderful work and business.',
-    'I love my work.',
-    'I love delivering 10X value in everything I do.',
-    'I take 100% responsibility for my results.',
-    'I am a problem solver. I am unstoppable.',
-    'I am a strong and effective leader.',
-    'Thank you, Universe, for helping me achieve my desired promotion.',
-    'Thank you, Universe, for helping me achieve outstanding growth in my work.',
-    'I am building an extraordinary career.',
-    'I am talented. I am the best at what I do.',
-    'I love what I do.'
+  {label:'❤️ Relationships', key:'relationships', items:[
+    'Thank you, Universe, for the love and support I receive from my family — my mom, dad, and my son.',
+    'Thank you, Universe, for the relationships I have at my workplace that help me grow.',
+    'Thank you, Universe, for the ability to connect, understand, and build meaningful relationships.',
+    'I am so happy and grateful now that I share a calm, respectful, and positive relationship with my boss and colleagues.',
+    'I am so happy and grateful now that I spend quality, present, and joyful time with my mom, dad, and my son every day.',
+    'I am surrounded by supportive, understanding, and collaborative people in both my personal and professional life.',
+    'I communicate with clarity, calmness, and confidence at work.',
+    'I choose understanding over reacting, especially in challenging conversations.',
+    'I consciously create time every day to connect with my mom, dad, and my son.',
+    'I am fully present when I am with my family — no distractions, just connection.',
+    'I am a calm, emotionally balanced, and grounded person in all my relationships.',
+    'I am someone who nurtures both my career relationships and my family with equal care and intention.',
+    'I choose connection over reaction.'
   ]},
-  {label:'💰 Money',key:'money',items:[
-    'Thank you, Universe, for all the money in my life.',
-    'I am grateful for the money I earn and save.',
-    'I am financially free.',
-    'I am always taken care of.',
-    'I love making money and creating value.',
-    'I am a value creator and naturally attract money.',
-    'I am an excellent money manager.',
-    'I am a big thinker.',
-    'I have multiple sources of income.',
-    'Thank you, Universe. I am now earning abundantly and happily.',
-    'I am generating passive income consistently.',
-    'I am proud of my products and services.',
-    'I love selling because I believe in what I offer.'
+  {label:'🚀 Career', key:'career', items:[
+    'Thank you, Universe, for the experience, skills, and growth I have built in my career so far.',
+    'Thank you, Universe, for the opportunities that have shaped me into a strong HR professional.',
+    'Thank you, Universe, for the visibility, trust, and impact I am creating through my work.',
+    'I am so happy and grateful now that I am promoted to the role of VP — HR, recognised for my leadership and impact.',
+    'I am so happy and grateful now that I receive multiple high-quality opportunities that align perfectly with my experience and strengths.',
+    'I am so happy and grateful now that I have secured a remote role with a leading global company at double my current salary.',
+    'I have 2-3 strong offers in hand, and I confidently choose the best opportunity for my growth and lifestyle.',
+    'I consistently showcase my impact, leadership, and results with clarity and confidence.',
+    'I actively explore and apply to opportunities that align with my long-term career vision.',
+    'I build strong professional relationships and networks that open doors to the right roles.',
+    'I continuously upgrade my skills and knowledge to match senior leadership expectations.',
+    'I prepare thoroughly and confidently for interviews and leadership discussions.',
+    'I am a strategic, confident, and high-impact HR leader.',
+    'I attract and choose opportunities that value my expertise, pay me well, and respect my time and lifestyle.',
+    'I do not chase opportunities — I attract and choose the right ones.'
   ]},
-  {label:'⚡ Power Close',key:'power',items:[
+  {label:'⚡ Power Close', key:'power', items:[
     'I am a massive action taker.',
     'I am powerful.',
     'I am unstoppable.',
-    'Today, I show up as my best self.'
+    'Today, I show up as my best self.',
+    'I am Ashwathi. I build things. I lead. I create. I win.'
   ]}
 ];
 const affirmations = AFFIRM_CATS.flatMap(c=>c.items.map(text=>({area:c.label,text})));
 
-
-// Evening-specific affirmations (last thing the mind hears)
-const eveningAffirmations = [
-  'Today I showed up. That is enough.',
-  'I release this day with gratitude. I did my best.',
-  'While I sleep, my subconscious continues building my vision.',
-  'I am safe. I am loved. I am exactly where I need to be.',
-  'Tomorrow is already handled. Tonight I rest from power.',
-  'Every day I grow. I am becoming her — steadily, surely.',
-  'My body is healing as I sleep. My mind is integrating.',
-  'I close today with love — for myself, for my son, for this life.'
-];
-
-const happyTriggers = [
-  {icon:'🌱',title:'The Farmhouse',phrase:'It\'s being built. Every day.',color:'lc-green'},
-  {icon:'💛',title:'My Son',phrase:'He sees a mama who shows up.',color:'lc-gold'},
-  {icon:'💰',title:'Wealth Building',phrase:'Every decision today builds my freedom.',color:'lc-teal'},
-  {icon:'✨',title:'What I\'ve Built',phrase:'Appraisal system. PMS. HR foundation. All me.',color:'lc-wine'},
-  {icon:'🌏',title:'Travel Coming',phrase:'I\'m going places. It\'s in my frequency.',color:'lc-gold'},
-  {icon:'🔥',title:'I Am On Track',phrase:'Right now — exactly where I need to be.',color:'lc-wine'}
-];
-
-const allEmotions = {
-  pos:['Grateful','Happy','Calm','Confident','Feeling Rich','Beautiful','Loved','Secure','Magnetic','Trusted','Powerful','Energetic','Motivated','Self-Love'],
-  neg:['Self-Doubt','Fearful','Helpless','Lazy/Drained','Comparing','Complaining','Lonely','Reactive','Resentful','Scattered','Hatred','Stressed','Insecure','Dramatic']
-};
-
+// Evening affirmations
 const slots = [
   {h:6,label:'6–8 AM'},{h:8,label:'8–10 AM'},{h:10,label:'10–12 PM'},
   {h:12,label:'12–2 PM'},{h:14,label:'2–4 PM'},{h:16,label:'4–6 PM'},
@@ -1558,6 +1678,37 @@ function startDuo(){
 // ═══════════════════════════════════════════════════════
 // HO'OPONOPONO
 // ═══════════════════════════════════════════════════════
+
+function renderHopo(){
+  const el=document.getElementById('screen-hopo');
+  el.innerHTML=`<div style="padding:1rem">
+    <div style="background:linear-gradient(135deg,#2D1F4A,#1D3A5A);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.75rem">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,180,255,.65);margin-bottom:.3rem">🤍 Ho'oponopono — Hawaiian Forgiveness Practice</div>
+      <div style="font-size:12.5px;color:rgba(220,210,255,.75);line-height:1.5">Use morning to clear. Use evening to close. Use anytime you feel heaviness, resentment, or tightness — with anyone, including yourself.</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#1A1030,#2D1F4A);border-radius:12px;padding:1.1rem;margin-bottom:.75rem;text-align:center">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(200,180,255,.45);margin-bottom:.9rem">Say with full feeling — hand on chest, eyes closed</div>
+      <div style="font-size:1.15rem;font-style:italic;color:rgba(230,220,255,.9);line-height:1.7;margin-bottom:.2rem" id="hopoPhrase">${hopoPhrases[hopoPhraseIdx]}</div>
+      <div style="font-size:10.5px;color:rgba(200,180,255,.45);margin-bottom:.9rem" id="hopoPhraseNum">Phrase ${hopoPhraseIdx+1} of 4</div>
+      <div style="font-size:2.25rem;font-weight:300;color:rgba(200,180,255,.75);line-height:1" id="hopoRounds">${hopoRounds}</div>
+      <div style="font-size:9.5px;color:rgba(200,180,255,.35);margin-top:.15rem;letter-spacing:.1em">rounds complete</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.75rem">
+      <button style="border:none;border-radius:9px;padding:.8rem;font-size:12.5px;font-weight:700;cursor:pointer;background:rgba(150,130,220,.25);color:rgba(220,210,255,.85)" onclick="hopoStart()">▶ Start / Reset</button>
+      <button style="border:none;border-radius:9px;padding:.8rem;font-size:12.5px;font-weight:700;cursor:pointer;background:rgba(150,130,220,.45);color:white" onclick="hopoNext()">Next Phrase →</button>
+    </div>
+    <button style="width:100%;background:var(--green);color:white;border:none;border-radius:9px;padding:.8rem;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:.5rem" onclick="hopoComplete()">✓ Session Complete — I've cleared it</button>
+    <div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.6rem">
+      <div style="background:var(--cream-2);padding:.5rem .9rem;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border-bottom:.5px solid var(--border)">What this practice does</div>
+      <div style="padding:.7rem .9rem;font-size:12.5px;color:var(--ink);line-height:1.7">Ho'oponopono works on the belief that everything we experience is a projection of our own memory and data. By saying these 4 phrases, you are cleaning the data inside you that created the experience. The phrases work even if you say them silently. Repeat until you feel a release or softening.</div>
+    </div>
+    <div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden">
+      <div style="background:var(--cream-2);padding:.5rem .9rem;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border-bottom:.5px solid var(--border)">Direct it to:</div>
+      <div style="padding:.7rem .9rem;font-size:12.5px;color:var(--ink);line-height:1.7"><strong>Morning:</strong> anyone you are carrying tension with — situations, yourself.<br><br><strong>Evening:</strong> the whole day — every moment you reacted, judged, or held on.<br><br><strong>Anytime:</strong> when you feel stuck, reactive, resentful, or heavy.</div>
+    </div>
+  </div>`;
+}
+
 function hopoStart(){hopoPhraseIdx=0;hopoRounds=0;hopoRender();}
 function hopoNext(){
   hopoPhraseIdx++;
@@ -1835,26 +1986,48 @@ function nudgeDone(type){} // posture just closes
 // ═══════════════════════════════════════════════════════
 // NOTIFICATIONS
 // ═══════════════════════════════════════════════════════
+// ── Ash's personalised schedule — 35 reminders daily ──
 const notifSchedule=[
-  {h:6,m:0,type:'morning',icon:'☀️',title:'Good Morning, Ash',body:'Start your morning routine. Set the frequency before anything else.'},
-  {h:7,m:0,type:'affirmation',icon:'✦',title:'Morning Affirmation',body:'Before the world gets in — say yours first.'},
-  {h:8,m:0,type:'checkin',icon:'🔔',title:'Frequency Check-In',body:'How is Ash doing? 30 seconds to log.'},
-  {h:10,m:0,type:'checkin',icon:'🔔',title:'Mid-Morning Check-In',body:'Still on frequency?'},
-  {h:10,m:30,type:'water',icon:'💧',title:'Drink Water',body:'One full glass. Before your next task.'},
-  {h:12,m:0,type:'affirmation',icon:'✦',title:'Midday Affirmation',body:'Halfway through. Remind yourself who you are.'},
-  {h:12,m:0,type:'checkin',icon:'🔔',title:'Midday Check-In',body:'How is the frequency? Log it.'},
-  {h:13,m:30,type:'water',icon:'💧',title:'Water Check',body:'Halfway to 5 litres? Log it.'},
-  {h:14,m:0,type:'checkin',icon:'🔔',title:'Afternoon Check-In',body:'How is the afternoon feeling?'},
-  {h:15,m:0,type:'lift',icon:'🌬️',title:'Breathe — 4-2-6',body:'Afternoon dip? One breath changes everything.'},
-  {h:16,m:0,type:'checkin',icon:'🔔',title:'Check-In — 4 PM',body:'Almost done. How is your frequency?'},
-  {h:16,m:30,type:'water',icon:'💧',title:'Water Reminder',body:'Push for that 5-litre goal before evening.'},
-  {h:18,m:0,type:'checkin',icon:'🔔',title:'Evening Check-In',body:'Day almost wrapped. Log the emotion.'},
-  {h:19,m:30,type:'evening',icon:'🌙',title:'Evening Routine',body:'Time to start your evening. Gratitude. Affirmations. Ho\'oponopono.'},
-  {h:20,m:30,type:'checkin',icon:'🔔',title:'Night Check-In',body:'How did today feel? 30 seconds.'},
-  {h:21,m:0,type:'dmp',icon:'🎯',title:'DMP Session — Mitesh Sir',body:'9 PM. Your vision. Your definite major purpose. Do not skip this.'},
-  {h:21,m:30,type:'affirmation',icon:'✦',title:'Evening Affirmations',body:'Last thing the mind hears before sleep. Make it yours.'},
-  {h:21,m:45,type:'hopo',icon:'🤍',title:'Ho\'oponopono — Evening',body:'Release the whole day. 4 rounds. Let it go.'},
-  {h:22,m:30,type:'lift',icon:'😴',title:'Wind Down',body:'Phone away. Tomorrow is already handled. Rest from power.'}
+
+  // MORNING ROUTINE — step by step
+  {h:7,m:0,  type:'morning',    icon:'☀️', title:'Wake Up — Drink Magic Water 🌊',       body:`Good morning Ash! First thing — magic water with intention. New day, new frequency. You've got this.`},
+  {h:7,m:3,  type:'breathe',    icon:'🌬️', title:'3 Deep Breaths — Arrive',              body:`Before anything else — 3 slow breaths. In through nose, out through mouth. Arrive in your day fully.`},
+  {h:7,m:10, type:'morning',    icon:'🙏', title:'10 Gratitudes — Say Them Out Loud',    body:`7:10 AM — 10 gratitudes. Say each one out loud. Feel it for 2 seconds. This sets your frequency for the whole day.`},
+  {h:7,m:20, type:'morning',    icon:'🚿', title:'Bathroom · Brush · Freshen Up',        body:`7:20 AM — bathroom, brush teeth, wash face. Fresh start. You are stepping into your power right now.`},
+  {h:7,m:30, type:'affirmation',icon:'🪞', title:'Morning Affirmations — Mirror Time',   body:`7:30 AM — mirror. Eyes on yourself. Say your Mitesh Khatri affirmations out loud. Health, Relationships, Career, Money, Power Close. Mean every word.`},
+  {h:7,m:45, type:'hopo',       icon:'🤍', title:"Ho'oponopono Morning — 4 Rounds",       body:"7:45 AM — I\'m sorry. Please forgive me. Thank you. I love you. 4 rounds minimum. Clear the slate before the day."},
+  {h:8,m:0,  type:'morning',    icon:'🦉', title:'Duolingo — 2 Lessons Now',             body:`8:00 AM — open Duolingo. 2 lessons. The streak is a commitment to the future version of you. Do it now.`},
+  {h:8,m:15, type:'morning',    icon:'🧘', title:'Surya Namaskar — 12 Rounds + Savasana',body:`8:15 AM — 12 rounds. Each round = left + right. End with 2 mins Savasana. Body before mind. Energy before coffee.`},
+  {h:8,m:30, type:'morning',    icon:'🌿', title:'Oil Massage + Shower',                 body:`8:30 AM — oil to scalp (2-3 mins), then shower. Full self-care ritual. You are a temple. Treat it that way.`},
+  {h:8,m:45, type:'morning',    icon:'👗', title:'Get Ready — Dress With Intention',     body:`8:45 AM — dress with intention. You are not just getting ready. You are stepping into who Ash is today.`},
+  {h:9,m:0,  type:'morning',    icon:'🥚', title:'Breakfast — Boiled Egg + Banana 🍌',  body:`9:00 AM — boiled egg, banana. Fuel the temple. Eat slowly. Nourish before you go.`},
+  {h:9,m:15, type:'morning',    icon:'🚗', title:'Head to Office — Commute = Learning',  body:`9:15 AM — leave now. UAE revision audio or French listening on the drive. Every minute counts.`},
+  {h:10,m:0, type:'morning',    icon:'📋', title:'List Your Priority Work — Top 3',      body:`10:00 AM — write your top 3 must-do tasks today. What absolutely has to move? Start with the hardest.`},
+
+  // EMOTIONAL FREQUENCY — every 2 hours
+  {h:8,m:0,  type:'checkin',    icon:'🔔', title:'Frequency Check-In — 8 AM',            body:`How are you feeling right now? 30 seconds. Log it in My Buttons. Positive or negative — log both.`},
+  {h:10,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 10 AM',           body:`Mid-morning check. Log your emotion. If it's negative — fix it now. Open My Buttons → Check-In.`},
+  {h:12,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 12 PM',           body:`Midday. What emotion are you carrying into the afternoon? Log it. Adjust if needed.`},
+  {h:14,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 2 PM',            body:`2 PM check. Energy dip is normal. Log the emotion. One breath. One task. Keep the frequency high.`},
+  {h:16,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 4 PM',            body:`4 PM. Almost through the day. How is Ash feeling? Log it. Finish the afternoon strong.`},
+  {h:18,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 6 PM',            body:`End of office day. Log your emotion. What are you carrying home? Leave work energy at work.`},
+  {h:20,m:0, type:'checkin',    icon:'🔔', title:'Frequency Check-In — 8 PM',            body:`Evening check. How did today feel? Log it. Then move into your evening routine.`},
+
+  // WATER — every 2 hours
+  {h:9,m:0,  type:'water',      icon:'💧', title:'Water — 9 AM — Glass 2',               body:`Second glass. Drink before you leave or as you arrive. Hydrate the temple.`},
+  {h:11,m:0, type:'water',      icon:'💧', title:'Water — 11 AM — Keep Going',           body:`2 more glasses. Before your next task. 5 litres is the goal. Where are you right now?`},
+  {h:13,m:0, type:'water',      icon:'💧', title:'Water — 1 PM — Lunch Water',           body:`2-3 glasses with lunch. You should be past 2L by now. Log it in the app.`},
+  {h:15,m:0, type:'water',      icon:'💧', title:'Water — 3 PM — Afternoon Push',        body:`One full glass now. Cortisol drops. Clarity rises. Halfway mark — are you at 3L yet?`},
+  {h:17,m:0, type:'water',      icon:'💧', title:'Water — 5 PM — Push to 4L',            body:`Pre-evening. Push toward 4-5 litres now. Don't leave it all to tonight.`},
+  {h:19,m:0, type:'water',      icon:'💧', title:'Water — 7 PM — Evening Glass',         body:`2 glasses with dinner. You're close to goal. Log it. Finish strong.`},
+  {h:21,m:15,type:'water',      icon:'💧', title:'Water — Final Glass of the Day',       body:`Last glass. Log it. 5 litres done. ✓ Tomorrow you do it all again.`},
+
+  // EVENING ROUTINE
+  {h:19,m:30,type:'evening',    icon:'🌙', title:'Evening Routine — Start Now',           body:`7:30 PM — time for your evening. Gratitude wins, affirmations, Ho'oponopono. Close the day from power, not from noise.`},
+  {h:21,m:0, type:'dmp',        icon:'🎯', title:'🎯 DMP — 9 PM — DO NOT SKIP',          body:`9:00 PM SHARP. Phone silent. Sit quietly. Feel the farmhouse. Read your DMP out loud. Feel it as already real. It is done. It is mine. I am grateful.`},
+  {h:21,m:30,type:'affirmation',icon:'✦', title:'Evening Affirmations — Last Words',     body:`9:30 PM — say your evening affirmations with full feeling. This is the last thing your subconscious hears tonight. Make it count.`},
+  {h:21,m:45,type:'hopo',       icon:'🤍', title:"Ho'oponopono — Release the Day",        body:"9:45 PM — release it all. I\'m sorry. Please forgive me. Thank you. I love you. 4 rounds. Let the whole day go."},
+  {h:22,m:30,type:'lift',       icon:'😴', title:'Phone Away — Sleep by 11 PM',          body:`10:30 PM — phone down. No more screens. Tomorrow is already handled. You showed up today. Rest from power.`}
 ];
 
 let notifTimer=null;
@@ -1880,7 +2053,6 @@ function showSwNotif(title,body){
 }
 function scheduleNextNotif(){
   clearTimeout(notifTimer);if(!notifEnabled||Notification.permission!=='granted')return;
-  const now=new Date();
   const next=notifSchedule.map(n=>{const t=new Date(now);t.setHours(n.h,n.m,0,0);if(t<=now)t.setDate(t.getDate()+1);return{...n,ms:t-now};}).sort((a,b)=>a.ms-b.ms)[0];
   if(!next)return;
   notifTimer=setTimeout(()=>{
@@ -1892,7 +2064,6 @@ function scheduleNextNotif(){
 function updateNotifBtn(){const btn=document.getElementById('notifBtn');if(!btn)return;
   if(notifEnabled){btn.textContent='🔔 On';btn.classList.add('on');}else{btn.textContent='🔔 Notify';btn.classList.remove('on');}}
 function renderNotifSection(){
-  const el=document.getElementById('notif-section');if(!el)return;
   el.innerHTML=`<div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-top:.8rem">
     <div style="background:var(--wine);padding:.7rem .9rem;font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-pale)">${notifEnabled?'🔔 Notifications Active':'Enable Notifications'}</div>
     <div style="padding:.8rem .9rem">
@@ -1907,7 +2078,6 @@ function renderNotifSection(){
 // NEGATIVE / POSITIVE DETAIL
 // ═══════════════════════════════════════════════════════
 function showNeg(key){
-  const d=negData[key];const posKey=negToPos[key]||'calm';const pos=posData[posKey];
   const html=`<div class="d-card">
     <div class="d-header"><div class="d-em">${d.name}</div><div class="d-trigger">${d.trigger}</div></div>
     <div class="d-body">
@@ -1939,7 +2109,6 @@ function showNeg(key){
   pushDetail(html);
 }
 function showPos(key){
-  const d=posData[key];if(!d)return;
   const html=`<div class="d-card">
     <div class="d-header pos"><div class="d-em">${d.name}</div></div>
     <div class="d-body">
@@ -1969,7 +2138,6 @@ function saveEmLog(d){S.set('emlog',d);}
 function getSlotEntries(key){return(getEmLog()[key]||[]);}
 
 function renderCheckin(){
-  const slot=getCurrentSlot();const key=getSlotKey();
   const entries=getSlotEntries(key);const hasNeg=entries.some(e=>e.type==='neg');
   document.getElementById('ci-content').innerHTML=`
     <div class="ci-hero"><div><div class="ci-lbl">${slot.label}</div><div class="ci-slot">Log all emotions — tap any chip</div></div><div class="ci-clock" id="liveClock">--:--</div></div>
@@ -2029,9 +2197,7 @@ function clearSlot(key){const log=getEmLog();delete log[key];saveEmLog(log);rend
 
 function buildFullTimeline(){return`<div class="tl-box" style="margin-top:.65rem"><div class="tl-title">Today's Full Emotion Log</div><div id="fullTlBox">${buildFullTimelineRows()}</div></div>`;}
 function buildFullTimelineRows(){
-  const today=todayKey();const log=getEmLog();
   return slots.map(s=>{
-    const k=today+'-'+s.h;const entries=log[k]||[];
     if(!entries.length)return`<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot empty"></div><div class="tl-em" style="color:var(--muted);font-style:italic">—</div></div>`;
     const pos=entries.filter(e=>e.type==='pos').length,neg=entries.filter(e=>e.type==='neg').length;
     return`<div class="tl-row" style="align-items:flex-start;padding:.2rem 0">
@@ -2075,13 +2241,9 @@ function toggleHabit(id){
   saveHabitLog(log);renderHabits();
 }
 function renderHabits(){
-  const el=document.getElementById('screen-habits');
   const habits=getHabits();const log=getHabitLog();
   const todayLog=log[todayKey()]||{};
-  const done=habits.filter(h=>todayLog[h.id]).length;
-  const pct=Math.round(done/habits.length*100);
   // build 30-day streak dots for each habit
-  const today=new Date();
   function habitStreak(id){let s=0;for(let i=0;i<30;i++){const d=new Date(today);d.setDate(today.getDate()-i);const k=d.toDateString();if(log[k]&&log[k][id]){s++;}else if(i>0)break;}return s;}
 
   el.innerHTML=`<div style="padding:1rem">
@@ -2120,7 +2282,6 @@ function renderHabits(){
   </div>`;
 }
 function addCustomHabit(){
-  const inp=document.getElementById('newHabitInput');if(!inp||!inp.value.trim())return;
   const habits=getHabits();const id='c'+Date.now();
   habits.push({id,icon:'⭐',name:inp.value.trim(),cat:'custom'});
   saveHabits(habits);renderHabits();
@@ -2141,7 +2302,6 @@ const DEFAULT_VISIONS=[
 function getVisions(){return S.get('visions')||DEFAULT_VISIONS;}
 function saveVisions(v){S.set('visions',v);}
 function renderVision(){
-  const el=document.getElementById('screen-vision');
   const visions=getVisions();
   const dmp=S.get('dmp_statement')||'';
   el.innerHTML=`<div style="padding:1rem">
@@ -2183,7 +2343,6 @@ function renderVision(){
   </div>`;
 }
 function saveDMP(){
-  const v=document.getElementById('dmpTextarea')?.value||'';
   S.set('dmp_statement',v);showToast('DMP saved ✓ — say it tonight at 9 PM');
 }
 function addVision(){
@@ -2201,7 +2360,6 @@ function addVision(){
 function resetVisions(){if(confirm('Reset to default vision cards?')){S.del('visions');renderVision();}}
 
 function renderNotifSection(){
-  const el=document.getElementById('notif-section');if(!el)return;
   const perm=('Notification' in window)?Notification.permission:'unsupported';
   const isBlocked=perm==='denied';const isGranted=perm==='granted';
   let statusHtml='';
@@ -2215,6 +2373,347 @@ function renderNotifSection(){
 }
 function showToast(msg){let t=document.getElementById('mbtoast');if(!t){t=document.createElement('div');t.id='mbtoast';t.style.cssText='position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:8px 16px;border-radius:22px;font-size:12.5px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap';document.body.appendChild(t);}t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2200);}
 
+// ═══════════════════════════════════════════════════════
+// PLANNER — SCHEDULES, STREAKS, HISTORY, WEEKLY
+// ═══════════════════════════════════════════════════════
+
+// ── PLANNER STORAGE — uses IndexedDB via S object ──
+function loadAll(){return S.get('aplanner_v2')||{};}
+function saveAll(a){S.set('aplanner_v2',a);}
+function localDateStr(d){const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
+function dateKey(d){return localDateStr(d);}
+
+const WEEKDAY=[
+  {id:'w0',time:'7:00 AM',name:'Wake up — magic water + bathroom',cat:'wellness',bell:true,desc:'First things first — water, bathroom, freshen up',subs:['Drink magic water (warm, with intention) 🌊','Bathroom — let the body fully clear 🚽','Brush teeth — fresh start to the day ✨','Wash face, freshen up']},
+  {id:'w1',time:'7:12 AM',name:'10 gratitude statements',cat:'spirit',bell:true,desc:'Speak 10 gratitudes aloud — feel each one deeply',subs:['Gratitude 1–5 (people, health, blessings)','Gratitude 6–10 (opportunities, growth, today)']},
+  {id:'w2',time:'7:22 AM',name:'Mirror talk — self affirmations',cat:'self',bell:true,desc:'Look into your eyes, speak kindly and powerfully',subs:['Affirm your worth, beauty, and strength','State your goals as already achieved','End: "I love you, Ashwathi"']},
+  {id:'w3',time:'7:30 AM',name:"Ho'oponopono — money morning",cat:'spirit',bell:true,desc:'Chant for abundance, money, and clearing blocks',subs:["I love you. I'm sorry. Please forgive me. Thank you.",'5 mins — full focus on money & abundance','Visualise financial freedom in vivid detail']},
+  {id:'w4',time:'7:38 AM',name:'Morning affirmations',cat:'spirit',bell:false,desc:'Mitesh Khatri affirmations — say with full feeling',subs:['Health affirmations — 9 statements','Relationship affirmations — 14 statements','Career affirmations — 11 statements','Money affirmations — 13 statements','Power close — 4 statements']},
+  {id:'w5',time:'7:45 AM',name:'Surya Namaskar',cat:'wellness',bell:true,desc:'12 rounds — energise your body and clear your mind',subs:['3 slow warm-up rounds','9 full-pace rounds','1–2 min Savasana — breathe and absorb']},
+  {id:'w6',time:'8:05 AM',name:'Duolingo — French',cat:'learn',bell:true,desc:'Protect your streak — every single day without fail',subs:['Complete at least 1 full lesson','Aim for 2 if time allows']},
+  {id:'w7',time:'8:20 AM',name:'Mitesh Khatri module',cat:'spirit',bell:true,desc:'30 mins of Mitesh Sir teaching — full attention',subs:['Watch or listen with complete focus — no multitasking','Note 1 key insight to carry into your day']},
+  {id:'w8',time:'8:50 AM',name:'Oil + shower + get ready',cat:'self',bell:true,desc:'Full self-care ritual before office',subs:['Apply coconut or sesame oil to scalp (2–3 mins) 🌿','Shower — wash off oil, feel completely fresh','Dress with intention — you are stepping into your power','Breakfast — overnight oats or fresh fruit bowl 🥣','Pack bag, charge phone, find keys']},
+  {id:'w9',time:'9:15 AM',name:'Leave for office',cat:'work',bell:true,desc:'18km — use commute time for learning',subs:['Leave by 9:15 AM sharp','UAE revision audio or French listening during drive']},
+  {id:'w10',time:'10:00 AM',name:'Work — full focus',cat:'work',bell:false,desc:'Full presence. Every interaction is leadership practice.',subs:['Priority task 1','Priority task 2','Drink 2 glasses of water during the morning 💧','Lead with intention — Galadari mindset on']},
+  {id:'w11',time:'1:00 PM',name:'Lunch + UAE study + water',cat:'learn',bell:true,desc:'Nourish your body, feed your mind, hydrate',subs:['Lunch option: dal khichdi / steak & veggies / fruit bowl 🥗','2–3 glasses of water with lunch 💧','UAE HR Masterclass — 1 module or flashcards (20 mins)','Rest eyes 5 mins — look away from screen']},
+  {id:'w12',time:'1:30 PM',name:'Afternoon work block',cat:'work',bell:false,desc:'Deep work — clear your key tasks before 6 PM',subs:['Priority afternoon task','2 glasses of water during afternoon 💧','Wrap up notes and handovers by 6 PM']},
+  {id:'w13',time:'6:30 PM',name:'Leave office + drive home',cat:'work',bell:true,desc:'Decompress — French listening or peaceful silence',subs:['Leave by 6:30 PM','French audio or silence — mentally leave work behind']},
+  {id:'w14',time:'7:15 PM',name:'Evening self-care + methi prep',cat:'wellness',bell:true,desc:'Hair and body care — a few minutes for yourself',subs:['Prep methi water — soak 2 tbsp seeds overnight 🌿','If oil day — apply to scalp and joints (5 mins)','Change into comfortable home clothes']},
+  {id:'w15',time:'7:25 PM',name:'Evening affirmations',cat:'spirit',bell:true,desc:'Second round — Mitesh Khatri affirmations + evening affirmations',subs:['All Mitesh affirmations — health, relationships, career, money','Power close — 4 statements','Evening affirmations — close the day with love']},
+  {id:'w16',time:'7:35 PM',name:"Evening Ho'oponopono",cat:'spirit',bell:true,desc:'Chanting — release the day, return to peace',subs:['Chant 5–10 mins — regular evening practice','Release any stress, conflict, or worry from today']},
+  {id:'w17',time:'7:50 PM',name:'UAE HR study session',cat:'learn',bell:true,desc:'Galadari interview prep — deep focus 45–60 mins',subs:['Complete 1 module quiz — target 80%+','Review flashcards for any weak areas','Practice 1 interview question aloud with full STAR answer']},
+  {id:'w18',time:'8:45 PM',name:'Dinner + water',cat:'wellness',bell:true,desc:'Light nourishing dinner — no heavy carbs late',subs:['Dinner: steak & veggies / dal khichdi / fruit + nuts 🍽️','2 glasses of water with dinner 💧','10 min gentle walk after dinner if possible']},
+  {id:'w19',time:'9:00 PM',name:'DMP — Mitesh Khatri live',cat:'spirit',bell:true,desc:'9 PM sharp — phone silent, 100% presence',subs:['Attend live — zero distractions, zero multitasking','Take 1 note to act on tomorrow morning']},
+  {id:'w20',time:'10:30 PM',name:'Wind down + night routine',cat:'rest',bell:true,desc:'Close the day with care, reflection, and gratitude',subs:['Brush teeth — night clean ✨','Journal: 3 wins from today','Last glass of water 💧','Set tomorrow intention — sleep with purpose']},
+  {id:'w21',time:'11:00 PM',name:'Sleep',cat:'rest',bell:true,desc:'8 hours — memory, healing, and full restoration',subs:['Phone away from bed or on silent night mode','Sleep by 11 PM — non-negotiable for your health']}
+];
+
+const WEEKEND=[
+  {id:'e0',time:'8:00 AM',name:'Wake up — magic water + bathroom',cat:'wellness',bell:true,desc:'Slower start — still begin with the same sacred rituals',subs:['Drink magic water on waking 🌊','Bathroom — full clear, no rushing 🚽','Brush teeth — start fresh ✨','Wash face, slow and grateful morning']},
+  {id:'e1',time:'8:15 AM',name:'10 gratitude statements',cat:'spirit',bell:true,desc:'Weekend — take more time, go deeper into gratitude',subs:['10 spoken gratitudes — feel every single one deeply','Include gratitude for your free time and rest']},
+  {id:'e2',time:'8:25 AM',name:'Mirror talk + affirmations',cat:'self',bell:true,desc:'Longer version today — really sit in your power',subs:['Mirror talk — full 5 minutes, look into your eyes','All Mitesh affirmations — health, relationships, career, money, power close']},
+  {id:'e3',time:'8:40 AM',name:"Ho'oponopono — money morning",cat:'spirit',bell:true,desc:'Weekend — deeper, longer abundance session',subs:["I love you. I'm sorry. Please forgive me. Thank you.",'Chant 10 mins — money, abundance, clearing','Visualise your dream life in vivid, joyful detail']},
+  {id:'e4',time:'8:55 AM',name:'Surya Namaskar — full practice',cat:'wellness',bell:true,desc:'More time today — go deeper and slower',subs:['3 slow warm-up rounds','9 full rounds with breath awareness','2 min Savasana — full rest']},
+  {id:'e5',time:'9:20 AM',name:'Duolingo — French (2 lessons)',cat:'learn',bell:true,desc:'Weekend push — 2 lessons to accelerate progress',subs:['Lesson 1 — new content','Lesson 2 — practice and review']},
+  {id:'e6',time:'9:40 AM',name:'Mitesh Khatri module',cat:'spirit',bell:true,desc:'30 mins — weekend version, go deeper and take notes',subs:['Full 30-min module — complete focus',"Journal 3 insights from today's session"]},
+  {id:'e7',time:'10:10 AM',name:'Oil + shower + full self-care',cat:'self',bell:true,desc:'Weekend full self-care ritual — take your time',subs:['Apply oil to scalp and body — leave for 20–30 mins 🌿','Full shower — wash off oil, feel completely renewed','Dress comfortably — you deserve ease today']},
+  {id:'e8',time:'10:45 AM',name:'Healthy breakfast',cat:'wellness',bell:true,desc:'Weekend breakfast — cook something nourishing',subs:['Option: overnight oats with fruits and nuts 🥣','Option: fruit bowl — mango, banana, papaya, pomegranate 🍌','3 glasses of water by 11 AM 💧']},
+  {id:'e9',time:'11:15 AM',name:'UAE HR deep study session',cat:'learn',bell:true,desc:'Extended study block — 2 full modules + interview prep',subs:['Module 1 — study content fully and take notes','Module 1 — take quiz (target 90%+)','Practice 2 interview questions aloud with STAR format']},
+  {id:'e10',time:'1:00 PM',name:'Personal time — family + rest',cat:'self',bell:false,desc:'Recharge — your son, family, joy, anything restorative',subs:['Quality time with your son 💛','Rest, walk, or do something that brings pure joy']},
+  {id:'e11',time:'2:00 PM',name:'Lunch + water',cat:'wellness',bell:true,desc:'Nourishing midday meal — eat slowly, enjoy it',subs:['Lunch: dal khichdi / steak & grilled veggies / fruit bowl 🍽️','2–3 glasses of water 💧','Short rest or walk after eating']},
+  {id:'e12',time:'3:30 PM',name:'Weekend prep: meal prep',cat:'wellness',bell:true,desc:'Prep healthy meals for the week',subs:['Soak overnight oats for next 2 days (5 mins) 🥣','Prep veggies — wash, chop, store in fridge','Cook a batch of khichdi if needed']},
+  {id:'e13',time:'5:00 PM',name:'Methi water prep + hair care',cat:'wellness',bell:true,desc:'Hair care ritual — invest in your health',subs:['Soak 2 tbsp methi seeds overnight 🌿','Option: apply coconut oil hair mask — 30 min treatment','Comb hair gently, check scalp health']},
+  {id:'e14',time:'5:30 PM',name:'YouTube / LinkedIn / POSH prep',cat:'work',bell:true,desc:'Content, career, consulting — build your future',subs:['Script or record 1 UAE HR tip video for YouTube','LinkedIn — post a meaningful insight or engage','POSH consulting deck — advance at least 1 section']},
+  {id:'e15',time:'6:30 PM',name:'Evening affirmations',cat:'spirit',bell:true,desc:'Evening affirmation round — close the afternoon',subs:['All Mitesh affirmations — health, relationships, career, money','Power close + evening affirmations']},
+  {id:'e16',time:'6:45 PM',name:"Evening Ho'oponopono",cat:'spirit',bell:true,desc:'Regular evening chanting — peace and release',subs:["Chant 10 mins — let go of the week's weight",'Return to love and peace']},
+  {id:'e17',time:'7:30 PM',name:'Dinner + water',cat:'wellness',bell:true,desc:'Light evening meal — mindful, slow eating',subs:['Dinner: steak & roasted veggies / khichdi / fruit + curd 🍽️','2 glasses of water 💧','Walk after dinner — 10–15 mins']},
+  {id:'e18',time:'9:00 PM',name:'DMP — Mitesh Khatri live',cat:'spirit',bell:true,desc:'9 PM DMP — weekend, full presence, no rushing',subs:['Full session — zero distractions','Journal 1 key insight to carry into next week']},
+  {id:'e19',time:'10:30 PM',name:'Wind down + night routine',cat:'rest',bell:true,desc:'Reflect, care, prepare for the week ahead',subs:['Brush teeth — night clean ✨','3 wins from today + 3 intentions for next week','Last glass of water 💧']},
+  {id:'e20',time:'11:00 PM',name:'Sleep',cat:'rest',bell:true,desc:'Rest and fully restore — ready for a great week',subs:['Phone away from bed','Sleep by 11 PM']}
+];
+
+const STREAK_HABITS=[
+  {id:'water',name:'5 litres water',icon:'💧',check:d=>((d.water||0)>=14)},
+  {id:'french',name:'Duolingo French',icon:'🇫🇷',check:d=>td(d,'w6')||td(d,'e5')},
+  {id:'gratitude',name:'10 gratitudes',icon:'🙏',check:d=>td(d,'w1')||td(d,'e1')},
+  {id:'surya',name:'Surya Namaskar',icon:'🌅',check:d=>td(d,'w5')||td(d,'e4')},
+  {id:'hooponopono',name:"Ho'oponopono morning",icon:'🌺',check:d=>td(d,'w3')||td(d,'e3')},
+  {id:'affirmations',name:'Affirmations (both rounds)',icon:'✨',check:d=>(td(d,'w4')||td(d,'e2'))&&(td(d,'w15')||td(d,'e15'))},
+  {id:'mitesh',name:'Mitesh module',icon:'🎯',check:d=>td(d,'w7')||td(d,'e6')},
+  {id:'dmp',name:'DMP 9 PM',icon:'🌙',check:d=>td(d,'w19')||td(d,'e18')},
+  {id:'uaestudy',name:'UAE HR study',icon:'📚',check:d=>td(d,'w17')||td(d,'e9')},
+  {id:'mirror',name:'Mirror talk',icon:'🪞',check:d=>td(d,'w2')||td(d,'e2')},
+  {id:'methi',name:'Methi water prep',icon:'🌿',check:d=>td(d,'w14')||td(d,'e13')},
+  {id:'brush',name:'Brush teeth (both)',icon:'🪥',check:d=>(td(d,'w0')||td(d,'e0'))&&(td(d,'w20')||td(d,'e19'))},
+  {id:'oil',name:'Hair oiling',icon:'🌿',check:d=>td(d,'w8')||td(d,'e7')},
+  {id:'meal',name:'Healthy meal today',icon:'🥗',check:d=>td(d,'w11')||td(d,'e11')},
+  {id:'steps',name:'8,000 steps',icon:'👟',check:d=>((d.steps||0)>=8000)},
+];
+function td(d,id){return d&&d.tasks&&!!d.tasks[id];}
+
+
+
+function initPlanner(){
+  currentDay=(dow===0||dow===6)?'weekend':'weekday';
+  document.getElementById('ds-wd').classList.toggle('active',currentDay==='weekday');
+  document.getElementById('ds-we').classList.toggle('active',currentDay==='weekend');
+  const {all,key,day}=getToday();
+  if(day.dayType)currentDay=day.dayType;
+  renderGlasses();renderSteps();renderSchedule();updateSummary();
+}
+function getToday(){const all=loadAll();const key=todayKey();if(!all[key])all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};if(all[key].steps===undefined)all[key].steps=0;return{all,key,day:all[key]};}
+function getToday2(){const all=loadAll();const key=todayKey();if(!all[key])all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};if(all[key].steps===undefined)all[key].steps=0;return{all,key,day2:all[key]};}
+function saveTodayDay(all,key,day){all[key]=day;saveAll(all);}
+function getBlocks(){return currentDay==='weekday'?WEEKDAY:WEEKEND;}
+
+function setDay(d){currentDay=d;document.getElementById('ds-wd').classList.toggle('active',d==='weekday');document.getElementById('ds-we').classList.toggle('active',d==='weekend');const{all,key,day}=getToday();day.dayType=d;saveTodayDay(all,key,day);openBlock=null;renderSchedule();updateSummary();}
+
+function renderGlasses(){const{day}=getToday();const w=day.water||0;const el=document.getElementById('glasses');if(!el)return;el.innerHTML='';for(let i=0;i<14;i++){const g=document.createElement('div');g.className='glass'+(i<w?' filled':'');g.innerHTML=i<w?'💧':'🫙';g.onclick=()=>{const{all,key,day2}=getToday2();day2.water=(i<(day2.water||0))?i:(i+1);saveTodayDay(all,key,day2);renderGlasses();updateSummary();};el.appendChild(g);}document.getElementById('w-info').textContent=w+' / 14 glasses · '+(w*350).toLocaleString()+' ml (~'+Math.round(w*350/1000*10)/10+'L)';}
+
+function renderSchedule(){const{day}=getToday();const blocks=getBlocks();const el=document.getElementById('schedule');if(!el)return;el.innerHTML='';let lastCat='';const labels={wellness:'Wellness',spirit:'Spiritual & Mindset',work:'Work',learn:'Learning & Study',self:'Self-care',rest:'Rest'};
+  blocks.forEach((b)=>{
+    if(b.cat!==lastCat){const sl=document.createElement('div');sl.className='sec-hdr';sl.textContent=labels[b.cat]||b.cat;el.appendChild(sl);lastCat=b.cat;}
+    const tasksDone=b.subs.filter((_,si)=>!!(day.subs&&day.subs[b.id+'_'+si])).length;const tasksTotal=b.subs.length;const blockDone=!!(day.tasks&&day.tasks[b.id]);const isOpen=openBlock===b.id;
+    const div=document.createElement('div');div.className='block'+(blockDone?' done-block':'');
+    div.innerHTML=`<div class="cat-bar-p" style="background:${CAT_COLOR[b.cat]}"></div>
+      <div class="block-hdr" id="bhdr_${b.id}">
+        <div class="block-time">${b.time}</div>
+        <div class="block-info">
+          <div class="block-name">${b.name}</div>
+          <div class="block-desc">${b.desc}</div>
+          <div class="block-prog"><div class="prog-bar-p"><div class="prog-fill-p" style="width:${Math.round(tasksDone/tasksTotal*100)}%;background:${CAT_COLOR[b.cat]}"></div></div><div class="prog-lbl-p">${tasksDone}/${tasksTotal}</div></div>
+        </div>
+        <div class="block-check${blockDone?' done':''}" id="bchk_${b.id}"></div>
+      </div>
+      <div class="sub-list${isOpen?' open':''}" id="sub_${b.id}">
+        ${b.subs.map((s,si)=>{const sd=!!(day.subs&&day.subs[b.id+'_'+si]);return`<div class="sub-item" onclick="toggleSub('${b.id}',${si},event)"><div class="sub-chk${sd?' done':''}" id="sc_${b.id}_${si}"></div><div class="sub-label${sd?' done-txt':''}">${s}</div>${si===0&&b.bell?`<button class="bell-btn${(scheduledNotifs[b.id])?' on':''}" onclick="toggleBell('${b.id}',event)">🔔</button>`:''}</div>`;}).join('')}
+      </div>`;
+    div.querySelector('.block-hdr').addEventListener('click',()=>toggleBlock(b.id));
+    el.appendChild(div);
+  });
+}
+
+function toggleBlock(id){openBlock=(openBlock===id)?null:id;const sub=document.getElementById('sub_'+id);if(sub)sub.classList.toggle('open',openBlock===id);document.querySelectorAll('.sub-list').forEach(s=>{if(s.id!=='sub_'+id)s.classList.remove('open');});const blocks=getBlocks();const b=blocks.find(x=>x.id===id);if(!b)return;const{all,key,day}=getToday();const allDone=b.subs.every((_,si)=>!!(day.subs&&day.subs[id+'_'+si]));if(allDone&&b.subs.length>0){if(!day.tasks)day.tasks={};day.tasks[id]=true;saveTodayDay(all,key,day);const chk=document.getElementById('bchk_'+id);if(chk)chk.classList.add('done');}}
+
+function toggleSub(bid,si,e){e.stopPropagation();const{all,key,day}=getToday();if(!day.subs)day.subs={};const k=bid+'_'+si;day.subs[k]=!day.subs[k];if(!day.tasks)day.tasks={};const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);if(b){const allDone=b.subs.every((_,si2)=>!!day.subs[bid+'_'+si2]);day.tasks[bid]=allDone;}saveTodayDay(all,key,day);const sc=document.getElementById('sc_'+bid+'_'+si);if(sc)sc.classList.toggle('done',!!day.subs[k]);const sl=document.querySelector(`#sub_${bid} .sub-item:nth-child(${si+1}) .sub-label`);if(sl)sl.classList.toggle('done-txt',!!day.subs[k]);if(b){const done=b.subs.filter((_,si2)=>!!day.subs[bid+'_'+si2]).length;const fill=document.querySelector(`#bhdr_${bid} .prog-fill-p`);if(fill)fill.style.width=Math.round(done/b.subs.length*100)+'%';const lbl=document.querySelector(`#bhdr_${bid} .prog-lbl-p`);if(lbl)lbl.textContent=done+'/'+b.subs.length;const chk=document.getElementById('bchk_'+bid);if(chk)chk.classList.toggle('done',!!day.tasks[bid]);const blk=chk?.closest('.block');if(blk)blk.classList.toggle('done-block',!!day.tasks[bid]);}updateSummary();}
+
+function updateStepsUI(v){const goal=8000;const pct=Math.min(100,Math.round(v/goal*100));const bar=document.getElementById('steps-bar');if(bar){bar.style.width=pct+'%';bar.style.background=pct>=100?'var(--pgold)':'var(--pg)';}const info=document.getElementById('steps-info');if(info)info.textContent=v.toLocaleString()+' / 8,000';const pctEl=document.getElementById('steps-pct');if(pctEl)pctEl.textContent=pct+'%';const disp=document.getElementById('steps-display');if(disp)disp.textContent=v.toLocaleString();}
+function adjustSteps(delta){const{all,key,day}=getToday();const cur=day.steps||0;const next=Math.max(0,cur+delta);day.steps=next;saveTodayDay(all,key,day);updateStepsUI(next);updateSummary();if(cur<8000&&next>=8000)showToast('Goal reached! 🏆 '+next.toLocaleString()+' steps');}
+function setSteps(val){const{all,key,day}=getToday();day.steps=Math.max(0,val);saveTodayDay(all,key,day);updateStepsUI(day.steps);updateSummary();}
+function renderSteps(){const{day}=getToday();updateStepsUI(day.steps||0);}
+function updateSummary(){const{day}=getToday();const blocks=getBlocks();const done=blocks.filter(b=>!!(day.tasks&&day.tasks[b.id])).length;const total=blocks.length;const pct=total>0?Math.round(done/total*100):0;const w=day.water||0;const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};set('s-done',done);set('s-total',total);set('s-pct',pct+'%');set('s-water-p',(w*0.35).toFixed(1)+'L');const st=day.steps||0;set('s-steps-p',st>=1000?(st/1000).toFixed(1)+'k':st);}
+function resetToday(){if(!confirm('Reset today\'s progress?'))return;const all=loadAll();const key=todayKey();all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};saveAll(all);openBlock=null;renderGlasses();renderSchedule();updateSummary();showToast('Day reset ✓');}
+
+// ═══════════════════════════════════════════════════════
+// PLANNER NOTIFICATIONS
+// ═══════════════════════════════════════════════════════
+function parseTime(t){const m=t.match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return null;let h=parseInt(m[1]),min=parseInt(m[2]),ap=m[3].toUpperCase();if(ap==='PM'&&h!==12)h+=12;if(ap==='AM'&&h===12)h=0;return{h,min};}
+function scheduleAllNotifs(){if(!notifGranted)return;const blocks=getBlocks();const now=new Date();blocks.filter(b=>b.bell).forEach(b=>{const t=parseTime(b.time);if(!t)return;const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);const ms=fire-now;if(ms>0&&ms<86400000){if(scheduledNotifs[b.id])clearTimeout(scheduledNotifs[b.id]);scheduledNotifs[b.id]=setTimeout(()=>{new Notification('My Day — '+b.name,{body:b.desc,tag:b.id});},ms);}});showToast('Reminders set for today ✓');}
+function requestNotifPermission(){if(!('Notification' in window)){showToast('Notifications not supported');return;}if(Notification.permission==='granted'){notifGranted=true;scheduleAllNotifs();return;}if(Notification.permission==='denied'){showToast('Enable notifications in Chrome settings');return;}Notification.requestPermission().then(p=>{if(p==='granted'){notifGranted=true;scheduleAllNotifs();const b=document.getElementById('notif-banner-plan');if(b)b.classList.remove('show');}else{showToast('Notifications blocked');}});}
+function toggleBell(bid,e){e.stopPropagation();if(!notifGranted){requestNotifPermission();return;}if(scheduledNotifs[bid]){clearTimeout(scheduledNotifs[bid]);delete scheduledNotifs[bid];showToast('Reminder off');}else{const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);if(!b)return;const t=parseTime(b.time);if(!t)return;const now=new Date();const fire=new Date(now.getFullYear(),now.getMonth(),now.getDate(),t.h,t.min,0);const ms=fire-now;if(ms>0){scheduledNotifs[bid]=setTimeout(()=>{new Notification('My Day — '+b.name,{body:b.desc});},ms);showToast('Reminder set for '+b.time);}else{showToast('That time has already passed today');}}}
+
+// ═══════════════════════════════════════════════════════
+// STREAKS / HISTORY / WEEKLY
+// ═══════════════════════════════════════════════════════
+function renderStreaks(){const all=loadAll();const el=document.getElementById('streaks-page');el.innerHTML='';const today=new Date();STREAK_HABITS.forEach(h=>{let streak=0,maxStreak=0,cur=0;const last7=[];for(let i=29;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const k=dateKey(d);const hit=all[k]?h.check(all[k]):false;if(i<7)last7.push({hit,isToday:i===0});if(hit){cur++;if(cur>maxStreak)maxStreak=cur;}else{cur=0;}}streak=0;for(let i=0;i<=29;i++){const d=new Date(today);d.setDate(today.getDate()-i);const k=dateKey(d);if(all[k]&&h.check(all[k])){streak++;}else{break;}}const div=document.createElement('div');div.className='streak-card';div.innerHTML=`<div class="streak-icon">${h.icon}</div><div class="streak-info"><div class="streak-name">${h.name}</div><div class="streak-sub">Best: ${maxStreak} days</div><div class="dots-row">${last7.map(d=>`<div class="dot${d.hit?' hit':''}${d.isToday?' today':''}"></div>`).join('')}</div></div><div class="streak-count"><div class="streak-num">${streak}</div><div class="streak-days">days</div></div>`;el.appendChild(div);});}
+
+function renderHistory(){const all=loadAll();const el=document.getElementById('history-page');el.innerHTML='';const today=new Date();const year=today.getFullYear();const month=today.getMonth();const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];const h=document.createElement('div');h.className='cal-month';h.textContent=monthNames[month]+' '+year;el.appendChild(h);const grid=document.createElement('div');grid.className='cal-grid';['S','M','T','W','T','F','S'].forEach(d=>{const l=document.createElement('div');l.className='cal-day-lbl';l.textContent=d;grid.appendChild(l);});const first=new Date(year,month,1);const startDow=first.getDay();for(let i=0;i<startDow;i++){const e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);}const daysInMonth=new Date(year,month+1,0).getDate();for(let d=1;d<=daysInMonth;d++){const date=new Date(year,month,d);const k=dateKey(date);const data=all[k];const isFuture=date>today;const isToday=dateKey(date)===dateKey(today);const dayEl=document.createElement('div');let cls='cal-day';if(isFuture)cls+=' future';else if(!data)cls+=' no-data';else{const blocks=data.dayType==='weekend'?WEEKEND:WEEKDAY;const done=blocks.filter(b=>!!(data.tasks&&data.tasks[b.id])).length;const pct=done/blocks.length;if(pct>=0.8)cls+=' complete';else if(pct>0)cls+=' partial';else cls+=' no-data';}if(isToday)cls+=' today-ring';dayEl.className=cls;dayEl.textContent=d;dayEl.onclick=()=>showDayDetail(k,data,monthNames[month]+' '+d);grid.appendChild(dayEl);}el.appendChild(grid);const detail=document.createElement('div');detail.id='day-detail';el.appendChild(detail);}
+function showDayDetail(key,data,label){const el=document.getElementById('day-detail');if(!data){el.innerHTML=`<div class="day-detail"><div class="dd-title">${label}</div><div style="font-size:12.5px;color:var(--muted)">No data recorded.</div></div>`;return;}const blocks=data.dayType==='weekend'?WEEKEND:WEEKDAY;const done=blocks.filter(b=>!!(data.tasks&&data.tasks[b.id])).length;el.innerHTML=`<div class="day-detail"><div class="dd-title">${label} — ${done}/${blocks.length} tasks · ${(data.water||0)*350}ml water</div>${blocks.map(b=>`<div class="dd-row"><span>${b.name}</span><span>${(data.tasks&&data.tasks[b.id])?'✅':'○'}</span></div>`).join('')}</div>`;el.scrollIntoView({behavior:'smooth'});}
+
+function renderWeekly(){const all=loadAll();const el=document.getElementById('weekly-page');el.innerHTML='';const today=new Date();const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let tD=0,tT=0,tW=0,tSt=0,pDays=0;const bars=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const k=dateKey(d);const data=all[k];let pct=0,done=0,total=0;if(data){const blocks=data.dayType==='weekend'?WEEKEND:WEEKDAY;done=blocks.filter(b=>!!(data.tasks&&data.tasks[b.id])).length;total=blocks.length;pct=total>0?Math.round(done/total*100):0;tD+=done;tT+=total;tW+=(data.water||0);tSt+=(data.steps||0);if(pct>=80)pDays++;}bars.push({label:dayNames[d.getDay()],pct,done,total,isToday:i===0});}const card=document.createElement('div');card.className='week-card';card.innerHTML=`<div class="week-title">This week — completion by day</div>`+bars.map(b=>`<div class="bar-row"><div class="bar-label" style="${b.isToday?'font-weight:700;color:var(--pg)':''}">${b.label}</div><div class="bar-track"><div class="bar-fill" style="width:${b.pct}%;background:${b.pct>=80?'var(--pg)':b.pct>0?'var(--pamber)':'var(--border)'}"></div></div><div class="bar-pct">${b.pct}%</div></div>`).join('')+`<div class="big-stat"><div class="bs"><div class="bs-val">${tT>0?Math.round(tD/tT*100):0}%</div><div class="bs-lbl">Week completion</div></div><div class="bs"><div class="bs-val">${pDays}</div><div class="bs-lbl">Strong days (80%+)</div></div><div class="bs"><div class="bs-val">${(tW*0.35).toFixed(1)}L</div><div class="bs-lbl">Total water</div></div><div class="bs"><div class="bs-val">${tD}</div><div class="bs-lbl">Tasks done</div></div></div>`;el.appendChild(card);const hCard=document.createElement('div');hCard.className='week-card';hCard.innerHTML='<div class="week-title">Habit hit rate this week</div>'+STREAK_HABITS.map(h=>{let hits=0;for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const k=dateKey(d);if(all[k]&&h.check(all[k]))hits++;}const pct=Math.round(hits/7*100);return`<div class="bar-row"><div class="bar-label" style="font-size:15px;width:22px">${h.icon}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pct>=80?'var(--pg)':pct>=50?'var(--pamber)':'var(--pred)'}"></div></div><div class="bar-pct">${hits}/7</div></div>`;}).join('');el.appendChild(hCard);}
+
+// ═══════════════════════════════════════════════════════
+// NOTIFICATIONS (My Buttons system)
+// ═══════════════════════════════════════════════════════
+async function toggleNotifications(){
+  if(!('Notification' in window)){showToast('Browser does not support notifications.');renderNotifSection();return;}
+  // Turn OFF
+  if(notifEnabled){
+    notifEnabled=false;S.set('notif_on',false);updateNotifBtn();renderNotifSection();
+    showToast('Notifications turned off.');return;
+  }
+  // Already granted — just switch on
+  if(Notification.permission==='granted'){
+    notifEnabled=true;S.set('notif_on',true);updateNotifBtn();scheduleNextNotif();renderNotifSection();
+    showSwNotif('My Buttons ✦','Notifications active! DMP 9PM, check-ins, water — all set. ✦');return;
+  }
+  // Blocked — can't ask again, show fix guide
+  if(Notification.permission==='denied'){
+    showToast('Notifications blocked — see fix steps below.');renderNotifSection();return;
+  }
+  // Default — request permission
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm==='granted'){
+      notifEnabled=true;S.set('notif_on',true);updateNotifBtn();scheduleNextNotif();
+      showSwNotif('My Buttons ✦','Notifications active! All reminders scheduled. ✦');
+    } else {
+      showToast('Tap "Fix Notifications" below for steps.');
+    }
+  }catch(e){showToast('Could not request permission. See fix steps below.');}
+  renderNotifSection();
+}
+
+// Always use ServiceWorker registration.showNotification — works in installed PWA mode
+// Falls back to new Notification() if SW not ready
+function showSwNotif(title, body){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification(title,{
+        body,
+        icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%235C2333"/><text x="32" y="44" text-anchor="middle" font-size="32" fill="%23E8C878">✦</text></svg>',
+        badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%235C2333"/><text x="32" y="44" text-anchor="middle" font-size="28" fill="%23E8C878">✦</text></svg>',
+        tag:'mb-info',vibrate:[200,100,200]
+      });
+    }).catch(()=>{
+      if(Notification.permission==='granted') try{new Notification(title,{body});}catch(e){}
+    });
+  } else if(Notification.permission==='granted'){
+    try{new Notification(title,{body});}catch(e){}
+  }
+}
+const mbNotifSchedule=[
+  {h:6,m:0,type:'morning',icon:'☀️',title:'Good morning, Ash',body:'Start your morning routine. Set the frequency before anything else.'},
+  {h:7,m:0,type:'affirmation',icon:'✦',title:'Morning Affirmations',body:'Before the world gets in — say yours first.'},
+  {h:8,m:0,type:'checkin',icon:'🔔',title:'Frequency Check-In',body:'30 seconds to log. How are you doing?'},
+  {h:10,m:30,type:'water',icon:'💧',title:'Drink Water',body:'One full glass. Before your next task.'},
+  {h:12,m:0,type:'affirmation',icon:'✦',title:'Midday Affirmations',body:'Halfway through. Remind yourself who you are.'},
+  {h:13,m:30,type:'water',icon:'💧',title:'Water Check',body:'Halfway to 5 litres yet?'},
+  {h:14,m:0,type:'checkin',icon:'🔔',title:'Afternoon Check-In',body:'How is the afternoon feeling?'},
+  {h:16,m:0,type:'checkin',icon:'🔔',title:'Check-In — 4 PM',body:'Almost done. How is your frequency?'},
+  {h:16,m:30,type:'water',icon:'💧',title:'Water Reminder',body:'Push for 5 litres before evening.'},
+  {h:19,m:30,type:'evening',icon:'🌙',title:'Evening Routine',body:'Time to start your evening. Gratitude. Affirmations. Ho\'oponopono.'},
+  {h:21,m:0,type:'dmp',icon:'🎯',title:'DMP Session — Mitesh Sir',body:'9 PM. Your vision. Your definite major purpose. Do not skip this.'},
+  {h:21,m:30,type:'affirmation',icon:'✦',title:'Evening Affirmations',body:'Last thing the mind hears before sleep. Make it yours.'},
+  {h:21,m:45,type:'hopo',icon:'🤍',title:"Ho'oponopono — Evening",body:'Release the whole day. 4 rounds. Let it go.'},
+  {h:22,m:30,type:'lift',icon:'😴',title:'Wind Down',body:'Phone away. Tomorrow is already handled.'}
+];
+let mbNotifTimer=null;
+function scheduleNextNotif(){
+  clearTimeout(mbNotifTimer);
+  if(!notifEnabled||Notification.permission!=='granted')return;
+  const next=mbNotifSchedule.map(n=>{
+    const t=new Date(now);t.setHours(n.h,n.m,0,0);
+    if(t<=now)t.setDate(t.getDate()+1);
+    return{...n,ms:t-now};
+  }).sort((a,b)=>a.ms-b.ms)[0];
+  if(!next)return;
+  mbNotifTimer=setTimeout(()=>{
+    if(notifEnabled&&Notification.permission==='granted'){
+      // Use SW showNotification so it works in standalone/installed PWA mode
+      if('serviceWorker' in navigator){
+        navigator.serviceWorker.ready.then(reg=>{
+          reg.showNotification(next.icon+' '+next.title,{
+            body:next.body,
+            tag:next.type+next.h,
+            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%235C2333"/><text x="32" y="44" text-anchor="middle" font-size="32" fill="%23E8C878">✦</text></svg>',
+            badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%235C2333"/><text x="32" y="44" text-anchor="middle" font-size="28" fill="%23E8C878">✦</text></svg>',
+            vibrate:[200,100,200],
+            data:{type:next.type}
+          });
+        }).catch(()=>{
+          try{new Notification(next.icon+' '+next.title,{body:next.body,tag:next.type+next.h});}catch(e){}
+        });
+      } else {
+        try{new Notification(next.icon+' '+next.title,{body:next.body,tag:next.type+next.h});}catch(e){}
+      }
+    }
+    scheduleNextNotif();
+  },next.ms);
+}
+function updateNotifBtn(){const btn=document.getElementById('notifBtn');if(!btn)return;if(notifEnabled){btn.textContent='🔔 On';btn.classList.add('on');}else{btn.textContent='🔔 Notify';btn.classList.remove('on');}}
+function renderNotifSection(){
+  const perm=('Notification' in window)?Notification.permission:'unsupported';
+  const isBlocked=perm==='denied';
+  const isGranted=perm==='granted';
+  let statusHtml='';
+  if(isBlocked){
+    statusHtml=`<div style="background:#FEF0F0;border:1px solid #F0B8B8;border-radius:8px;padding:.75rem .9rem;margin-bottom:.65rem">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin-bottom:.4rem">⚠ Notifications Blocked — Fix Steps</div>
+      <div style="font-size:12.5px;color:var(--ink);line-height:1.9">
+        <strong>Samsung A56 — Chrome (Option 1):</strong><br>
+        1. Open Chrome → ⋮ menu → <strong>Settings</strong><br>
+        2. <strong>Site Settings</strong> → <strong>Notifications</strong><br>
+        3. Find this site under Blocked → tap it → <strong>Allow</strong><br>
+        4. Return here → tap Enable below<br><br>
+        <strong>Samsung Settings (Option 2):</strong><br>
+        1. Settings → <strong>Apps</strong> → <strong>Chrome</strong><br>
+        2. <strong>Notifications</strong> → turn on <strong>Allow notifications</strong><br>
+        3. Return here → tap Enable below
+      </div>
+    </div>`;
+  } else if(!isGranted){
+    statusHtml=`<div style="font-size:12.5px;color:var(--ink);line-height:1.6;margin-bottom:.6rem">Enable and the app will tend your frequency throughout the day — check-ins, water, DMP 9PM, affirmations, Ho'oponopono evening.</div>`;
+  } else {
+    statusHtml=`<div style="font-size:12.5px;color:var(--ink);line-height:1.6;margin-bottom:.6rem"><strong style="color:var(--green)">✓ Permission granted.</strong> ${notifEnabled?'All reminders active — morning 6AM, check-ins, water, DMP 9PM, evening affirmations & Ho\'oponopono 9:45PM.':'Tap Enable to activate all scheduled reminders.'}</div>`;
+  }
+  el.innerHTML=`<div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-top:.75rem">
+    <div style="background:${notifEnabled?'var(--green)':isBlocked?'var(--red)':'var(--wine)'};padding:.65rem .9rem;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:white">
+      ${notifEnabled?'🔔 Notifications Active':isBlocked?'🚫 Notifications Blocked':'🔔 Notifications Off'}</div>
+    <div style="padding:.75rem .9rem">
+      ${statusHtml}
+      ${!isBlocked?`<button style="width:100%;background:${notifEnabled?'var(--green)':'var(--wine)'};color:white;border:none;border-radius:7px;padding:.65rem;font-size:13.5px;font-weight:600;cursor:pointer" onclick="toggleNotifications()">${notifEnabled?'✓ Active — Tap to Disable':'Enable Notifications'}</button>`:''}
+      <div style="margin-top:.55rem;font-size:10px;color:var(--muted);line-height:1.65">
+        <strong>Battery fix (critical for Samsung):</strong><br>
+        Settings → Apps → Chrome → Battery → set to <strong>Unrestricted</strong>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// MICRO NUDGES
+// ═══════════════════════════════════════════════════════
+function scheduleNudge(){clearTimeout(nudgeTimer);nudgeTimer=setTimeout(showRandomNudge,(60+Math.random()*30)*60000);}
+function showRandomNudge(){const n=nudges[Math.floor(Math.random()*nudges.length)];currentNudgeAction=n.action;document.getElementById('nudgeOvIcon').textContent=n.icon;document.getElementById('nudgeOvTitle').textContent=n.title;document.getElementById('nudgeOvBody').textContent=n.body;document.getElementById('nudgeOv').classList.add('active');scheduleNudge();}
+function doNudgeAction(){document.getElementById('nudgeOv').classList.remove('active');switch(currentNudgeAction){case 'breathe':startBreathe();break;case 'water':addWater(500);break;case 'affirm':showAffirmOv();break;case 'grateful':showPosDetail('grateful');break;case 'hopo':navTo('hopo','nb-more');break;}}
+function closeNudgeOv(){document.getElementById('nudgeOv').classList.remove('active');}
+
+// ═══════════════════════════════════════════════════════
+// BREATHE / NAP / JUMP
+// ═══════════════════════════════════════════════════════
+function startBreathe(){document.getElementById('breatheOv').classList.add('active');runBreathe();}
+function runBreathe(){const phases=[{l:'Inhale',s:4,a:'expanding'},{l:'Hold',s:2,a:'holding'},{l:'Exhale',s:6,a:'shrinking'}];let pi=0,c=0;const circ=document.getElementById('brCircle'),num=document.getElementById('brNum'),lbl=document.getElementById('brLabel');function next(){const p=phases[pi%3];lbl.textContent=p.l;circ.className='br-circle '+p.a;c=p.s;num.textContent=c;clearInterval(brInt);brInt=setInterval(()=>{c--;num.textContent=c;if(c<=0){pi++;next();}},1000);}next();}
+function stopBreathe(){clearInterval(brInt);document.getElementById('breatheOv').classList.remove('active');}
+function startNap(){napSec=600;document.getElementById('napOv').classList.add('active');updateNap();clearInterval(napInt);napInt=setInterval(()=>{napSec--;updateNap();if(napSec<=0){clearInterval(napInt);document.getElementById('napTime').textContent='WAKE UP';}},1000);}
+function updateNap(){const m=Math.floor(napSec/60),s=napSec%60;document.getElementById('napTime').textContent=m+':'+String(s).padStart(2,'0');}
+function stopNap(){clearInterval(napInt);document.getElementById('napOv').classList.remove('active');}
+function startJump(){jumpLeft=10;document.getElementById('jumpCount').textContent=10;document.getElementById('jumpOv').classList.add('active');}
+function countJump(){if(jumpLeft<=0)return;jumpLeft--;document.getElementById('jumpCount').textContent=jumpLeft;if(jumpLeft===0){setTimeout(()=>{document.getElementById('jumpCount').textContent='Done!';setTimeout(stopJump,800);},200);}}
+function stopJump(){document.getElementById('jumpOv').classList.remove('active');jumpLeft=10;}
+
+// CLOCK
+function startClock(){clearInterval(clockTimer);updateClock();clockTimer=setInterval(updateClock,1000);}
+function updateClock(){const el=document.getElementById('liveClock');if(!el)return;const n=new Date();let h=n.getHours(),m=n.getMinutes();const ap=h>=12?'PM':'AM';h=h%12||12;el.textContent=h+':'+String(m).padStart(2,'0')+' '+ap;}
+
+// TOAST
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ═══════════════════════════════════════════════════════
+// PWA
+// ═══════════════════════════════════════════════════════
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{
+    try{const sw=`const C='mb9';self.addEventListener('install',e=>{self.skipWaiting();});self.addEventListener('activate',e=>{clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response(''))));});`;const b=new Blob([sw],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(b)).catch(()=>{});}catch(e){}
+  });
+}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.add('show');});
+window.addEventListener('appinstalled',()=>document.getElementById('installBanner').classList.remove('show'));
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').classList.remove('show');});}}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+updateNotifBtn();
+if(notifEnabled)scheduleNextNotif();
+scheduleNudge();
+renderDash();
+// Init planner state for summary
+const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
+</script>
+</body>
+</html>
 // ═══════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════
@@ -2232,9 +2731,14 @@ function switchTab(tab){
   else if(tab==='water')renderWater();
   else if(tab==='affirm')renderAffirmations();
   else if(tab==='evening')renderEvening();
+  else if(tab==='hopo'){renderHopo();}
   else if(tab==='nudge')renderNotifSection();
   else if(tab==='habits')renderHabits();
   else if(tab==='vision')renderVision();
+  else if(tab==='plan'){initPlanner();}
+  else if(tab==='streaks')renderStreaks();
+  else if(tab==='history')renderHistory();
+  else if(tab==='weekly')renderWeekly();
 }
 function goBack(){
   document.getElementById('detail-screen').classList.remove('active');
@@ -2280,7 +2784,6 @@ function stopJump(){document.getElementById('jumpOv').classList.remove('active')
 // ═══════════════════════════════════════════════════════
 function startClock(){clearInterval(clockTimer);updateClock();clockTimer=setInterval(updateClock,1000);}
 function updateClock(){const el=document.getElementById('liveClock');if(!el)return;
-  const n=new Date();let h=n.getHours(),m=n.getMinutes();const ap=h>=12?'PM':'AM';h=h%12||12;
   el.textContent=h+':'+String(m).padStart(2,'0')+' '+ap;}
 
 // ═══════════════════════════════════════════════════════
