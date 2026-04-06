@@ -1022,27 +1022,109 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 
 <script>
 // ═══════════════════════════════════════════════════════
-// STORAGE — clean namespaced localStorage
+// STORAGE — IndexedDB with in-memory cache
+// Samsung-safe: survives battery optimisation, no vanishing data
 // ═══════════════════════════════════════════════════════
+const DB_NAME = 'mybuttons_v10', DB_STORE = 'kv', DB_VER = 1;
+let _db = null, _cache = {}, _dbReady = false, _dbQueue = [];
+
+function _openDB(){
+  return new Promise((res,rej)=>{
+    if(_db){res(_db);return;}
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => e.target.result.createObjectStore(DB_STORE);
+    req.onsuccess = e => { _db = e.target.result; res(_db); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+// Load ALL data into memory cache at startup — makes all gets synchronous
+async function _loadAll(){
+  try{
+    const db = await _openDB();
+    const tx = db.transaction(DB_STORE,'readonly');
+    const store = tx.objectStore(DB_STORE);
+    const keys = await new Promise((res,rej)=>{const r=store.getAllKeys();r.onsuccess=()=>res(r.result);r.onerror=rej;});
+    const vals = await new Promise((res,rej)=>{const r=store.getAll();r.onsuccess=()=>res(r.result);r.onerror=rej;});
+    keys.forEach((k,i)=>{ _cache[k]=vals[i]; });
+    _dbReady = true;
+    // run any queued saves
+    _dbQueue.forEach(fn=>fn());
+    _dbQueue = [];
+  }catch(e){
+    // IndexedDB failed (private browsing?) — fall back to localStorage silently
+    _dbReady = true;
+    try{
+      Object.keys(localStorage).forEach(k=>{
+        if(k.startsWith('mb8_')){try{_cache[k.slice(4)]=JSON.parse(localStorage.getItem(k));}catch{}}
+      });
+    }catch{}
+  }
+}
+
 const S = {
-  get(k){try{return JSON.parse(localStorage.getItem('mb8_'+k));}catch{return null;}},
-  set(k,v){try{localStorage.setItem('mb8_'+k,JSON.stringify(v));}catch(e){}},
-  del(k){localStorage.removeItem('mb8_'+k);}
+  get(k){ return _cache.hasOwnProperty(k) ? _cache[k] : null; },
+  set(k,v){
+    _cache[k] = v;
+    // Write-through to IndexedDB async (non-blocking)
+    const write = () => {
+      if(!_db) return;
+      try{
+        const tx = _db.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).put(v, k);
+      }catch(e){
+        // fallback to localStorage
+        try{localStorage.setItem('mb8_'+k, JSON.stringify(v));}catch{}
+      }
+    };
+    if(_dbReady) write(); else _dbQueue.push(write);
+  },
+  del(k){
+    delete _cache[k];
+    if(_db){ try{const tx=_db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).delete(k);}catch{} }
+    try{localStorage.removeItem('mb8_'+k);}catch{}
+  }
 };
+
 function todayKey(){return new Date().toDateString();}
 
-// Daily reset at midnight
-(function checkReset(){
+// Migrate old localStorage data into IndexedDB (one-time)
+function _migrateLS(){
+  try{
+    let migrated = 0;
+    Object.keys(localStorage).forEach(k=>{
+      if(k.startsWith('mb8_')){
+        const key = k.slice(4);
+        if(!_cache.hasOwnProperty(key)){
+          try{
+            const v = JSON.parse(localStorage.getItem(k));
+            S.set(key, v);
+            migrated++;
+          }catch{}
+        }
+      }
+    });
+    if(migrated > 0) console.log('Migrated',migrated,'keys from localStorage to IndexedDB');
+  }catch{}
+}
+
+// Daily reset + init — called after DB loads
+function _initApp(){
+  _migrateLS();
   const last = S.get('last_day');
   const today = todayKey();
   if(last !== today){
     S.set('last_day', today);
-    // Reset routine + water — preserve emotions forever
     S.set('routine_'+today, {steps:new Array(7).fill(false), grat:[]});
     S.set('evening_'+today, {steps:new Array(6).fill(false), wins:[]});
     S.set('water_'+today, {ml:0, log:[]});
   }
-})();
+  // Kick off the app render
+  updateNotifBtn();
+  if(notifEnabled) scheduleNextNotif();
+  scheduleNudge();
+  renderDash();
+}
 
 // ═══════════════════════════════════════════════════════
 // DATA
@@ -1552,14 +1634,14 @@ function saveEvWins(){
 // ═══════════════════════════════════════════════════════
 // AUDIO (IndexedDB persistence)
 // ═══════════════════════════════════════════════════════
-const DB_NAME='mb8_audio',DB_STORE='files';let db=null;
-function openDB(){return new Promise((res,rej)=>{if(db){res(db);return;}const req=indexedDB.open(DB_NAME,1);
-  req.onupgradeneeded=e=>e.target.result.createObjectStore(DB_STORE);
-  req.onsuccess=e=>{db=e.target.result;res(db);};req.onerror=rej;});}
-function saveAudio(blob){return openDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readwrite');
-  tx.objectStore(DB_STORE).put(blob,'affirm');tx.oncomplete=res;tx.onerror=rej;}));}
-function loadAudioDB(){return openDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,'readonly');
-  const req=tx.objectStore(DB_STORE).get('affirm');req.onsuccess=()=>res(req.result||null);req.onerror=rej;}));}
+const AUDIO_DB_NAME='mb8_audio',AUDIO_DB_STORE='files';let audioDB=null;
+function openAudioDB(){return new Promise((res,rej)=>{if(audioDB){res(audioDB);return;}const req=indexedDB.open(AUDIO_DB_NAME,1);
+  req.onupgradeneeded=e=>e.target.result.createObjectStore(AUDIO_DB_STORE);
+  req.onsuccess=e=>{audioDB=e.target.result;res(audioDB);};req.onerror=rej;});}
+function saveAudio(blob){return openAudioDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(AUDIO_DB_STORE,'readwrite');
+  tx.objectStore(AUDIO_DB_STORE).put(blob,'affirm');tx.oncomplete=res;tx.onerror=rej;}));}
+function loadAudioDB(){return openAudioDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(AUDIO_DB_STORE,'readonly');
+  const req=tx.objectStore(AUDIO_DB_STORE).get('affirm');req.onsuccess=()=>res(req.result||null);req.onerror=rej;}));}
 
 function loadAudioFile(e){
   const file=e.target.files[0];if(!file)return;
@@ -2231,12 +2313,23 @@ if(location.hash){
 }
 
 // ═══════════════════════════════════════════════════════
-// INIT
+// INIT — load IndexedDB first, then start app
 // ═══════════════════════════════════════════════════════
-updateNotifBtn();
-if(notifEnabled)scheduleNextNotif();
-scheduleNudge();
-renderDash();
+// Show loading state while DB loads
+document.getElementById('dash-content').innerHTML=`
+  <div style="padding:2rem;text-align:center;color:var(--muted)">
+    <div style="font-size:2rem;margin-bottom:.75rem">✦</div>
+    <div style="font-size:14px;font-weight:600;color:var(--wine)">Loading My Buttons…</div>
+    <div style="font-size:12px;margin-top:.35rem">Setting up your space</div>
+  </div>`;
+
+_loadAll().then(()=>{
+  _initApp();
+}).catch(()=>{
+  // DB completely failed — still run app from empty cache
+  _dbReady = true;
+  _initApp();
+});
 </script>
 </body>
 </html>
