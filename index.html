@@ -636,6 +636,29 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 .wake-btn{padding:.45rem .9rem;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--cream-2);color:var(--muted);transition:all .12s}
 .wake-btn.active{background:var(--wine);color:var(--cream);border-color:var(--wine)}
 
+
+/* ── Personalised Ho'oponopono ── */
+.hopo-tab-hero{background:linear-gradient(135deg,#1A1030,#2D1F4A);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:.8rem}
+.hopo-tab-hero-lbl{font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,180,255,.55);margin-bottom:.3rem}
+.hopo-tab-hero-title{font-size:1.1rem;font-weight:300;color:rgba(230,220,255,.9);line-height:1.4;margin-bottom:.25rem}
+.hopo-tab-hero-sub{font-size:12px;color:rgba(200,180,255,.45);line-height:1.5}
+.hopo-cat-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem}
+.hopo-cat-btn{border:none;border-radius:9px;padding:.75rem .5rem;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.hopo-cat-btn:active{transform:scale(.97)}
+.hopo-cat-btn.money{background:linear-gradient(135deg,#1A3A2A,#2A5A3A);color:rgba(180,230,160,.9)}
+.hopo-cat-btn.health{background:linear-gradient(135deg,#2D1F4A,#3D2A5A);color:rgba(200,180,255,.9)}
+.hopo-cat-btn.relationships{background:linear-gradient(135deg,#3D1522,#5C2333);color:rgba(232,200,120,.9)}
+.hopo-cat-btn.career{background:linear-gradient(135deg,#1A3050,#2A4A70);color:rgba(180,210,255,.9)}
+.hopo-cat-btn.active-cat{transform:scale(1.02);box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.hopo-script-wrap{background:linear-gradient(135deg,#1A1030,#2D1F4A);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem}
+.hopo-script-title{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.75rem}
+.hopo-script-para{font-size:13.5px;line-height:1.85;margin-bottom:.65rem;font-style:italic}
+.hopo-script-section{margin-bottom:1rem;border-left:2px solid rgba(200,180,255,.2);padding-left:.8rem}
+.hopo-session-btns{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.75rem}
+.hopo-sess-btn{border:none;border-radius:8px;padding:.8rem;font-size:12.5px;font-weight:700;cursor:pointer}
+.hopo-sess-start{background:rgba(150,130,220,.35);color:rgba(220,210,255,.9);border:.5px solid rgba(150,130,220,.4)!important}
+.hopo-sess-done{background:var(--green);color:white}
+
 /* ══ NEW FEATURES CSS ══ */
 /* SOS button */
 @keyframes sosPulse{0%,100%{box-shadow:0 3px 12px rgba(163,45,45,.5)}50%{box-shadow:0 3px 20px rgba(163,45,45,.9)}}
@@ -766,6 +789,7 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
   <div class="tab active" id="tab-dash"     onclick="switchTab('dash')">🏠 Home</div>
   <div class="tab"        id="tab-morning"  onclick="switchTab('morning')">☀️ Morning</div>
   <div class="tab"        id="tab-checkin"  onclick="switchTab('checkin')">Check-In</div>
+  <div class="tab"        id="tab-hopo"     onclick="switchTab('hopo')">🤍 Ho'opo</div>
   <div class="tab"        id="tab-emotions" onclick="switchTab('emotions')">😔 Emotions</div>
   <div class="tab"        id="tab-affirm"   onclick="switchTab('affirm')">✦ Affirm</div>
   <div class="tab"        id="tab-evening"  onclick="switchTab('evening')">🌙 Evening</div>
@@ -2147,23 +2171,119 @@ function seekAudio(e){if(!audioEl||!audioEl.duration)return;const r=e.currentTar
 // ═══════════════════════════════════════════════════════
 // HO'OPONOPONO
 // ═══════════════════════════════════════════════════════
+// ── Ho'oponopono personalised scripts ──
+const HOPO_SCRIPTS = {
+  money: {
+    icon: '💰', label: "Money", color: 'money',
+    lines: [
+      {type:'responsibility', text:"I take 100% responsibility\nfor my financial situations,\nfor my money blocks,\nfor all the struggles I have experienced in my life around money."},
+      {type:'sorry', text:"I am sorry, dear money, for feeling stressed about you all the time.\n\nI am sorry for feeling desperate about you.\n\nI am sorry for the insecurity and fear I have carried about you.\n\nI am sorry for pushing you away with my thoughts, beliefs, and actions.\n\nI am sorry for not respecting you when you came into my life.\n\nI am sorry for not loving you and not accepting you fully.\n\nI am sorry for restricting you and limiting you to one source."},
+      {type:'forgive', text:"Please forgive me, dear money, for believing it is difficult for you to come into my life.\n\nPlease forgive me for avoiding opportunities that could bring you to me.\n\nPlease forgive me for not valuing you when you came to me.\n\nPlease forgive me for rejecting you, doubting you, and not trusting you.\n\nPlease forgive me for my past beliefs, fears, and experiences around money."},
+      {type:'thankyou', text:"Thank you, dear money, for always being there for me in ways I may not have noticed.\n\nThank you for supporting me despite my fears and insecurities.\n\nThank you for coming into my life again and again.\n\nThank you for taking care of me in so many ways.\n\nThank you for all the opportunities to earn, grow, and create wealth."},
+      {type:'love', text:"I love you, dear money.\n\nI accept you in all forms — big and small.\nYou are welcome in my life from all directions.\nI receive you with love, respect, and gratitude.\n\nI honour you and use you wisely.\nI am open to having a beautiful, healthy relationship with you.\n\nI now choose to release all past pain, guilt, and fear around money.\nI choose to create a new, loving, and abundant relationship with money.\nI allow money to flow into my life easily and naturally.\nI trust myself to handle money with confidence and clarity."}
+    ]
+  },
+  health: {
+    icon: '💪', label: "Health", color: 'health',
+    lines: [
+      {type:'responsibility', text:"I take 100% responsibility\nfor my health, my body, and how I have treated it.\nFor the habits I have built and the ones I have ignored."},
+      {type:'sorry', text:"I am sorry, dear body, for neglecting you at times.\n\nI am sorry for pushing you when you needed rest.\nI am sorry for not listening to your signals.\n\nI am sorry for feeding you stress, unhealthy thoughts, and habits."},
+      {type:'forgive', text:"Please forgive me, my body, for not taking care of you consistently.\n\nPlease forgive me for not prioritising your health.\nPlease forgive me for the times I doubted you or criticised you."},
+      {type:'thankyou', text:"Thank you, my body, for supporting me every single day.\n\nThank you for healing, recovering, and staying strong.\nThank you for carrying me through everything in life."},
+      {type:'love', text:"I love you, my body. I respect you and honour you.\n\nI choose to nourish you, care for you, and listen to you.\n\nI now choose to treat my body with love, care, and consistency.\nI choose healthy habits that support my energy and well-being.\nI allow myself to feel strong, healthy, and alive."}
+    ]
+  },
+  relationships: {
+    icon: '❤️', label: "Relationships", color: 'relationships',
+    lines: [
+      {type:'responsibility', text:"I take 100% responsibility\nfor my relationships — at home and at work.\nFor how I communicate, react, and show up."},
+      {type:'sorry', text:"I am sorry for the times I reacted instead of understanding.\n\nI am sorry for holding expectations and not expressing them clearly.\nI am sorry for not being fully present with my family.\n\nI am sorry for moments where I chose ego over connection."},
+      {type:'forgive', text:"Please forgive me for the misunderstandings I created knowingly or unknowingly.\n\nPlease forgive me for not always giving time and attention to my loved ones.\nPlease forgive me for not handling some situations with calmness."},
+      {type:'thankyou', text:"Thank you for the love, support, and presence in my life.\n\nThank you for my family — my mom, dad, and my son.\nThank you for my colleagues and the people I work with."},
+      {type:'love', text:"I choose love in my relationships. I choose understanding over reaction.\n\nI value the people in my life deeply.\n\nI now choose to show up with calmness, clarity, and kindness.\nI choose to give time, presence, and attention to my family.\nI choose to build respectful and positive relationships at work."}
+    ]
+  },
+  career: {
+    icon: '🚀', label: "Career", color: 'career',
+    lines: [
+      {type:'responsibility', text:"I take 100% responsibility\nfor my career, my growth, and my opportunities.\nFor how I show up, perform, and position myself."},
+      {type:'sorry', text:"I am sorry for doubting myself and my capabilities.\n\nI am sorry for holding back when I should have stepped forward.\nI am sorry for not always recognising my own value."},
+      {type:'forgive', text:"Please forgive me for the times I did not fully believe in myself.\n\nPlease forgive me for missed opportunities and hesitation.\nPlease forgive me for not always showing my full potential."},
+      {type:'thankyou', text:"Thank you for my experience, skills, and growth so far.\n\nThank you for the opportunities I have received.\nThank you for the ability to learn, adapt, and evolve."},
+      {type:'love', text:"I trust myself and my abilities. I respect my journey and my progress.\n\nI am proud of who I am becoming professionally.\n\nI now choose to show up with confidence and clarity.\nI choose to take ownership and create opportunities.\nI choose to grow into a strong, impactful leader."}
+    ]
+  }
+};
+
+let _hopoScript = 'money'; // default
+let _hopoPhraseStep = 0;
+
 function renderHopo(){
-  document.getElementById('hopo-content').innerHTML=`
-    <div class="hopo-hero"><div class="hopo-hero-title">🤍 Ho'oponopono — Hawaiian Forgiveness Practice</div><div class="hopo-hero-sub">Use morning to clear. Use evening to close. Use anytime you feel heaviness, resentment, or tightness — with anyone, including yourself.</div></div>
-    <div class="hopo-mantra">
-      <div class="hopo-mantra-lbl">Say with full feeling — hand on chest, eyes closed</div>
-      <div class="hopo-phrase" id="hopoPhrase">${hopoPhrases[hopoPhraseIdx]}</div>
-      <div class="hopo-phrase-num" id="hopoPhraseNum">Phrase ${hopoPhraseIdx+1} of 4</div>
-      <div class="hopo-rounds" id="hopoRounds">${hopoRounds}</div>
-      <div class="hopo-rounds-lbl">rounds complete</div>
+  const el = document.getElementById('hopo-content'); if(!el) return;
+  const script = HOPO_SCRIPTS[_hopoScript];
+  const typeColors = {responsibility:'rgba(200,180,255,.6)',sorry:'rgba(255,180,160,.7)',forgive:'rgba(255,220,120,.7)',thankyou:'rgba(180,230,160,.7)',love:'rgba(255,200,220,.8)'};
+  const typeLabels = {responsibility:'I Take Responsibility',sorry:'I Am Sorry',forgive:'Please Forgive Me',thankyou:'Thank You',love:'I Love You'};
+
+  el.innerHTML = `
+    <div class="hopo-tab-hero">
+      <div class="hopo-tab-hero-lbl">🤍 HO'OPONOPONO</div>
+      <div class="hopo-tab-hero-title">Hawaiian cleaning practice.<br>You clean the data inside you.</div>
+      <div class="hopo-tab-hero-sub">Not apologising to others. Releasing the memory that created the experience. Say with hand on chest, eyes closed, full feeling.</div>
     </div>
-    <div class="hopo-btns">
-      <button class="hopo-btn hopo-btn-start" onclick="hopoStart()">▶ Start / Reset</button>
-      <button class="hopo-btn hopo-btn-next" onclick="hopoNext()">Next Phrase →</button>
+
+    <div class="hopo-cat-row">
+      <button class="hopo-cat-btn money${_hopoScript==='money'?' active-cat':''}" onclick="setHopoScript('money')">💰 Money</button>
+      <button class="hopo-cat-btn health${_hopoScript==='health'?' active-cat':''}" onclick="setHopoScript('health')">💪 Health</button>
+      <button class="hopo-cat-btn relationships${_hopoScript==='relationships'?' active-cat':''}" onclick="setHopoScript('relationships')">❤️ Relationships</button>
+      <button class="hopo-cat-btn career${_hopoScript==='career'?' active-cat':''}" onclick="setHopoScript('career')">🚀 Career</button>
     </div>
-    <button class="hopo-done-btn" onclick="hopoComplete()">✓ Session Complete — I've cleared it</button>
-    <div class="hopo-guide"><div class="hopo-guide-head">What this practice does</div><div class="hopo-guide-body">Ho'oponopono works on the belief that everything we experience is a projection of our own memory and data. By saying these 4 phrases, you're not apologising to others — you're cleaning the data inside you that created the experience. The phrases work even if you say them silently. Repeat until you feel a release or softening.</div></div>
-    <div class="hopo-guide"><div class="hopo-guide-head">Direct it to:</div><div class="hopo-guide-body"><strong>Morning:</strong> anyone you're carrying tension with — situations, yourself.<br><br><strong>Evening:</strong> the whole day — every moment you reacted, judged, or held on.<br><br><strong>Anytime:</strong> when you feel stuck, reactive, resentful, or heavy.</div></div>`;
+
+    <div class="hopo-script-wrap">
+      <div class="hopo-script-title" style="color:${typeColors[script.lines[_hopoPhraseStep].type]}">${script.icon} ${script.label} — ${typeLabels[script.lines[_hopoPhraseStep].type]}</div>
+      <div class="hopo-script-section">
+        ${script.lines[_hopoPhraseStep].text.split('\n').map(line=>line.trim()?`<div class="hopo-script-para" style="color:rgba(230,220,255,.88)">${line}</div>`:'<div style="height:.3rem"></div>').join('')}
+      </div>
+      <div style="display:flex;gap:.35rem;justify-content:center;margin-bottom:.8rem">
+        ${script.lines.map((_,i)=>`<div style="width:${i===_hopoPhraseStep?'22px':'8px'};height:8px;border-radius:99px;background:${i===_hopoPhraseStep?'rgba(200,180,255,.8)':'rgba(200,180,255,.25)'};transition:all .3s;cursor:pointer" onclick="setHopoStep(${i})"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="hopo-session-btns">
+      <button class="hopo-sess-btn hopo-sess-start" onclick="prevHopoStep()">← Previous</button>
+      <button class="hopo-sess-btn hopo-sess-start" onclick="nextHopoStep()">${_hopoPhraseStep < script.lines.length-1 ? 'Next →' : 'Start Again ↺'}</button>
+    </div>
+    <button class="hopo-done-btn" onclick="hopoComplete()" style="width:100%;background:var(--green);color:white;border:none;border-radius:9px;padding:.9rem;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:.75rem">
+      ✓ Session Complete — I have cleared it
+    </button>
+
+    <div style="background:rgba(255,255,255,.04);border:.5px solid rgba(200,180,255,.15);border-radius:10px;padding:.8rem .9rem;margin-bottom:.75rem">
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,180,255,.45);margin-bottom:.45rem">Quick Session — 4 Phrases</div>
+      <div style="font-size:13px;color:rgba(200,180,255,.7);line-height:1.8;font-style:italic">
+        "I'm sorry."<br>"Please forgive me."<br>"Thank you."<br>"I love you."
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.65rem">
+        <button class="hopo-sess-btn hopo-sess-start" onclick="hopoStart()">▶ Start Rounds</button>
+        <button class="hopo-sess-btn hopo-sess-start" onclick="hopoNext()">Next Phrase →</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;justify-content:center">
+        <div style="font-size:2rem;font-weight:300;color:rgba(200,180,255,.8)" id="hopoRounds">${hopoRounds}</div>
+        <div style="font-size:11px;color:rgba(200,180,255,.4)">rounds complete</div>
+      </div>
+      <div style="font-size:14px;font-style:italic;color:rgba(220,210,255,.7);text-align:center;padding:.45rem 0;min-height:30px" id="hopoPhrase">${hopoPhrases[hopoPhraseIdx]}</div>
+    </div>`;
+}
+
+function setHopoScript(key){ _hopoScript=key; _hopoPhraseStep=0; renderHopo(); }
+function setHopoStep(i){ _hopoPhraseStep=i; renderHopo(); }
+function nextHopoStep(){
+  const len=HOPO_SCRIPTS[_hopoScript].lines.length;
+  _hopoPhraseStep=(_hopoPhraseStep+1)%len;
+  renderHopo();
+}
+function prevHopoStep(){
+  const len=HOPO_SCRIPTS[_hopoScript].lines.length;
+  _hopoPhraseStep=(_hopoPhraseStep-1+len)%len;
+  renderHopo();
 }
 function hopoStart(){hopoPhraseIdx=0;hopoRounds=0;hopoRender();}
 function hopoNext(){hopoPhraseIdx++;if(hopoPhraseIdx>=hopoPhrases.length){hopoPhraseIdx=0;hopoRounds++;}hopoRender();}
@@ -3089,7 +3209,7 @@ function switchTab(tab){
   clearInterval(clockTimer);
   if(tab==='dash')renderDash();
   else if(tab==='morning')renderMorning();
-  else if(tab==='hopo')renderHopo();
+  else if(tab==='hopo'){renderHopo();}
   else if(tab==='checkin')renderCheckin();
   else if(tab==='water')renderWater();
   else if(tab==='negative'){renderNeg();const el=document.getElementById('screen-negative');if(el)el.classList.add('active');}
