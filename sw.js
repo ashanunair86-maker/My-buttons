@@ -1,45 +1,71 @@
-// MY BUTTONS — SW v11 — NETWORK-FIRST — forces cache clear
-const CACHE = 'mybuttons-v11';
+// My Buttons SW v12 — alarm-style, requireInteraction, snooze/done actions
+const CACHE='mb12';const ASSETS=['./','./index.html','./manifest.json','./icon.png'];
 
-self.addEventListener('install', e => {
+self.addEventListener('install',e=>{
   self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS).catch(()=>{})));
+});
+
+self.addEventListener('activate',e=>{
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(['./index.html','./manifest.json']).catch(()=>{}))
+    caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+      .then(()=>clients.claim())
   );
 });
 
-self.addEventListener('activate', e => {
-  // Delete ALL old caches including v10, v9, v8, mb8, mb9
-  e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(k => {
-      console.log('Deleting cache:', k);
-      return caches.delete(k);
-    }))).then(() => caches.open(CACHE).then(c => 
-      c.addAll(['./index.html','./manifest.json']).catch(()=>{})
-    ))
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', e => {
-  if(e.request.method !== 'GET') return;
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
   e.respondWith(
-    fetch(e.request, {cache: 'no-cache'})
-      .then(r => {
-        if(r && r.status === 200) {
-          const clone = r.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return r;
-      })
-      .catch(() => caches.match(e.request).then(c => c || caches.match('./index.html')))
+    caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+      if(res&&res.status===200&&e.request.url.startsWith('https://')){
+        const clone=res.clone();
+        caches.open(CACHE).then(c=>c.put(e.request,clone)).catch(()=>{});
+      }
+      return res;
+    })).catch(()=>caches.match('./index.html'))
   );
 });
 
-self.addEventListener('notificationclick', e => {
-  e.notification.close();
-  e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list => {
-    if(list.length){list[0].focus();return;}
-    clients.openWindow('./');
-  }));
+// Handle notification click — Done or Snooze
+self.addEventListener('notificationclick',e=>{
+  const notif=e.notification;
+  notif.close();
+
+  if(e.action==='snooze'){
+    // Snooze 5 minutes — re-fire notification
+    const data=notif.data||{};
+    e.waitUntil(new Promise(resolve=>{
+      setTimeout(()=>{
+        self.registration.showNotification(notif.title,{
+          body:notif.body,
+          icon:notif.icon,
+          badge:notif.badge,
+          tag:(data.tag||'mb-snooze')+'-sn',
+          vibrate:[300,100,300,100,600],
+          requireInteraction:true,
+          renotify:true,
+          actions:[
+            {action:'done',title:'✓ Done'},
+            {action:'snooze',title:'⏰ 5 min'}
+          ],
+          data:data
+        });
+        resolve();
+      },5*60*1000);
+    }));
+    return;
+  }
+
+  // Done or default click — open/focus the app
+  e.waitUntil(
+    clients.matchAll({type:'window',includeUncontrolled:true}).then(clist=>{
+      for(const c of clist){
+        if(c.url.includes('My-buttons')||c.url.includes('mybuttons')||c.url.includes('index.html')){
+          c.focus();
+          return;
+        }
+      }
+      return clients.openWindow('./');
+    })
+  );
 });
