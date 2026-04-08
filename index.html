@@ -812,22 +812,22 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 </div>
 
 <div class="tabs-wrap" id="tabs">
-  <div class="tab active" id="tab-dash"     onclick="switchTab('dash')">🏠 Home</div>
+  <div class="tab" id="tab-dash"     onclick="switchTab('dash')">🏠 Home</div>
   <div class="tab"        id="tab-morning"  onclick="switchTab('morning')">☀️ Morning</div>
   <div class="tab"        id="tab-checkin"  onclick="switchTab('checkin')">Check-In</div>
   <div class="tab"        id="tab-hopo"     onclick="switchTab('hopo')">🤍 Ho'opo</div>
   <div class="tab"        id="tab-emotions" onclick="switchTab('emotions')">😔 Emotions</div>
   <div class="tab"        id="tab-affirm"   onclick="switchTab('affirm')">✦ Affirm</div>
   <div class="tab"        id="tab-evening"  onclick="switchTab('evening')">🌙 Evening</div>
-  <div class="tab"        id="tab-plan"     onclick="switchTab('plan')">📋 Planner</div>
+  <div class="tab active" id="tab-plan"     onclick="switchTab('plan')">📋 Planner</div>
   <div class="tab"        id="tab-progress" onclick="switchTab('progress')">📈 Progress</div>
   <div class="tab"        id="tab-habits"   onclick="switchTab('habits')">🎯 Habits</div>
-  <div class="tab"        id="tab-vision"   onclick="switchTab('vision')">🌟 Vision</div>
+  
   <div class="tab"        id="tab-insights" onclick="switchTab('insights')">🧠 Insights</div>
 </div>
 
 <!-- ══ DASHBOARD ══ -->
-<div class="screen active" id="screen-dash"><div id="dash-content"></div></div>
+<div class="screen" id="screen-dash"><div id="dash-content"></div></div>
 
 <!-- ══ MORNING ══ -->
 <div class="screen" id="screen-morning">
@@ -876,7 +876,7 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 <div class="screen" id="screen-streaks"><div class="streaks-page"></div></div>
 <div class="screen" id="screen-history"><div class="history-page"></div></div>
 <div class="screen" id="screen-weekly"><div class="weekly-page"></div></div>
-<div class="screen" id="screen-plan">
+<div class="screen active" id="screen-plan">
   <div class="plan-screen">
     <div class="notif-banner" id="notif-banner-plan">
       <strong>Enable reminders to stay on track</strong>Tap below to allow notifications.<br>
@@ -940,8 +940,8 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
           </div>
         </div>
       </div>
-<div class="screen" id="screen-habits"></div>
-<div class="screen" id="screen-vision"></div>
+<div class="screen" id="screen-habits"><div id="timeline-content" style="padding:1rem 1rem 0"></div></div>
+
 
 <div class="screen" id="screen-reset">
   <div id="reset-content"></div>
@@ -1241,8 +1241,215 @@ const slots = [
   {h:12,label:'12–2 PM'},{h:14,label:'2–4 PM'},{h:16,label:'4–6 PM'},
   {h:18,label:'6–8 PM'},{h:20,label:'8–10 PM'},{h:22,label:'10–12 AM'}
 ];
+const emSlots=[{h:6,label:'6–8 AM'},{h:8,label:'8–10 AM'},{h:10,label:'10–12 PM'},
+  {h:12,label:'12–2 PM'},{h:14,label:'2–4 PM'},{h:16,label:'4–6 PM'},
+  {h:18,label:'6–8 PM'},{h:20,label:'8–10 PM'},{h:22,label:'10–12 AM'}];
+
+const EV_TOTAL=6;
+
+const WEEKDAY=[
+  {id:'w0',time:'Wake',name:'Magic Water — First Thing',cat:'wellness',bell:true,desc:'Before phone. Before anything. One full glass.',subs:['Wake up intentionally','Drink magic water — warm, with intention 🌊','Say: "Today I rise in my power"']},
+  {id:'w1',time:'+5',name:'10 Gratitude Statements',cat:'spirit',bell:true,desc:'Say each out loud. Feel it for 2 seconds.',subs:['Gratitudes 1-5: people, health, home, son, safety','Gratitudes 6-10: career, farmhouse dream, growth, today']},
+  {id:'w2',time:'+20',name:'Freshen Up',cat:'self',bell:false,desc:'Bathroom, brush teeth, wash face.',subs:['Bathroom — let the body fully clear','Brush teeth ✨','Wash face, feel awake and present']},
+  {id:'w3',time:'+30',name:'Mirror Talk — Self Affirmations',cat:'self',bell:true,desc:'Eyes on yourself. Say each one. Mean it.',subs:['Stand in front of mirror — look into your eyes','Say all affirmations: health, money, career, relationships','End: "I love you, Ashwathi. You are enough."']},
+  {id:'w4',time:'+40',name:"Ho'oponopono — Morning Clear",cat:'spirit',bell:true,desc:'Clear the slate. 4 rounds minimum.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'4 rounds — direct to anyone you carry tension with']},
+  {id:'w5',time:'+50',name:'Morning Affirmations — Mitesh Audio',cat:'spirit',bell:false,desc:'Play while preparing. Let it in.',subs:['All affirmations: health, relationships, career, money','Power close — 4 statements']},
+  {id:'w6',time:'+1h5',name:'Surya Namaskar — 12 rounds',cat:'wellness',bell:true,desc:'Body before mind. Energy before coffee.',subs:['3 slow warm-up rounds','9 full-pace rounds','2 min Savasana']},
+  {id:'w7',time:'+1h25',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson']},
+  {id:'w8',time:'+1h45',name:'Mitesh Khatri — 1 Complete Session',cat:'spirit',bell:true,desc:'Full focus. This rewires you.',subs:['Watch or listen with complete focus','Note 1 key insight']},
+  {id:'w9',time:'+2h15',name:'Oil Massage + Bath + Get Ready',cat:'self',bell:true,desc:'Full self-care. You are stepping into your power.',subs:['Apply oil to scalp — 2-3 mins 🌿','Shower — feel completely renewed','Dress with intention 👗','Breakfast: boiled egg + banana 🥣']},
+  {id:'w10',time:'Leave',name:'Leave for Office',cat:'work',bell:true,desc:'18km — commute time is learning time.',subs:['Leave on time','Play French audio or Mitesh during drive','Arrive at 10 AM']},
+  {id:'w11',time:'10:00',name:'Office — Top 2 Priority Tasks',cat:'work',bell:true,desc:'Before email. Before meetings. 2 must-do tasks.',subs:['Write your 2 non-negotiable tasks for today','Start with the hardest one first']},
+  {id:'w12',time:'10:15',name:'Record Daily Intention',cat:'work',bell:false,desc:'30 seconds. What is your intention today?',subs:['Say out loud: "Today I will..."']},
+  {id:'w13',time:'10:30',name:'Water — Morning Round',cat:'wellness',bell:true,desc:'2 glasses before 11 AM.',subs:['Drink 2 full glasses 💧']},
+  {id:'w14',time:'12:30',name:'Lunch — Nourish the Temple',cat:'wellness',bell:true,desc:'Eat mindfully. Fuel the afternoon.',subs:['Dal khichdi / steak & veggies / fruit bowl 🥗','2 glasses of water 💧']},
+  {id:'w15',time:'14:00',name:'Water + Check-In — 2 PM',cat:'wellness',bell:true,desc:'Hydrate. Log your emotion.',subs:['Drink 2 glasses 💧','Log your emotion in Check-In']},
+  {id:'w16',time:'16:00',name:'Water + Check-In — 4 PM',cat:'wellness',bell:true,desc:'Almost through the day. How is Ash?',subs:['Drink 1-2 glasses 💧','Log your emotion in Check-In']},
+  {id:'w17',time:'Evening',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Clear the mind.',subs:['Walk 8,000 steps or 30-45 minutes','This is decompression time']},
+  {id:'w18',time:'21:00',name:'DMP Session — 9 PM',cat:'spirit',bell:true,desc:'DO NOT SKIP. This is the appointment that changes your life.',subs:['Phone silent. 100% presence.','Feel the farmhouse — already real','Read DMP statement out loud','Close: "It is done. It is mine. I am grateful."']},
+  {id:'w19',time:'22:00',name:'Dinner',cat:'wellness',bell:true,desc:'Light meal. Eat slowly.',subs:['Steak & veggies / dal khichdi 🍽️','2 glasses of water 💧']},
+  {id:'w20',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the whole day. 4 rounds.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Let it all go. Sleep clean.']},
+  {id:'w21',time:'23:00',name:'Sleep',cat:'rest',bell:true,desc:'8 hours. Rest is your first act of manifestation.',subs:['Phone away from bed','Sleep by 11 PM','Say: "Tomorrow is already handled."']}
+];
+
+const WEEKEND=[
+  {id:'e0',time:'8:00',name:'Magic Water + Wake Up Ritual',cat:'wellness',bell:true,desc:'Slower start. Same sacred foundation.',subs:['Drink magic water on waking 🌊','Breathe. Today is entirely yours.']},
+  {id:'e1',time:'8:15',name:'10 Gratitude Statements',cat:'spirit',bell:true,desc:'Weekend — go deeper.',subs:['10 spoken gratitudes — really feel each one']},
+  {id:'e2',time:'8:30',name:'Mirror Talk + Full Affirmations',cat:'self',bell:true,desc:'Longer version. Sit in your power.',subs:['Mirror talk — 5 full minutes','Power close: "I am Ashwathi. I build. I lead. I win."']},
+  {id:'e3',time:'8:50',name:"Ho'oponopono — Extended Session",cat:'spirit',bell:true,desc:'Deeper. Longer. Abundance focused.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'10 minutes — money, abundance, clearing all blocks']},
+  {id:'e4',time:'9:10',name:'Surya Namaskar — Full Practice',cat:'wellness',bell:true,desc:'More time today. Go deeper.',subs:['12 rounds + 3 min Savasana']},
+  {id:'e5',time:'9:35',name:'Duolingo French — 2 Lessons',cat:'learn',bell:true,desc:'Weekend push.',subs:['Lesson 1 — new content','Lesson 2 — review']},
+  {id:'e6',time:'9:55',name:'Mitesh Khatri — 1 Full Session',cat:'spirit',bell:true,desc:'Full session. Take notes.',subs:['Complete focus — zero multitasking']},
+  {id:'e7',time:'10:30',name:'Oil + Bath + Self-Care',cat:'self',bell:true,desc:'Full weekend ritual.',subs:['Apply oil — 15 mins 🌿','Full shower — feel renewed']},
+  {id:'e8',time:'11:00',name:'Healthy Breakfast',cat:'wellness',bell:true,desc:'Nourishing weekend breakfast.',subs:['Overnight oats / fruit / eggs 🥣','3 glasses of water 💧']},
+  {id:'e9',time:'11:30',name:'UAE HR — Deep Study Session',cat:'learn',bell:true,desc:'Build the qualification.',subs:['Module study — read + take notes','Quiz — target 80%+','Practice 1 interview question (STAR)']},
+  {id:'e10',time:'13:00',name:'Read — 30 Mins',cat:'learn',bell:true,desc:'Feed your mind.',subs:['1 chapter or 30 minutes — no phone']},
+  {id:'e11',time:'13:30',name:'Lunch + Water',cat:'wellness',bell:true,desc:'Nourishing meal.',subs:['Dal khichdi / steak & veggies 🍽️','2-3 glasses 💧']},
+  {id:'e12',time:'14:30',name:'Time with Aaryan — Teach via App',cat:'self',bell:true,desc:'Your son. Your purpose.',subs:['Sit with Aaryan and open your teaching app','Be fully present. No phone.']},
+  {id:'e13',time:'15:30',name:'Tuition Business — Student Outreach',cat:'work',bell:true,desc:'Build your income stream.',subs:['Reach out to 2 potential students','Post 1 LinkedIn/WhatsApp post']},
+  {id:'e14',time:'16:30',name:'YouTube Content Work',cat:'work',bell:true,desc:'Build the channel.',subs:['Script or record 1 HR tip video']},
+  {id:'e15',time:'17:30',name:'Family Time — Mom, Dad, Aaryan',cat:'self',bell:true,desc:'The people who matter most.',subs:['Phone away','Do something together: walk, cook, talk, laugh']},
+  {id:'e16',time:'19:00',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Family walk if possible.',subs:['Walk 8,000 steps or 40 minutes']},
+  {id:'e17',time:'21:00',name:'DMP Session — 9 PM',cat:'spirit',bell:true,desc:'Weekend DMP — full presence.',subs:['Feel the farmhouse. Vivid. Real. Already yours.']},
+  {id:'e18',time:'22:00',name:'Dinner + Water',cat:'wellness',bell:true,desc:'Light evening meal.',subs:['Steak & veggies / khichdi 🍽️','2 glasses 💧']},
+  {id:'e19',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the week.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Sleep clean.']},
+  {id:'e20',time:'23:00',name:'Sleep',cat:'rest',bell:true,desc:'Rest and restore.',subs:['Phone away from bed','Sleep by 11 PM']}
+];
+
+const STREAK_HABITS=[
+  {id:'water',name:'5 litres water',icon:'💧',check:d=>((d.water||0)>=14)},
+  {id:'magicwater',name:'Magic water first',icon:'🌊',check:d=>td(d,'w0')||td(d,'e0')},
+  {id:'gratitude',name:'10 gratitudes',icon:'🙏',check:d=>td(d,'w1')||td(d,'e1')},
+  {id:'mirror',name:'Mirror talk',icon:'🪞',check:d=>td(d,'w3')||td(d,'e2')},
+  {id:'hopo',name:"Ho'oponopono morning",icon:'🤍',check:d=>td(d,'w4')||td(d,'e3')},
+  {id:'surya',name:'Surya Namaskar',icon:'🌅',check:d=>td(d,'w6')||td(d,'e4')},
+  {id:'french',name:'Duolingo French',icon:'🇫🇷',check:d=>td(d,'w7')||td(d,'e5')},
+  {id:'mitesh',name:'Mitesh session',icon:'🎯',check:d=>td(d,'w8')||td(d,'e6')},
+  {id:'dmp',name:'DMP 9 PM',icon:'🌙',check:d=>td(d,'w18')||td(d,'e17')},
+  {id:'walk',name:'Evening walk',icon:'🚶',check:d=>td(d,'w17')||td(d,'e16')},
+  {id:'uaestudy',name:'UAE HR study',icon:'📚',check:d=>td(d,'e9')},
+  {id:'aaryan',name:'Time with Aaryan',icon:'💛',check:d=>td(d,'e12')},
+  {id:'family',name:'Family time',icon:'💚',check:d=>td(d,'e15')||(S.get('family_log')||{})[new Date().toDateString()]},
+  {id:'tuition',name:'Tuition prep',icon:'📖',check:d=>td(d,'e13')},
+  {id:'youtube',name:'YouTube content',icon:'🎬',check:d=>td(d,'e14')},
+  {id:'steps',name:'8,000 steps',icon:'👟',check:d=>((d.steps||0)>=8000)},
+];
+function td(d,id){return d&&d.tasks&&!!d.tasks[id];}
+
+
 
 const WATER_GOAL = 5000;
+
+// ═══════════════════════════════════════════
+// SINGLE DATA SOURCE — all features read/write only this
+// ═══════════════════════════════════════════
+const STORAGE_KEY = "day_data";
+
+function getTodayKey() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function getDayData() {
+  const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const today = getTodayKey();
+  if (!all[today]) {
+    all[today] = {
+      gratitude: [],
+      affirmationsDone: false,
+      hoponoDone: false,
+      waterLogs: [],
+      steps: 0,
+      emotions: [],
+      planTasks: {},
+      planSubs: {},
+      mrSteps: new Array(11).fill(false)
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  }
+  return all[today];
+}
+
+function saveDayData(data) {
+  const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  all[getTodayKey()] = data;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+// Backward compat shims
+function getMr(){
+  const d=getDayData();
+  return {steps: d.mrSteps||new Array(11).fill(false), grat: d.gratitude||[]};
+}
+function saveMr(mr){
+  const d=getDayData();
+  d.mrSteps=mr.steps;
+  d.gratitude=mr.grat||d.gratitude;
+  saveDayData(d);
+}
+function getWater(){
+  const d=getDayData();
+  const ml=(d.waterLogs||[]).reduce((s,l)=>s+(l.amount||l.ml||0),0);
+  return {ml, log: d.waterLogs||[]};
+}
+function saveWater(w){
+  const d=getDayData();
+  d.waterLogs=(w.log||[]).map(l=>({amount:l.ml||l.amount||0,time:l.t||new Date().toISOString()}));
+  saveDayData(d);
+}
+function getEmotionLog(){
+  const d=getDayData();
+  const log={};
+  (d.emotions||[]).forEach(e=>{
+    const h=e.slotH||new Date(e.time||Date.now()).getHours();
+    const k=new Date().toDateString()+'-'+h;
+    if(!log[k])log[k]=[];
+    log[k].push({emotion:e.label||e.emotion,type:e.type,time:e.time});
+  });
+  return log;
+}
+
+// Planner compat
+function loadAll(){
+  const all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+  const result={};
+  Object.entries(all).forEach(([k,v])=>{
+    result[k]={tasks:v.planTasks||{},subs:v.planSubs||{},water:0,steps:v.steps||0,dayType:'weekday'};
+  });
+  return result;
+}
+function saveAll(a){
+  // no-op — data is in STORAGE_KEY now
+}
+function getToday(){
+  const d=getDayData();
+  const key=getTodayKey();
+  const day={tasks:d.planTasks||{},subs:d.planSubs||{},water:0,steps:d.steps||0,dayType:currentDay};
+  const all=loadAll();
+  return{all,key,day};
+}
+function saveTodayDay(all,key,day){
+  const d=getDayData();
+  d.planTasks=day.tasks||{};
+  d.planSubs=day.subs||{};
+  d.steps=day.steps||0;
+  saveDayData(d);
+}
+function todayKey(){return getTodayKey();}
+
+
+
+// ═══════════════════════════════════════════
+function getDayData(){
+  const k='daydata_'+new Date().toDateString();
+  return S.get(k)||{
+    gratitude:[],affirmationsDone:false,hopoDone:false,
+    waterLogs:[],steps:0,
+    emotions:[],// [{time,slotH,emotion,type,switchedTo}]
+    planTasks:{},planSubs:{},
+    mrSteps:new Array(11).fill(false)
+  };
+}
+function saveDayData(d){S.set('daydata_'+new Date().toDateString(),d);}
+
+// Backward compat shims so existing functions still work
+function getMr(){const d=getDayData();return{steps:d.mrSteps||new Array(11).fill(false),grat:d.gratitude||[]};}
+function saveMr(mr){const d=getDayData();d.mrSteps=mr.steps;d.gratitude=mr.grat||d.gratitude;saveDayData(d);}
+function getWater(){const d=getDayData();const ml=(d.waterLogs||[]).reduce((s,l)=>s+l.ml,0);return{ml,log:d.waterLogs||[]};}
+function saveWater(w){const d=getDayData();d.waterLogs=w.log||[];saveDayData(d);}
+function getEmotionLog(){
+  const d=getDayData();const log={};
+  (d.emotions||[]).forEach(e=>{const k=new Date().toDateString()+'-'+e.slotH;if(!log[k])log[k]=[];log[k].push(e);});
+  return log;
+}
+function getToday(){
+  const d=getDayData();const all=loadAll();const key=todayKey();
+  // sync planner tasks into aplanner_v2 for history
+  if(!all[key])all[key]={tasks:{},subs:{},water:0,steps:0,dayType:currentDay};
+  all[key].tasks=d.planTasks||{};all[key].subs=d.planSubs||{};
+  all[key].steps=d.steps||0;
+  return{all,key,day:all[key]};
+}
+
 const WATER_MILESTONES = [
   {ml:500,label:'500ml — morning start'},
   {ml:1000,label:'1L — keep going'},
@@ -1255,7 +1462,7 @@ const WATER_MILESTONES = [
 // ═══════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════
-let currentTab = 'dash';
+let currentTab = 'plan';
 let inDetail = false;
 let clockTimer = null;
 let selectedEmotion = null;
@@ -1514,24 +1721,7 @@ function toggleMr(i){
   }
 }
 function completeMr(i){const d=getMr();d.steps[i]=true;saveMr(d);const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-'+i);if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
-function saveGratitude(){
-  const d=getMr();
-  // Collect from gratGrid0 first, fallback to any .grat-input
-  const gg=document.getElementById('gratGrid0');
-  const inputs=gg?gg.querySelectorAll('input'):document.querySelectorAll('.grat-input');
-  const vals=Array.from(inputs).map(i=>i.value.trim());
-  const filled=vals.filter(Boolean).length;
-  if(filled<3){showToast('Add at least 3 gratitudes first ✦');return;}
-  d.grat=Array.from(inputs).map(i=>i.value);
-  d.steps[0]=true;
-  saveMr(d);
-  const el=document.getElementById('mrstep-0');
-  if(el){el.classList.remove('expanded');el.classList.add('done');}
-  const ck=document.getElementById('mrck-0');
-  if(ck){ck.classList.add('done');ck.textContent='✓';}
-  updateMrProgress();
-  showToast('Gratitude saved ✦ '+filled+' items recorded');
-}
+
 function updateMrProgress(){const d=getMr();const done=d.steps.filter(Boolean).length;const pct=Math.round(done/MR_TOTAL*100);const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';const db=document.getElementById('mrDone');if(db)db.classList.toggle('show',done===MR_TOTAL);if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';}
 
 function startSurya(){document.getElementById('suryaTimer').style.display='block';document.getElementById('suryaStartBtn').textContent='⏱ Running…';clearInterval(suryaInt);suryaSec=0;suryaInt=setInterval(()=>{suryaSec++;const m=Math.floor(suryaSec/60),s=suryaSec%60;const el=document.getElementById('suryaTime');if(el)el.textContent=m+':'+String(s).padStart(2,'0');},1000);}
@@ -1656,6 +1846,22 @@ function renderHopo(){
     </div>`;
 }
 
+
+function hopoComplete(){
+  const data=getDayData();
+  data.hoponoDone=true;
+  saveDayData(data);
+  markPlannerBlockDone('w4');
+  markPlannerBlockDone('e3');
+  const banner=document.getElementById('hopoCompleteBanner');
+  const btn=document.getElementById('hopoCompleteBtn');
+  if(banner)banner.style.display='block';
+  if(btn)btn.style.display='none';
+  refreshUI();
+  showToast("Ho'oponopono complete ✓ — cleared");
+  if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
+}
+
 function setHopoScript(key){ _hopoScript=key; _hopoPhraseStep=0; renderHopo(); }
 function setHopoStep(i){ _hopoPhraseStep=i; renderHopo(); }
 function nextHopoStep(){
@@ -1671,33 +1877,7 @@ function prevHopoStep(){
 function hopoStart(){hopoPhraseIdx=0;hopoRounds=0;hopoRender();}
 function hopoNext(){hopoPhraseIdx++;if(hopoPhraseIdx>=hopoPhrases.length){hopoPhraseIdx=0;hopoRounds++;}hopoRender();}
 function hopoRender(){const ph=document.getElementById('hopoPhrase');const pn=document.getElementById('hopoPhraseNum');const rn=document.getElementById('hopoRounds');if(ph)ph.textContent=hopoPhrases[hopoPhraseIdx];if(pn)pn.textContent='Phrase '+(hopoPhraseIdx+1)+' of 4';if(rn)rn.textContent=hopoRounds;}
-function hopoComplete(){
-  const today=new Date().toDateString();
-  S.set('hopo_'+today,{rounds:hopoRounds,ts:new Date().toISOString(),done:true});
-  
-  // Visual confirmation on the button
-  const btn=document.querySelector('.hopo-done-btn,[onclick="hopoComplete()"]');
-  if(btn){
-    btn.textContent='✅ Session Complete — Cleared!';
-    btn.style.background='var(--green)';
-    btn.disabled=true;
-  }
-  
-  // Also mark morning step 4 done if it's today's morning session
-  const d=getMr();
-  if(!d.steps[4]){
-    d.steps[4]=true;saveMr(d);
-    showToast('Ho\'oponopono complete ✓ — morning step marked done');
-  } else {
-    showToast('Ho\'oponopono complete ✓ — '+hopoRounds+' rounds cleared');
-  }
-  
-  if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
-  const banner=document.getElementById('hopoCompleteBanner');
-  const completeBtn=document.getElementById('hopoCompleteBtn');
-  if(banner){banner.style.display='block';}
-  if(completeBtn){completeBtn.style.display='none';}
-}
+
 
 // ═══════════════════════════════════════════════════════
 // EVENING ROUTINE
@@ -1765,7 +1945,22 @@ function updateEvProgress(){const d=getEv();const done=d.steps.filter(Boolean).l
 // ═══════════════════════════════════════════════════════
 function getWater(){return S.get('water_'+new Date().toDateString())||{ml:0,log:[]};}
 function saveWater(d){S.set('water_'+new Date().toDateString(),d);}
-function addWater(ml){const d=getWater();d.ml=Math.min(WATER_GOAL,d.ml+ml);d.log.push({ml,t:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});saveWater(d);if(currentScreen==='water')renderWater();showToast('+'+ml+'ml water logged 💧');}
+
+
+function addWater(ml){
+  const data=getDayData();
+  if(!data.waterLogs)data.waterLogs=[];
+  const totalBefore=(data.waterLogs).reduce((s,l)=>s+(l.amount||0),0);
+  const add=Math.min(ml, WATER_GOAL-totalBefore);
+  if(add<=0){showToast('5L goal already reached! 🏆');return;}
+  data.waterLogs.push({amount:add, time:new Date().toISOString()});
+  saveDayData(data);
+  if(currentTab==='water')renderWater();
+  if(currentTab==='plan')updateSummary();
+  refreshUI();
+  showToast('+'+add+'ml water logged 💧');
+}
+
 function undoWater(){const d=getWater();if(!d.log.length)return;const last=d.log.pop();d.ml=Math.max(0,d.ml-last.ml);saveWater(d);renderWater();}
 function renderWater(){
   const el=document.getElementById('water-content');const d=getWater();const pct=Math.min(100,Math.round(d.ml/WATER_GOAL*100));
@@ -1951,6 +2146,18 @@ function renderAffirmScreen(){
       </div>`).join('')}
     </div>`).join('');
 }
+
+function completeAffirmations(){
+  const data=getDayData();
+  data.affirmationsDone=true;
+  saveDayData(data);
+  markPlannerBlockDone('w5');
+  markPlannerBlockDone('e2');
+  closeAffirmOv();
+  refreshUI();
+  showToast('Affirmations complete ✓ — said them all ×3');
+}
+
 function openAffirmAt(i){affirmIdx=i<0?0:i;showAffirmOv();}
 // ── Affirmation overlay ×3 counter ──
 let _affirmSaid=[false,false,false];
@@ -2310,7 +2517,238 @@ function renderSchedule(){const{day}=getToday();const blocks=getBlocks();const e
   });
 }
 
-function toggleBlock(id){openBlock=(openBlock===id)?null:id;const sub=document.getElementById('sub_'+id);if(sub)sub.classList.toggle('open',openBlock===id);document.querySelectorAll('.sub-list').forEach(s=>{if(s.id!=='sub_'+id)s.classList.remove('open');});const blocks=getBlocks();const b=blocks.find(x=>x.id===id);if(!b)return;const{all,key,day}=getToday();const allDone=b.subs.every((_,si)=>!!(day.subs&&day.subs[id+'_'+si]));if(allDone&&b.subs.length>0){if(!day.tasks)day.tasks={};day.tasks[id]=true;saveTodayDay(all,key,day);const chk=document.getElementById('bchk_'+id);if(chk)chk.classList.add('done');}}
+function toggleBlock(id){
+  openBlock=(openBlock===id)?null:id;
+  const sub=document.getElementById('sub_'+id);
+  if(sub)sub.classList.toggle('open',openBlock===id);
+  document.querySelectorAll('.sub-list').forEach(s=>{if(s.id!=='sub_'+id)s.classList.remove('open');});
+  
+  // Special block integrations when opening
+  if(openBlock===id){
+    if(id==='w1'||id==='e1') _injectGratitude(id);
+    else if(id==='w4'||id==='e3') _injectHopo(id);
+    else if(id==='w5'||id==='e2') _injectAffirmations(id);
+    else if(id==='w15'||id==='w16'||id==='e9') _injectEmotionCheck(id);
+  }
+  
+  const blocks=getBlocks();const b=blocks.find(x=>x.id===id);if(!b)return;
+  const{all,key,day}=getToday();
+  const allDone=b.subs.every((_,si)=>!!(day.subs&&day.subs[id+'_'+si]));
+  if(allDone&&b.subs.length>0){if(!day.tasks)day.tasks={};day.tasks[id]=true;saveTodayDay(all,key,day);const chk=document.getElementById('bchk_'+id);if(chk)chk.classList.add('done');}
+}
+
+function _injectGratitude(blockId){
+  const sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  if(document.getElementById('inline-grat-'+blockId))return; // already injected
+  const d=getDayData();
+  const div=document.createElement('div');
+  div.id='inline-grat-'+blockId;
+  div.style.cssText='padding:.75rem;border-top:1px solid var(--border)';
+  div.innerHTML=`
+    <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:.45rem">✦ 10 Gratitudes — say each out loud</div>
+    <div class="grat-grid" id="grat-grid-${blockId}"></div>
+    <button onclick="_saveInlineGratitude('${blockId}')" style="width:100%;margin-top:.5rem;background:var(--gold);color:var(--ink);border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer">✓ Save & Mark Done</button>
+  `;
+  sub.appendChild(div);
+  const gg=document.getElementById('grat-grid-'+blockId);
+  for(let i=0;i<10;i++){
+    const inp=document.createElement('input');inp.type='text';inp.className='grat-input';
+    inp.placeholder='Grateful for '+(i+1)+'…';inp.value=(d.gratitude&&d.gratitude[i])||'';inp.dataset.idx=i;
+    inp.addEventListener('input',e=>{const dd=getDayData();if(!dd.gratitude)dd.gratitude=[];dd.gratitude[parseInt(e.target.dataset.idx)]=e.target.value;saveDayData(dd);});
+    gg.appendChild(inp);
+  }
+}
+
+function _saveInlineGratitude(blockId){
+  const gg=document.getElementById('grat-grid-'+blockId);
+  const inputs=gg?gg.querySelectorAll('input'):[];
+  const vals=Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
+  if(vals.length<3){showToast('Add at least 3 gratitudes ✦');return;}
+  const d=getDayData();
+  d.gratitude=Array.from(inputs).map(i=>i.value);
+  // mark planner block done
+  const{all,key,day}=getToday();
+  if(!day.tasks)day.tasks={};if(!day.subs)day.subs={};
+  day.tasks[blockId]=true;
+  saveTodayDay(all,key,day);
+  saveDayData(d);
+  // update planner visuals
+  const blk=document.getElementById('bchk_'+blockId);if(blk)blk.classList.add('done');
+  const row=document.querySelector('#sub_'+blockId);if(row)row.classList.remove('open');
+  openBlock=null;updateSummary();
+  showToast('Gratitude saved ✦ '+vals.length+' items recorded');
+}
+
+function _injectHopo(blockId){
+  const sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  if(document.getElementById('inline-hopo-'+blockId))return;
+  const div=document.createElement('div');div.id='inline-hopo-'+blockId;
+  div.style.cssText='padding:.75rem;border-top:1px solid var(--border)';
+  div.innerHTML=`
+    <div style="font-size:12px;color:var(--muted);margin-bottom:.6rem;line-height:1.6;font-style:italic">
+      "I'm sorry. Please forgive me. Thank you. I love you."<br>
+      <strong style="color:var(--wine);font-style:normal">4 rounds minimum — hand on chest, eyes closed</strong>
+    </div>
+    <button onclick="switchTab('hopo')" style="width:100%;margin-bottom:.4rem;background:linear-gradient(135deg,#2D1F4A,#1A1030);color:rgba(230,220,255,.9);border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer">Open Full Ho'oponopono →</button>
+    <button onclick="_markPlannerDone('${blockId}')" style="width:100%;background:var(--green);color:white;border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer">✓ Done — I have cleared it</button>
+  `;
+  sub.appendChild(div);
+}
+
+function _injectAffirmations(blockId){
+  const sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  if(document.getElementById('inline-affirm-'+blockId))return;
+  const div=document.createElement('div');div.id='inline-affirm-'+blockId;
+  div.style.cssText='padding:.75rem;border-top:1px solid var(--border)';
+  div.innerHTML=`
+    <div style="font-size:11px;color:var(--muted);margin-bottom:.5rem">56 affirmations × 3 — hand on chest, full feeling</div>
+    <button onclick="showAffirmOv()" style="width:100%;margin-bottom:.4rem;background:var(--wine);color:var(--cream);border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer">✦ Say Affirmations Now</button>
+    <button onclick="_markPlannerDone('${blockId}')" style="width:100%;background:var(--green);color:white;border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer">✓ Done — Said them all ×3</button>
+  `;
+  sub.appendChild(div);
+}
+
+function _injectEmotionCheck(blockId){
+  const sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  if(document.getElementById('inline-em-'+blockId))return;
+  const slot=getCurrentSlot();
+  const key=new Date().toDateString()+'-'+slot.h;
+  const entries=getSlotEntries(key);
+  const div=document.createElement('div');div.id='inline-em-'+blockId;
+  div.style.cssText='padding:.75rem;border-top:1px solid var(--border)';
+  div.innerHTML=`
+    <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:.45rem">How are you feeling right now?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem">
+      ${['Calm','Confident','Happy','Grateful','Stressed','Anxious','Frustrated','Tired'].map(e=>`
+        <div onclick="_logInlineEmotion('${e}','${key}','${blockId}')" 
+          style="padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:600;cursor:pointer;
+          background:${['Stressed','Anxious','Frustrated','Tired'].includes(e)?'var(--red-bg)':'var(--green-bg)'};
+          color:${['Stressed','Anxious','Frustrated','Tired'].includes(e)?'var(--red)':'var(--green)'};
+          border:1px solid ${['Stressed','Anxious','Frustrated','Tired'].includes(e)?'var(--red-border)':'var(--green-border)'}">
+          ${e}</div>`).join('')}
+    </div>
+    ${entries.length?'<div style="font-size:11px;color:var(--green)">✓ Logged: '+entries.map(e=>e.emotion).join(', ')+'</div>':''}
+  `;
+  sub.appendChild(div);
+}
+
+
+function logEmotion(type, label, slotH){
+  const data=getDayData();
+  if(!data.emotions)data.emotions=[];
+  const h=slotH||new Date().getHours();
+  if(data.emotions.find(e=>e.slotH===h&&e.label===label)){
+    showToast(label+' already logged this slot');return;
+  }
+  data.emotions.push({
+    time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+    slotH:h, type, label
+  });
+  saveDayData(data);
+  showToast((type==='pos'?'✓ ':'⚠ ')+label+' logged');
+  if(type==='negative'||type==='neg') triggerNegativeFlow(label);
+  refreshUI();
+}
+
+function switchEmotion(newLabel){
+  const data=getDayData();
+  const last=data.emotions[data.emotions.length-1];
+  if(last){last.switchedTo=newLabel;}
+  saveDayData(data);
+  showToast('Switched to '+newLabel+' ✓');
+  refreshUI();
+}
+
+function triggerNegativeFlow(label){
+  let strip=document.getElementById('negStripLive');
+  if(!strip){strip=document.createElement('div');strip.id='negStripLive';}
+  strip.className='neg-strip';strip.style.display='block';
+  strip.innerHTML=`<div class="neg-strip-title">⚠ ${label} — shift it now</div><div class="neg-strip-btns"><div class="neg-strip-btn" onclick="switchTab('emotions')">→ Fix It</div><div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div><div class="neg-strip-btn g" onclick="switchTab('hopo')">Ho'opo</div></div>`;
+  const ci=document.getElementById('ci-content');
+  if(ci&&!document.getElementById('negStripLive'))ci.prepend(strip);
+}
+
+function _logInlineEmotion(emotion,key,blockId){
+  const type=['Stressed','Anxious','Frustrated','Tired'].includes(emotion)?'neg':'pos';
+  const d=getDayData();
+  if(!d.emotions)d.emotions=[];
+  const slot=getCurrentSlot();
+  // avoid duplicate
+  if(!d.emotions.find(e=>e.slotH===slot.h&&e.emotion===emotion)){
+    d.emotions.push({time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),slotH:slot.h,emotion,type});
+    saveDayData(d);
+  }
+  showToast((type==='pos'?'✓ ':'⚠ ')+emotion+' logged');
+  if(type==='neg'){
+    // flash neg strip
+    setTimeout(()=>{
+      const strip=document.createElement('div');strip.className='neg-strip';strip.style.display='block';
+      strip.innerHTML=`<div class="neg-strip-title">⚠ ${emotion} — shift it now</div><div class="neg-strip-btns"><div class="neg-strip-btn" onclick="switchTab('emotions')">→ Fix It</div><div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div><div class="neg-strip-btn g" onclick="switchTab('hopo')">Ho'opo</div></div>`;
+      const inj=document.getElementById('inline-em-'+blockId);
+      if(inj)inj.after(strip);
+    },100);
+  }
+  // Re-inject to show logged state
+  const existing=document.getElementById('inline-em-'+blockId);if(existing)existing.remove();
+  setTimeout(()=>_injectEmotionCheck(blockId),150);
+}
+
+
+function refreshUI(){
+  // Re-render whichever tab is active
+  if(currentTab==='plan')updateSummary();
+  if(currentTab==='habits'){
+    const el=document.getElementById('timeline-content');
+    if(el)renderTimeline();
+    else{const old=document.getElementById('fcContainer');if(old)old.remove();}
+  }
+  if(currentTab==='progress')renderProgress&&renderProgress();
+  if(currentTab==='dash')renderDash();
+  // Update planner block completion visuals
+  const data=getDayData();
+  ['w1','w4','w5','e1','e2','e3'].forEach(id=>{
+    const chk=document.getElementById('bchk_'+id);
+    if(!chk)return;
+    const done=data.planTasks&&data.planTasks[id];
+    if(done){chk.classList.add('done');chk.closest('.block')?.classList.add('done-block');}
+  });
+  if(data.hoponoDone){
+    const btn=document.getElementById('hopoCompleteBtn');
+    const banner=document.getElementById('hopoCompleteBanner');
+    if(btn)btn.style.display='none';
+    if(banner)banner.style.display='block';
+  }
+}
+
+function markPlannerBlockDone(blockId){
+  const data=getDayData();
+  if(!data.planTasks)data.planTasks={};
+  data.planTasks[blockId]=true;
+  saveDayData(data);
+  const{all,key,day}=getToday();
+  if(!day.tasks)day.tasks={};
+  day.tasks[blockId]=true;
+  saveTodayDay(all,key,day);
+  const chk=document.getElementById('bchk_'+blockId);
+  if(chk){chk.classList.add('done');chk.closest('.block')?.classList.add('done-block');}
+  updateSummary();
+}
+
+function _markPlannerDone(blockId){
+  const{all,key,day}=getToday();
+  if(!day.tasks)day.tasks={};
+  day.tasks[blockId]=true;
+  saveTodayDay(all,key,day);
+  const chk=document.getElementById('bchk_'+blockId);if(chk)chk.classList.add('done');
+  const blk=chk?.closest('.block');if(blk)blk.classList.add('done-block');
+  const sub=document.getElementById('sub_'+blockId);if(sub)sub.classList.remove('open');
+  openBlock=null;updateSummary();
+  const d=getDayData();
+  if(blockId==='w4'||blockId==='e3'){d.hopoDone=true;saveDayData(d);}
+  if(blockId==='w5'||blockId==='e2'){d.affirmationsDone=true;saveDayData(d);}
+  showToast('✓ Marked complete');
+  if(navigator.vibrate)navigator.vibrate([80,40,80]);
+}
 
 function toggleSub(bid,si,e){e.stopPropagation();const{all,key,day}=getToday();if(!day.subs)day.subs={};const k=bid+'_'+si;day.subs[k]=!day.subs[k];if(!day.tasks)day.tasks={};const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);if(b){const allDone=b.subs.every((_,si2)=>!!day.subs[bid+'_'+si2]);day.tasks[bid]=allDone;}saveTodayDay(all,key,day);const sc=document.getElementById('sc_'+bid+'_'+si);if(sc)sc.classList.toggle('done',!!day.subs[k]);const sl=document.querySelector(`#sub_${bid} .sub-item:nth-child(${si+1}) .sub-label`);if(sl)sl.classList.toggle('done-txt',!!day.subs[k]);if(b){const done=b.subs.filter((_,si2)=>!!day.subs[bid+'_'+si2]).length;const fill=document.querySelector(`#bhdr_${bid} .prog-fill-p`);if(fill)fill.style.width=Math.round(done/b.subs.length*100)+'%';const lbl=document.querySelector(`#bhdr_${bid} .prog-lbl-p`);if(lbl)lbl.textContent=done+'/'+b.subs.length;const chk=document.getElementById('bchk_'+bid);if(chk)chk.classList.toggle('done',!!day.tasks[bid]);const blk=chk?.closest('.block');if(blk)blk.classList.toggle('done-block',!!day.tasks[bid]);}updateSummary();}
 
@@ -2618,7 +3056,7 @@ _loadAll().then(()=>{
   if(last!==today){S.set('last_day',today);S.set('routine_'+today,{steps:new Array(7).fill(false),grat:[]});S.set('evening_'+today,{steps:new Array(6).fill(false),wins:[]});}
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
   notifEnabled=S.get('notif_on')===true;
-  updateNotifBtn();if(notifEnabled)scheduleNextNotif();scheduleNudge();renderDash();
+  updateNotifBtn();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
 }).catch(()=>{
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
   updateNotifBtn();scheduleNudge();renderDash();
@@ -2643,13 +3081,124 @@ function saveHabits(h){S.set('custom_habits',h);}
 function getHabitLog(){return S.get('habit_log')||{};}
 function saveHabitLog(d){S.set('habit_log',d);}
 function toggleHabit(id){const log=getHabitLog();const k=todayKey();if(!log[k])log[k]={};log[k][id]=!log[k][id];saveHabitLog(log);renderHabits();}
+
+
+// ═══════════════════════════════════════════
+// CAPACITOR NATIVE NOTIFICATIONS
+// ═══════════════════════════════════════════
+async function requestNotificationPermission(){
+  if(!window.Capacitor||!window.Capacitor.isNativePlatform())return;
+  const{LocalNotifications}=Capacitor.Plugins;
+  await LocalNotifications.requestPermissions();
+}
+
+async function scheduleNotifications(wakeHour){
+  if(!window.Capacitor||!window.Capacitor.isNativePlatform())return;
+  const{LocalNotifications}=Capacitor.Plugins;
+  const w=parseInt(wakeHour||localStorage.getItem('mb_wake_hour')||'6');
+
+  // Cancel all existing
+  const existing=await LocalNotifications.getPending();
+  if(existing.notifications.length){
+    await LocalNotifications.cancel({notifications:existing.notifications});
+  }
+
+  await LocalNotifications.schedule({notifications:[
+    {id:1, title:'☀️ Good morning, Ash ✦', body:'Magic water first. Set your frequency.',
+      schedule:{on:{hour:w,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:2, title:'🙏 10 Gratitudes — Now', body:'Say them out loud. Feel each one.',
+      schedule:{on:{hour:w,minute:10},repeats:true}, channelId:'mybuttons-main'},
+    {id:3, title:'🪞 Mirror + Affirmations', body:'Eyes on yourself. Say each one. Mean it.',
+      schedule:{on:{hour:w,minute:30},repeats:true}, channelId:'mybuttons-main'},
+    {id:4, title:"🤍 Ho'oponopono Morning", body:"4 rounds. I'm sorry. Please forgive me. Thank you. I love you.",
+      schedule:{on:{hour:w,minute:40},repeats:true}, channelId:'mybuttons-main'},
+    {id:5, title:'🧘 Surya Namaskar', body:'Body before mind. Energy before coffee.',
+      schedule:{on:{hour:w,minute:65},repeats:true}, channelId:'mybuttons-main'},
+    {id:10, title:'📋 Top 2 Priorities', body:'Before email. Before meetings.',
+      schedule:{on:{hour:10,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:11, title:'💧 Water + Check-In', body:'Log your state. How are you feeling?',
+      schedule:{on:{hour:10,minute:30},repeats:true}, channelId:'mybuttons-main'},
+    {id:12, title:'🔔 Check-In 12PM', body:'Midday frequency check.',
+      schedule:{on:{hour:12,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:13, title:'💧 Water + Check-In', body:'Afternoon check. Log and shift if needed.',
+      schedule:{on:{hour:14,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:14, title:'💧 Water + Check-In', body:'Almost done. How is Ash feeling?',
+      schedule:{on:{hour:16,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:15, title:'🔔 Check-In 6PM', body:'End of office day. Leave work energy at work.',
+      schedule:{on:{hour:18,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:16, title:'🚶 Evening Walk', body:'8,000 steps. Move the body. Clear the mind.',
+      schedule:{on:{hour:19,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:17, title:'💧 Water + Check-In 8PM', body:'Evening check. Last hydration push.',
+      schedule:{on:{hour:20,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:18, title:'🎯 DMP — 9 PM — DO NOT SKIP', body:'YOUR VISION. Phone silent. Full presence.',
+      schedule:{on:{hour:21,minute:0},repeats:true}, channelId:'mybuttons-main'},
+    {id:19, title:'✦ Evening Affirmations', body:'Last thing the mind hears. Make it powerful.',
+      schedule:{on:{hour:21,minute:30},repeats:true}, channelId:'mybuttons-main'},
+    {id:20, title:"🤍 Ho'oponopono Evening", body:'Release the day. 4 rounds. Sleep clean.',
+      schedule:{on:{hour:21,minute:45},repeats:true}, channelId:'mybuttons-main'},
+    {id:21, title:'😴 Phone Away — Sleep by 11', body:'Tomorrow is handled. Your family is safe.',
+      schedule:{on:{hour:22,minute:30},repeats:true}, channelId:'mybuttons-main'},
+  ]});
+
+  localStorage.setItem('mb_notif_scheduled_date', new Date().toDateString());
+  localStorage.setItem('mb_wake_hour', String(w));
+  showToast('✓ '+17+' daily reminders scheduled');
+}
+
+async function setupNotifListener(){
+  if(!window.Capacitor||!window.Capacitor.isNativePlatform())return;
+  const{LocalNotifications}=Capacitor.Plugins;
+  LocalNotifications.addListener('localNotificationActionPerformed',()=>{
+    switchTab('plan');
+  });
+}
+
+async function initCapacitorNotifs(){
+  if(!window.Capacitor||!window.Capacitor.isNativePlatform())return;
+  await requestNotificationPermission();
+  await setupNotifListener();
+  const last=localStorage.getItem('mb_notif_scheduled_date');
+  if(last!==new Date().toDateString()){
+    await scheduleNotifications();
+  }
+}
+
+function renderTimeline(){
+  const el=document.getElementById('timeline-content');if(!el)return;
+  const data=getDayData();
+  const emotions=data.emotions||[];
+  if(!emotions.length){
+    el.innerHTML='<div class="ins-empty">No emotions logged yet today.<br>Log via Planner blocks or Check-In tab.</div>';
+    return;
+  }
+  el.innerHTML=emotions.map(e=>`
+    <div class="tl-row">
+      <div class="tl-time">${e.time||''}</div>
+      <div class="tl-dot ${e.type==='pos'?'pos':'neg'}"></div>
+      <div class="tl-em">${e.label||e.emotion||''}${e.switchedTo?' <span style="color:var(--green)">→ '+e.switchedTo+'</span>':''}</div>
+    </div>`).join('');
+}
+
+function _buildEmotionTimeline(){
+  const d=getDayData();
+  const emotions=d.emotions||[];
+  if(!emotions.length)return '<div style="font-size:12px;color:var(--muted);font-style:italic;padding:.5rem 0">No emotions logged today — check in via Planner blocks or Check-In tab</div>';
+  return emotions.map(e=>`
+    <div class="tl-row">
+      <div class="tl-time">${e.time||''}</div>
+      <div class="tl-dot ${e.type==='pos'?'pos':'neg'}"></div>
+      <div class="tl-em">${e.emotion}${e.switchedTo?' → '+e.switchedTo:''}</div>
+    </div>`).join('');
+}
+
 function renderHabits(){
+  renderTimeline();
   const el=document.getElementById('screen-habits');if(!el)return;
   const habits=getHabits();const log=getHabitLog();const todayLog=log[todayKey()]||{};
   const done=habits.filter(h=>todayLog[h.id]).length;const pct=Math.round(done/habits.length*100);
   const today=new Date();
   function hStreak(id){let s=0;for(let i=0;i<30;i++){const d=new Date(today);d.setDate(today.getDate()-i);const k=d.toDateString();if(log[k]&&log[k][id]){s++;}else if(i>0)break;}return s;}
-  el.innerHTML='<div style="padding:1rem"><div style="background:linear-gradient(135deg,var(--wine-dark),var(--wine));border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem"><div style="font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);margin-bottom:.3rem">🎯 Daily Habits</div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem"><div style="font-size:1.4rem;font-weight:300;color:var(--cream)">'+done+'<span style="font-size:1rem;opacity:.5">/'+habits.length+'</span></div><div style="font-size:1.4rem;font-weight:300;color:var(--gold-pale)">'+pct+'%</div></div><div style="background:rgba(255,255,255,.15);border-radius:99px;height:7px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:var(--gold-pale);border-radius:99px;transition:width .4s"></div></div><div style="font-size:11px;color:rgba(251,247,240,.5);margin-top:.3rem">'+(done===habits.length?'✦ All complete!':'Tap each to check off')+'</div></div>'+
+  el.innerHTML='<div style="padding:1rem"><div class="tl-box" style="margin-bottom:.8rem"><div class="tl-title">Today&#39;s Frequency Log</div>'+_buildEmotionTimeline()+'</div><div style="background:linear-gradient(135deg,var(--wine-dark),var(--wine));border-radius:12px;padding:1rem 1.1rem;margin-bottom:.8rem"><div style="font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);margin-bottom:.3rem">🎯 Daily Habits</div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem"><div style="font-size:1.4rem;font-weight:300;color:var(--cream)">'+done+'<span style="font-size:1rem;opacity:.5">/'+habits.length+'</span></div><div style="font-size:1.4rem;font-weight:300;color:var(--gold-pale)">'+pct+'%</div></div><div style="background:rgba(255,255,255,.15);border-radius:99px;height:7px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:var(--gold-pale);border-radius:99px;transition:width .4s"></div></div><div style="font-size:11px;color:rgba(251,247,240,.5);margin-top:.3rem">'+(done===habits.length?'✦ All complete!':'Tap each to check off')+'</div></div>'+
   habits.map(h=>{const checked=!!todayLog[h.id];const streak=hStreak(h.id);const last7=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const k=d.toDateString();last7.push(!!(log[k]&&log[k][h.id]));}
   return'<div onclick="toggleHabit(\"'+h.id+'\")" style="background:'+(checked?'var(--green-bg)':'var(--white)')+';border:.5px solid '+(checked?'var(--green-border)':'var(--border)')+';border-radius:10px;padding:.7rem .9rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.65rem;cursor:pointer"><div style="width:24px;height:24px;border-radius:50%;border:2px solid '+(checked?'var(--green)':'var(--border)')+';background:'+(checked?'var(--green)':'var(--cream-2)')+';display:flex;align-items:center;justify-content:center;font-size:11px;color:'+(checked?'white':'transparent')+';flex-shrink:0">✓</div><div style="font-size:17px;flex-shrink:0">'+h.icon+'</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;color:'+(checked?'var(--green)':'var(--ink)')+';margin-bottom:2px">'+h.name+'</div><div style="display:flex;gap:3px;align-items:center">'+last7.map(d=>'<div style="width:9px;height:9px;border-radius:50%;background:'+(d?'var(--green)':'var(--cream-3)')+'"></div>').join('')+'<span style="font-size:9px;color:var(--muted);margin-left:3px">'+streak+' day streak</span></div></div></div>';}).join('')+
   '<div style="background:var(--cream-2);border:.5px solid var(--border);border-radius:10px;padding:.75rem .9rem;margin-top:.4rem"><div style="font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem">Add Custom Habit</div><div style="display:flex;gap:.4rem"><input type="text" id="newHabitInp" placeholder="Habit name..." style="flex:1;background:var(--white);border:.5px solid var(--border);border-radius:7px;padding:.45rem .7rem;font-size:13px;color:var(--ink);outline:none;font-family:inherit"><button onclick="addCustomHabit()" style="background:var(--wine);color:var(--cream);border:none;border-radius:7px;padding:.45rem .85rem;font-size:13px;font-weight:600;cursor:pointer">Add</button></div></div></div>';
@@ -2800,7 +3349,7 @@ _loadAll().then(()=>{
   if(last!==today){S.set('last_day',today);S.set('routine_'+today,{steps:new Array(7).fill(false),grat:[]});S.set('evening_'+today,{steps:new Array(6).fill(false),wins:[]});}
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
   notifEnabled=S.get('notif_on')===true;
-  updateNotifBtn();if(notifEnabled)scheduleNextNotif();scheduleNudge();renderDash();
+  updateNotifBtn();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
 }).catch(()=>{
   clearTimeout(_loadTimeout);
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
@@ -2967,7 +3516,9 @@ function saveFamilyNote(val){const n=S.get('family_notes')||{};n[todayKey()]=val
 const _origRH=renderHabits;
 renderHabits=function(){
   _origRH();
-  const el=document.getElementById('screen-habits');if(!el||document.getElementById('fcContainer'))return;
+  const el=document.getElementById('screen-habits');if(!el)return;
+  // Remove old container to re-render fresh
+  const old=document.getElementById('fcContainer');if(old)old.remove();
   const fc=document.createElement('div');fc.id='fcContainer';fc.style.cssText='padding:1rem 1rem 0';
   fc.innerHTML=_renderFamilyCard();
   const inner=el.querySelector('div');if(inner)el.insertBefore(fc,inner);else el.prepend(fc);
