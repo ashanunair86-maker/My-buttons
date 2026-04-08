@@ -10,7 +10,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#5C2333">
-<title>My Buttons — Ash</title>
+<title>My Buttons v14 — Ash</title>
 <link rel="manifest" href="./manifest.json">
 <style>
 :root{
@@ -802,8 +802,8 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 
 <div class="header">
   <div class="hdr-left">
-    <div class="hdr-title">My Buttons — Ash</div>
-    <div class="hdr-sub" id="hdrSub">Tap the emotion. Tune the frequency.</div>
+    <div class="hdr-title">My Buttons v14 — Ash</div>
+    <div class="hdr-sub" id="hdrSub">Tap the emotion. Tune the frequency. <span style='font-size:9px;opacity:.4'>v14</span></div>
   </div>
   <div class="hdr-right">
     <div class="hdr-btn" id="notifBtn" onclick="toggleNotifications()">🔔 Notify</div>
@@ -1514,7 +1514,24 @@ function toggleMr(i){
   }
 }
 function completeMr(i){const d=getMr();d.steps[i]=true;saveMr(d);const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-'+i);if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
-function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('#gratGrid0 input, .grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-0');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
+function saveGratitude(){
+  const d=getMr();
+  // Collect from gratGrid0 first, fallback to any .grat-input
+  const gg=document.getElementById('gratGrid0');
+  const inputs=gg?gg.querySelectorAll('input'):document.querySelectorAll('.grat-input');
+  const vals=Array.from(inputs).map(i=>i.value.trim());
+  const filled=vals.filter(Boolean).length;
+  if(filled<3){showToast('Add at least 3 gratitudes first ✦');return;}
+  d.grat=Array.from(inputs).map(i=>i.value);
+  d.steps[0]=true;
+  saveMr(d);
+  const el=document.getElementById('mrstep-0');
+  if(el){el.classList.remove('expanded');el.classList.add('done');}
+  const ck=document.getElementById('mrck-0');
+  if(ck){ck.classList.add('done');ck.textContent='✓';}
+  updateMrProgress();
+  showToast('Gratitude saved ✦ '+filled+' items recorded');
+}
 function updateMrProgress(){const d=getMr();const done=d.steps.filter(Boolean).length;const pct=Math.round(done/MR_TOTAL*100);const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';const db=document.getElementById('mrDone');if(db)db.classList.toggle('show',done===MR_TOTAL);if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';}
 
 function startSurya(){document.getElementById('suryaTimer').style.display='block';document.getElementById('suryaStartBtn').textContent='⏱ Running…';clearInterval(suryaInt);suryaSec=0;suryaInt=setInterval(()=>{suryaSec++;const m=Math.floor(suryaSec/60),s=suryaSec%60;const el=document.getElementById('suryaTime');if(el)el.textContent=m+':'+String(s).padStart(2,'0');},1000);}
@@ -1615,7 +1632,10 @@ function renderHopo(){
       <button class="hopo-sess-btn hopo-sess-start" onclick="prevHopoStep()">← Previous</button>
       <button class="hopo-sess-btn hopo-sess-start" onclick="nextHopoStep()">${_hopoPhraseStep < script.lines.length-1 ? 'Next →' : 'Start Again ↺'}</button>
     </div>
-    <button class="hopo-done-btn" onclick="hopoComplete()" style="width:100%;background:var(--green);color:white;border:none;border-radius:9px;padding:.9rem;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:.75rem">
+    <div id="hopoCompleteBanner" style="display:none;background:var(--green);border-radius:9px;padding:.9rem;margin-bottom:.75rem;text-align:center;color:white;font-size:14px;font-weight:700">
+      ✅ Session Complete — Cleared &amp; Recorded
+    </div>
+    <button id="hopoCompleteBtn" onclick="hopoComplete()" style="width:100%;background:var(--green);color:white;border:none;border-radius:9px;padding:.9rem;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:.75rem">
       ✓ Session Complete — I have cleared it
     </button>
 
@@ -1651,7 +1671,33 @@ function prevHopoStep(){
 function hopoStart(){hopoPhraseIdx=0;hopoRounds=0;hopoRender();}
 function hopoNext(){hopoPhraseIdx++;if(hopoPhraseIdx>=hopoPhrases.length){hopoPhraseIdx=0;hopoRounds++;}hopoRender();}
 function hopoRender(){const ph=document.getElementById('hopoPhrase');const pn=document.getElementById('hopoPhraseNum');const rn=document.getElementById('hopoRounds');if(ph)ph.textContent=hopoPhrases[hopoPhraseIdx];if(pn)pn.textContent='Phrase '+(hopoPhraseIdx+1)+' of 4';if(rn)rn.textContent=hopoRounds;}
-function hopoComplete(){S.set('hopo_'+new Date().toDateString(),{rounds:hopoRounds,ts:new Date().toISOString()});showToast('Ho\'oponopono complete ✓ — '+hopoRounds+' rounds');}
+function hopoComplete(){
+  const today=new Date().toDateString();
+  S.set('hopo_'+today,{rounds:hopoRounds,ts:new Date().toISOString(),done:true});
+  
+  // Visual confirmation on the button
+  const btn=document.querySelector('.hopo-done-btn,[onclick="hopoComplete()"]');
+  if(btn){
+    btn.textContent='✅ Session Complete — Cleared!';
+    btn.style.background='var(--green)';
+    btn.disabled=true;
+  }
+  
+  // Also mark morning step 4 done if it's today's morning session
+  const d=getMr();
+  if(!d.steps[4]){
+    d.steps[4]=true;saveMr(d);
+    showToast('Ho\'oponopono complete ✓ — morning step marked done');
+  } else {
+    showToast('Ho\'oponopono complete ✓ — '+hopoRounds+' rounds cleared');
+  }
+  
+  if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
+  const banner=document.getElementById('hopoCompleteBanner');
+  const completeBtn=document.getElementById('hopoCompleteBtn');
+  if(banner){banner.style.display='block';}
+  if(completeBtn){completeBtn.style.display='none';}
+}
 
 // ═══════════════════════════════════════════════════════
 // EVENING ROUTINE
