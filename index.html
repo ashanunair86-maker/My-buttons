@@ -659,6 +659,32 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 .hopo-sess-start{background:rgba(150,130,220,.35);color:rgba(220,210,255,.9);border:.5px solid rgba(150,130,220,.4)!important}
 .hopo-sess-done{background:var(--green);color:white}
 
+
+/* ── Task status badges ── */
+.task-status{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:auto;flex-shrink:0;white-space:nowrap}
+.ts-done{background:var(--green-bg);color:var(--green);border:.5px solid var(--green-border)}
+.ts-delayed{background:#FDF4E0;color:#8B5A00;border:.5px solid #E8C878}
+.ts-missed{background:var(--red-bg);color:var(--red);border:.5px solid var(--red-border)}
+.ts-upcoming{background:var(--cream-2);color:var(--muted);border:.5px solid var(--border)}
+.ts-current{background:#E8F0FF;color:#2D3074;border:.5px solid #AAAAE0;animation:pulse-blue 2s infinite}
+@keyframes pulse-blue{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ── End of day summary popup ── */
+.eod-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;display:none;align-items:flex-end;justify-content:center}
+.eod-overlay.show{display:flex}
+.eod-card{background:var(--cream);border-radius:16px 16px 0 0;padding:1.25rem 1.1rem;width:100%;max-height:80vh;overflow-y:auto}
+.eod-title{font-size:15px;font-weight:700;color:var(--wine);margin-bottom:.3rem}
+.eod-sub{font-size:12px;color:var(--muted);margin-bottom:.85rem}
+.eod-row{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:.5px solid var(--border)}
+.eod-row:last-child{border-bottom:none}
+.eod-icon{font-size:16px;flex-shrink:0}
+.eod-name{font-size:13px;color:var(--ink);flex:1}
+.eod-btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.35rem;margin-top:.45rem}
+.eod-btn{border:none;border-radius:7px;padding:.5rem;font-size:11.5px;font-weight:700;cursor:pointer}
+.eod-done-btn{background:var(--green-bg);color:var(--green);border:.5px solid var(--green-border)!important}
+.eod-miss-btn{background:var(--red-bg);color:var(--red);border:.5px solid var(--red-border)!important}
+.eod-delay-btn{background:#FDF4E0;color:#8B5A00;border:.5px solid #E8C878!important}
+
 /* ══ NEW FEATURES CSS ══ */
 /* SOS button */
 @keyframes sosPulse{0%,100%{box-shadow:0 3px 12px rgba(163,45,45,.5)}50%{box-shadow:0 3px 20px rgba(163,45,45,.9)}}
@@ -1296,7 +1322,7 @@ function renderDash(){
       <div class="dash-ring-card" onclick="switchTab('morning')">
         <div class="ring-icon">☀️</div>
         <div class="ring-label">Morning</div>
-        <div class="ring-val">${mrDone}/7</div>
+        <div class="ring-val">${mrDone}/${MR_TOTAL}</div>
         <div class="ring-sub">steps done</div>
         <div class="prog-wrap" style="margin-top:.4rem"><div class="prog-fill pf-wine" style="width:${Math.round(mrDone/7*100)}%"></div></div>
       </div>
@@ -2025,7 +2051,7 @@ function renderDash(){
     <div class="ring-row">
       <div class="ring-card" onclick="switchTab('morning')">
         <div class="ring-icon">☀️</div><div class="ring-lbl">Morning</div>
-        <div class="ring-val">${mrDone}/7</div><div class="ring-sub">steps done</div>
+        <div class="ring-val">${mrDone}/${MR_TOTAL}</div><div class="ring-sub">steps done</div>
         <div class="prog-wrap" style="margin-top:.35rem"><div class="prog-fill pf-wine" style="width:${Math.round(mrDone/7*100)}%"></div></div>
       </div>
       <div class="ring-card" onclick="switchTab('water')">
@@ -2056,7 +2082,7 @@ function renderDash(){
     </div>
     <div class="dash-section-title">Quick Actions</div>
     <div class="quick-grid">
-      <div class="quick-card" onclick="switchTab('morning')"><div class="qc-icon">☀️</div><div><div class="qc-lbl">Morning Routine</div><div class="qc-sub">${mrDone}/7 complete</div></div></div>
+      <div class="quick-card" onclick="switchTab('morning')"><div class="qc-icon">☀️</div><div><div class="qc-lbl">Morning Routine</div><div class="qc-sub">${mrDone}/${MR_TOTAL} complete</div></div></div>
       <div class="quick-card" onclick="switchTab('plan')"><div class="qc-icon">📋</div><div><div class="qc-lbl">Daily Planner</div><div class="qc-sub">${planDone}/${blocks.length} done</div></div></div>
       <div class="quick-card" onclick="switchTab('hopo')"><div class="qc-icon">🤍</div><div><div class="qc-lbl">Ho'oponopono</div><div class="qc-sub">Clear & release</div></div></div>
       <div class="quick-card" onclick="showAffirmOv()"><div class="qc-icon">✦</div><div><div class="qc-lbl">Affirmation Now</div><div class="qc-sub">Say one now</div></div></div>
@@ -2130,7 +2156,8 @@ function mrStepHTML(i,d,icon,name,hint,expandable){
 }
 
 function mrExpandContent(i){
-  // Step 1: Gratitudes (moved to step 1, index 1)
+  // Step 0: Gratitudes
+  if(i===0)return`<div class="mr-expand-body">Say each one out loud. Feel it for 2 seconds.<br><strong style="color:var(--wine)">Don't rush. This sets your frequency for the whole day.</strong></div><div class="grat-grid" id="gratGrid"></div><button class="step-btn step-btn-gold" onclick="saveGratitude()">Save & Complete ✓</button>`;
   if(i===1)return`<div class="mr-expand-body">Say each one out loud. Feel it for 2 seconds.<br><strong style="color:var(--wine)">Don't rush. This sets your frequency for the whole day.</strong></div><div class="grat-grid" id="gratGrid"></div><button class="step-btn step-btn-gold" onclick="saveGratitude()">Save & Complete ✓</button>`;
   // Step 3: Mirror affirmations
   if(i===3)return`<div style="background:var(--gold-bg);border:.5px solid var(--gold);border-radius:8px;padding:.6rem .8rem;margin-bottom:.55rem;font-size:12px;color:var(--ink);line-height:1.5"><strong>Say each affirmation 3 times.</strong> Hand on chest. Eyes on yourself in the mirror. Full feeling.</div><div id="mirrorAffirmText" class="mr-expand-body"></div><button class="step-btn step-btn-wine" onclick="completeMr(3)">Done — I said them all ×3 ✓</button>`;
@@ -2151,7 +2178,7 @@ function mrExpandContent(i){
 
 function toggleMr(i){const el=document.getElementById('mrstep-'+i);if(!el)return;const was=el.classList.contains('expanded');document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));if(!was)el.classList.add('expanded');}
 function completeMr(i){const d=getMr();d.steps[i]=true;saveMr(d);const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-'+i);if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
-function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('.grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[1]=true;saveMr(d);const el=document.getElementById('mrstep-1');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-1');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
+function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('.grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-0');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
 function updateMrProgress(){const d=getMr();const done=d.steps.filter(Boolean).length;const pct=Math.round(done/MR_TOTAL*100);const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';const db=document.getElementById('mrDone');if(db)db.classList.toggle('show',done===MR_TOTAL);if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';}
 
 function startSurya(){document.getElementById('suryaTimer').style.display='block';document.getElementById('suryaStartBtn').textContent='⏱ Running…';clearInterval(suryaInt);suryaSec=0;suryaInt=setInterval(()=>{suryaSec++;const m=Math.floor(suryaSec/60),s=suryaSec%60;const el=document.getElementById('suryaTime');if(el)el.textContent=m+':'+String(s).padStart(2,'0');},1000);}
@@ -2803,6 +2830,81 @@ const CAT_COLOR={
   wellness:'#2A6B3A',spirit:'#5C2333',self:'#B07830',
   work:'#1D6B5A',learn:'#2D3074',rest:'#7A6858'
 };
+
+// ── Task status helpers ──
+function _parseBlockMinutes(timeStr){
+  if(!timeStr||timeStr.startsWith('+'))return null;
+  const m=timeStr.match(/(\d+):(\d+)/);
+  if(m)return parseInt(m[1])*60+parseInt(m[2]);
+  return null;
+}
+function _blockStatus(b, day){
+  const done=!!(day.tasks&&day.tasks[b.id]);
+  if(done)return 'done';
+  const mins=_parseBlockMinutes(b.time);
+  if(mins===null)return 'upcoming'; // relative times like '+5', 'Wake', 'Leave'
+  const now=new Date();
+  const nowMins=now.getHours()*60+now.getMinutes();
+  if(nowMins<mins-5)return 'upcoming';
+  if(nowMins>=mins-5&&nowMins<=mins+30)return 'current';
+  if(nowMins>mins+30&&nowMins<=mins+120)return 'delayed';
+  return 'missed';
+}
+function _statusBadge(status){
+  const map={
+    done:'<span class="task-status ts-done">✓ Done</span>',
+    current:'<span class="task-status ts-current">▶ Now</span>',
+    delayed:'<span class="task-status ts-delayed">⚠ Delayed</span>',
+    missed:'<span class="task-status ts-missed">✗ Missed</span>',
+    upcoming:''
+  };
+  return map[status]||'';
+}
+
+// ── End of day review ──
+function showEODReview(){
+  const{day}=getToday();const blocks=getBlocks();
+  const missed=blocks.filter(b=>{
+    if(!!(day.tasks&&day.tasks[b.id]))return false;
+    const mins=_parseBlockMinutes(b.time);
+    if(mins===null)return false;
+    const nowMins=new Date().getHours()*60+new Date().getMinutes();
+    return nowMins>mins+120;
+  });
+  if(!missed.length){showToast('All tasks done! ✦');return;}
+  const ov=document.getElementById('eodOverlay');
+  const list=document.getElementById('eodList');
+  if(!ov||!list)return;
+  list.innerHTML=missed.map(b=>`
+    <div class="eod-row">
+      <div class="eod-icon">⬡</div>
+      <div class="eod-name">${b.name}</div>
+      <div class="eod-btn-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.25rem;flex-shrink:0">
+        <button class="eod-btn eod-done-btn" onclick="markEOD('${b.id}','done')">✓</button>
+        <button class="eod-btn eod-delay-btn" onclick="markEOD('${b.id}','delay')">→ tmrw</button>
+        <button class="eod-btn eod-miss-btn" onclick="markEOD('${b.id}','miss')">✗</button>
+      </div>
+    </div>`).join('');
+  ov.classList.add('show');
+}
+function markEOD(bid,status){
+  if(status==='done'){
+    const{all,key,day}=getToday();if(!day.tasks)day.tasks={};
+    day.tasks[bid]=true;saveTodayDay(all,key,day);
+  }
+  // Remove from list
+  const blocks=getBlocks();const b=blocks.find(x=>x.id===bid);
+  const rows=document.querySelectorAll('.eod-row');
+  rows.forEach(r=>{if(r.innerHTML.includes(b?.name||bid))r.remove();});
+  const list=document.getElementById('eodList');
+  if(list&&!list.children.length){
+    document.getElementById('eodOverlay').classList.remove('show');
+    showToast(status==='done'?'✓ Marked done':'Logged ✓');
+  }
+  renderSchedule();updateSummary();
+}
+function closeEOD(){document.getElementById('eodOverlay').classList.remove('show');}
+
 function renderSchedule(){const{day}=getToday();const blocks=getBlocks();const el=document.getElementById('schedule');if(!el)return;el.innerHTML='';let lastCat='';const labels={wellness:'Wellness',spirit:'Spiritual & Mindset',work:'Work',learn:'Learning & Study',self:'Self-care',rest:'Rest'};
   blocks.forEach((b)=>{
     if(b.cat!==lastCat){const sl=document.createElement('div');sl.className='sec-hdr';sl.textContent=labels[b.cat]||b.cat;el.appendChild(sl);lastCat=b.cat;}
@@ -2816,7 +2918,7 @@ function renderSchedule(){const{day}=getToday();const blocks=getBlocks();const e
           <div class="block-desc">${b.desc}</div>
           <div class="block-prog"><div class="prog-bar-p"><div class="prog-fill-p" style="width:${Math.round(tasksDone/tasksTotal*100)}%;background:${CAT_COLOR[b.cat]}"></div></div><div class="prog-lbl-p">${tasksDone}/${tasksTotal}</div></div>
         </div>
-        <div class="block-check${blockDone?' done':''}" id="bchk_${b.id}"></div>
+        ${_statusBadge(_blockStatus(b,day))}<div class="block-check${blockDone?' done':''}" id="bchk_${b.id}"></div>
       </div>
       <div class="sub-list${isOpen?' open':''}" id="sub_${b.id}">
         ${b.subs.map((s,si)=>{const sd=!!(day.subs&&day.subs[b.id+'_'+si]);return`<div class="sub-item" onclick="toggleSub('${b.id}',${si},event)"><div class="sub-chk${sd?' done':''}" id="sc_${b.id}_${si}"></div><div class="sub-label${sd?' done-txt':''}">${s}</div>${si===0&&b.bell?`<button class="bell-btn${(scheduledNotifs[b.id])?' on':''}" data-id="${b.id}" onclick="toggleBell('${b.id}',event)">🔔</button>`:''}</div>`;}).join('')}
@@ -3216,7 +3318,7 @@ function switchTab(tab){
   else if(tab==='positive'){renderPos();const el=document.getElementById('screen-positive');if(el)el.classList.add('active');}
   else if(tab==='emotions')renderEmotions();
   else if(tab==='affirm')renderAffirmScreen();
-  else if(tab==='evening')renderEvening();
+  else if(tab==='evening'){renderEvening();const h=new Date().getHours();if(h>=21){setTimeout(()=>showEODReview(),1200);}}
   else if(tab==='nudge')renderNudge();
   else if(tab==='habits')renderHabits();
   else if(tab==='vision')renderVision();
@@ -3660,6 +3762,17 @@ setTimeout(function(){updateSOSBtn();},600);
 
 <!-- ══ SOS FLOATING BUTTON ══ -->
 <div id="sos-btn" onclick="openSOS()" style="display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom)+1.5rem);right:1rem;z-index:200;width:52px;height:52px;border-radius:50%;background:#A32D2D;box-shadow:0 3px 12px rgba(163,45,45,.5);display:none;align-items:center;justify-content:center;cursor:pointer;font-size:22px;animation:sosPulse 2s infinite">⚡</div>
+
+
+<!-- ══ END OF DAY REVIEW ══ -->
+<div class="eod-overlay" id="eodOverlay">
+  <div class="eod-card">
+    <div class="eod-title">📋 End of Day Review</div>
+    <div class="eod-sub">These tasks didn't get done today. Mark each one:</div>
+    <div id="eodList"></div>
+    <button onclick="closeEOD()" style="width:100%;background:var(--wine);color:var(--cream);border:none;border-radius:9px;padding:.8rem;font-size:13.5px;font-weight:600;cursor:pointer;margin-top:.85rem">Close</button>
+  </div>
+</div>
 
 <!-- ══ DMP VOICE OVERLAY ══ -->
 <div class="ov ov-night" id="dmpVoiceOv" style="z-index:350;padding:1.5rem">
