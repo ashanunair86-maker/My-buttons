@@ -1,5 +1,5 @@
 // My Buttons SW v12 — alarm-style, requireInteraction, snooze/done actions
-const CACHE='mb12';const ASSETS=['./','./index.html','./manifest.json','./icon.png'];
+const CACHE='mb13';const ASSETS=['./','./index.html','./manifest.json','./icon.png'];
 
 self.addEventListener('install',e=>{
   self.skipWaiting();

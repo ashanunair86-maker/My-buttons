@@ -1388,725 +1388,11 @@ function getMr(){return S.get('routine_'+todayKey())||{steps:new Array(MR_TOTAL)
 function saveMr(d){S.set('routine_'+todayKey(),d);}
 
 function renderMorning(){
-  const d=getMr();
-  for(let i=0;i<MR_TOTAL;i++){
-    const el=document.getElementById('mrstep-'+i);
-    const ck=document.getElementById('mrck-'+i);
-    if(el)el.classList.toggle('done',d.steps[i]);
-    if(ck)ck.textContent=d.steps[i]?'✓':'';
-  }
-  // gratitude inputs
-  const gg=document.getElementById('gratGrid');
-  if(gg){
-    gg.innerHTML='';
-    for(let i=0;i<10;i++){
-      const inp=document.createElement('input');
-      inp.type='text';inp.className='grat-input';
-      inp.placeholder='Grateful for '+(i+1)+'…';
-      inp.value=d.grat[i]||'';inp.dataset.idx=i;
-      inp.addEventListener('input',e=>{const dd=getMr();dd.grat[e.target.dataset.idx]=e.target.value;saveMr(dd);});
-      gg.appendChild(inp);
-    }
-  }
-  // mirror affirmations (3 today)
-  const mat=document.getElementById('mirrorAffirmText');
-  if(mat) mat.innerHTML=ALL_AFFIRMS.slice(0,3).map((a,i)=>`<div style="margin-bottom:.65rem"><strong>${i+1}.</strong> <em style="color:var(--wine)">${a}</em></div>`).join('');
-
-  const done=d.steps.filter(Boolean).length;
-  const pct=Math.round(done/MR_TOTAL*100);
-  const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';
-  const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';
-  const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';
-  const done_banner=document.getElementById('mrDone');if(done_banner)done_banner.classList.toggle('show',done===MR_TOTAL);
-  if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';
-}
-
-function toggleMr(i){
-  const el=document.getElementById('mrstep-'+i);if(!el)return;
-  const was=el.classList.contains('expanded');
-  document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));
-  if(!was)el.classList.add('expanded');
-}
-function completeMr(i){
-  const d=getMr();d.steps[i]=true;saveMr(d);
-  const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}
-  const ck=document.getElementById('mrck-'+i);if(ck)ck.textContent='✓';
-  renderMorning();
-}
-function saveGratitude(){
-  const d=getMr();
-  const inputs=document.querySelectorAll('.grat-input');
-  if(Array.from(inputs).filter(i=>i.value.trim()).length<3){alert('Add at least 3 items.');return;}
-  d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);
-  const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}
-  renderMorning();
-}
-function startSurya(){
-  document.getElementById('suryaTimer').style.display='block';
-  document.getElementById('suryaStartBtn').textContent='⏱ Running…';
-  clearInterval(suryaInt);suryaSec=0;
-  suryaInt=setInterval(()=>{suryaSec++;const m=Math.floor(suryaSec/60),s=suryaSec%60;
-    document.getElementById('suryaTime').textContent=m+':'+String(s).padStart(2,'0');},1000);
-}
-function startDuo(){
-  if(duoRunning)return;duoRunning=true;
-  document.getElementById('duoTimer').style.display='block';
-  document.getElementById('duoStartBtn').textContent='⏱ Running…';
-  duoSec=900;clearInterval(duoInt);
-  duoInt=setInterval(()=>{if(duoSec<=0){clearInterval(duoInt);document.getElementById('duoTime').textContent='Done!';return;}
-    duoSec--;const m=Math.floor(duoSec/60),s=duoSec%60;
-    document.getElementById('duoTime').textContent=m+':'+String(s).padStart(2,'0');},1000);
-}
-
-// ═══════════════════════════════════════════════════════
-// HO'OPONOPONO
-// ═══════════════════════════════════════════════════════
-function hopoStart(){hopoPhraseIdx=0;hopoRounds=0;hopoRender();}
-function hopoNext(){
-  hopoPhraseIdx++;
-  if(hopoPhraseIdx>=hopoPhrases.length){hopoPhraseIdx=0;hopoRounds++;}
-  hopoRender();
-}
-function hopoRender(){
-  const ph=document.getElementById('hopoPhrase');
-  const pn=document.getElementById('hopoPhraseNum');
-  const rn=document.getElementById('hopoRounds');
-  if(ph)ph.textContent=hopoPhrases[hopoPhraseIdx];
-  if(pn)pn.textContent='Phrase '+(hopoPhraseIdx+1)+' of 4';
-  if(rn)rn.textContent=hopoRounds;
-}
-function hopoComplete(){
-  const today=todayKey();
-  S.set('hopo_'+today,{rounds:hopoRounds,ts:new Date().toISOString()});
-  alert('Ho\'oponopono session complete ✓\n\n'+hopoRounds+' full rounds.\n\nWell done. You cleared it.');
-}
-
-// ═══════════════════════════════════════════════════════
-// EVENING ROUTINE (6 steps: 0-5)
-// ═══════════════════════════════════════════════════════
-const EV_TOTAL = 6;
-function getEv(){return S.get('evening_'+todayKey())||{steps:new Array(EV_TOTAL).fill(false),wins:[]};}
-function saveEv(d){S.set('evening_'+todayKey(),d);}
-
-function renderEvening(){
-  const d=getEv();
-  for(let i=0;i<EV_TOTAL;i++){
-    const el=document.getElementById('evstep-'+i);
-    const ck=document.getElementById('evck-'+i);
-    if(el)el.classList.toggle('done',d.steps[i]);
-    if(ck)ck.textContent=d.steps[i]?'✓':'';
-  }
-  // restore wins
-  ['evwin1','evwin2','evwin3'].forEach((id,i)=>{const el=document.getElementById(id);if(el&&d.wins[i])el.value=d.wins[i];});
-  // evening affirmations (pick 3 from evening set)
-  const eat=document.getElementById('eveningAffirmText');
-  if(eat){
-    const picks=eveningAffirmations.slice(0,3);
-    eat.innerHTML=picks.map((a,i)=>`<div style="margin-bottom:.65rem"><strong>${i+1}.</strong> <em style="color:var(--indigo)">${a}</em></div>`).join('');
-  }
-  const done=d.steps.filter(Boolean).length;
-  const pct=Math.round(done/EV_TOTAL*100);
-  const pctEl=document.getElementById('evPct');if(pctEl)pctEl.textContent=pct+'%';
-  const bar=document.getElementById('evBar');if(bar)bar.style.width=pct+'%';
-  const sub=document.getElementById('evSub');if(sub)sub.textContent=done===EV_TOTAL?'Evening complete. Rest well.':done+' of '+EV_TOTAL+' complete';
-}
-
-function toggleEv(i){
-  const el=document.getElementById('evstep-'+i);if(!el)return;
-  const was=el.classList.contains('expanded');
-  document.querySelectorAll('.ev-step').forEach(s=>s.classList.remove('expanded'));
-  if(!was)el.classList.add('expanded');
-}
-function completEv(i){
-  const d=getEv();d.steps[i]=true;saveEv(d);
-  const el=document.getElementById('evstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}
-  const ck=document.getElementById('evck-'+i);if(ck)ck.textContent='✓';
-  renderEvening();
-}
-function saveEvWins(){
-  const d=getEv();
-  const w1=document.getElementById('evwin1')?.value||'';
-  const w2=document.getElementById('evwin2')?.value||'';
-  const w3=document.getElementById('evwin3')?.value||'';
-  if(!w1.trim()&&!w2.trim()&&!w3.trim()){alert('Name at least one win.');return;}
-  d.wins=[w1,w2,w3];d.steps[0]=true;saveEv(d);
-  const el=document.getElementById('evstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}
-  renderEvening();
-}
-
-// ═══════════════════════════════════════════════════════
-// AUDIO (IndexedDB persistence)
-// ═══════════════════════════════════════════════════════
-const AUDIO_DB_NAME='mb8_audio',AUDIO_DB_STORE='files';let audioDB=null;
-function openAudioDB(){return new Promise((res,rej)=>{if(audioDB){res(audioDB);return;}const req=indexedDB.open(AUDIO_DB_NAME,1);
-  req.onupgradeneeded=e=>e.target.result.createObjectStore(AUDIO_DB_STORE);
-  req.onsuccess=e=>{audioDB=e.target.result;res(audioDB);};req.onerror=rej;});}
-function saveAudio(blob){return openAudioDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(AUDIO_DB_STORE,'readwrite');
-  tx.objectStore(AUDIO_DB_STORE).put(blob,'affirm');tx.oncomplete=res;tx.onerror=rej;}));}
-function loadAudioDB(){return openAudioDB().then(db=>new Promise((res,rej)=>{const tx=db.transaction(AUDIO_DB_STORE,'readonly');
-  const req=tx.objectStore(AUDIO_DB_STORE).get('affirm');req.onsuccess=()=>res(req.result||null);req.onerror=rej;}));}
-
-function loadAudioFile(e){
-  const file=e.target.files[0];if(!file)return;
-  const lbl=document.getElementById('audioFileIn').previousElementSibling;
-  if(lbl)lbl.textContent='Saving…';
-  saveAudio(file).then(()=>{setupAudio(URL.createObjectURL(file));if(lbl)lbl.style.display='none';}).catch(()=>setupAudio(URL.createObjectURL(file)));
-}
-function setupAudio(url){
-  if(audioEl)audioEl.pause();
-  audioEl=new Audio(url);
-  audioEl.addEventListener('timeupdate',()=>{
-    if(!audioEl.duration)return;
-    const pct=(audioEl.currentTime/audioEl.duration)*100;
-    const fill=document.getElementById('audioProgFill');if(fill)fill.style.width=pct+'%';
-    const m=Math.floor(audioEl.currentTime/60),s=Math.floor(audioEl.currentTime%60);
-    const tm=Math.floor(audioEl.duration/60),ts=Math.floor(audioEl.duration%60);
-    const st=document.getElementById('audioStatusTxt');
-    if(st)st.textContent=m+':'+String(s).padStart(2,'0')+' / '+tm+':'+String(ts).padStart(2,'0');
-  });
-  audioEl.addEventListener('ended',()=>{document.getElementById('audioPlayBtn').textContent='▶';
-    const st=document.getElementById('audioStatusTxt');if(st)st.textContent='Finished ✓';});
-  audioLoaded=true;
-  document.getElementById('audioPlayBtn').textContent='▶';
-  const st=document.getElementById('audioStatusTxt');if(st)st.textContent='Ready — tap ▶ to play';
-  const lbl=document.getElementById('audioFileIn')?.nextElementSibling;
-  const loadlbl=document.querySelector('label[for="audioFileIn"]');if(loadlbl)loadlbl.style.display='none';
-}
-function toggleAudio(){
-  if(!audioLoaded){const st=document.getElementById('audioStatusTxt');if(st)st.textContent='Load file first →';return;}
-  if(audioEl.paused){audioEl.play();document.getElementById('audioPlayBtn').textContent='⏸';}
-  else{audioEl.pause();document.getElementById('audioPlayBtn').textContent='▶';}
-}
-function seekAudio(e){
-  if(!audioEl||!audioEl.duration)return;
-  const wrap=e.currentTarget,rect=wrap.getBoundingClientRect();
-  audioEl.currentTime=((e.clientX-rect.left)/rect.width)*audioEl.duration;
-}
-loadAudioDB().then(blob=>{if(blob)setupAudio(URL.createObjectURL(blob));}).catch(()=>{});
-
-// ═══════════════════════════════════════════════════════
-// WATER TRACKER
-// ═══════════════════════════════════════════════════════
-function getWater(){return S.get('water_'+todayKey())||{ml:0,log:[]};}
-function saveWater(d){S.set('water_'+todayKey(),d);}
-function addWater(ml){
-  const d=getWater();d.ml=Math.min(WATER_GOAL,d.ml+ml);d.log.push({ml,t:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
-  saveWater(d);renderWater();
-}
-function undoWater(){
-  const d=getWater();if(!d.log.length)return;
-  const last=d.log.pop();d.ml=Math.max(0,d.ml-last.ml);saveWater(d);renderWater();
-}
-function renderWater(){
-  const d=getWater();const pct=Math.min(100,Math.round(d.ml/WATER_GOAL*100));
-  const amt=document.getElementById('waterAmount');if(amt)amt.textContent=d.ml>=1000?(d.ml/1000).toFixed(1)+'L':d.ml+' ml';
-  const pctEl=document.getElementById('waterPct');if(pctEl)pctEl.textContent=pct+'% of daily goal'+(d.ml>=WATER_GOAL?' 🏆':'');
-  const bar=document.getElementById('waterBar');if(bar)bar.style.width=pct+'%';
-  const mm=document.getElementById('waterMilestones');
-  if(mm)mm.innerHTML='<div class="wm-title">Milestones</div>'+WATER_MILESTONES.map(m=>`<div class="wm-row"><div class="wm-dot${d.ml>=m.ml?' hit':''}"></div><div class="wm-lbl">${m.label}</div>${d.ml>=m.ml?'<div class="wm-tick">✓</div>':''}</div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════════
-// CHECK-IN
-// ═══════════════════════════════════════════════════════
-function getCurrentSlot(){const h=new Date().getHours();for(let i=slots.length-1;i>=0;i--)if(h>=slots[i].h)return slots[i];return slots[0];}
-function getSlotKey(){return todayKey()+'-'+getCurrentSlot().h;}
-
-function renderCheckin(){
-  const slot=getCurrentSlot();const key=getSlotKey();
-  const emotions=S.get('emotions')||{};const existing=emotions[key];
-  selectedEmotion=null;
-  const liftHTML=happyTriggers.map(t=>`<div class="lift-card ${t.color}"><div class="lift-icon">${t.icon}</div><div class="lift-title">${t.title}</div><div class="lift-phrase">${t.phrase}</div></div>`).join('');
-  const posChips=allEmotions.pos.map(e=>`<div class="ep-chip ep-pos${existing&&existing.emotion===e?' selected':''}" onclick="pickEm(this,'${e}','pos')">${e}</div>`).join('');
-  const negChips=allEmotions.neg.map(e=>`<div class="ep-chip ep-neg${existing&&existing.emotion===e?' selected':''}" onclick="pickEm(this,'${e}','neg')">${e}</div>`).join('');
-  document.getElementById('ci-content').innerHTML=`
-    <div class="ci-hero"><div><div class="ci-lbl">${slot.label}</div><div class="ci-slot">How am I doing?</div></div><div class="ci-clock" id="liveClock">--:--</div></div>
-    <div class="lift-label" style="padding:0 .15rem">Lift Me Now</div>
-    <div class="lift-grid" style="margin-bottom:.8rem">${liftHTML}</div>
-    <div class="logger-box">
-      <div class="logger-lbl">My emotion — last 2 hours</div>
-      <div class="logger-q">${existing?'Logged: <strong>'+existing.emotion+'</strong> — tap to update':'What was I mostly feeling?'}</div>
-      <div class="ep-wrap">
-        <div style="width:100%;font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green);padding:.25rem 0 .15rem">Positive</div>
-        ${posChips}
-        <div style="width:100%;font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);padding:.4rem 0 .15rem">Negative — tap to fix</div>
-        ${negChips}
-      </div>
-      <div class="neg-strip" id="negStrip">
-        <div class="neg-strip-title">⚠ Negative detected — fix it now</div>
-        <div class="neg-strip-btns">
-          <div class="neg-strip-btn" onclick="switchTab('negative')">→ Fix It</div>
-          <div class="neg-strip-btn g" onclick="startBreathe()">Breathe</div>
-          <div class="neg-strip-btn g" onclick="switchTab('hopo')">Ho'opo</div>
-        </div>
-      </div>
-      <button class="log-save-btn" id="saveBtn" onclick="saveEmotion('${key}')" style="${existing?'display:block':'display:none'}">Save Check-In ✓</button>
-    </div>
-    ${buildTimeline()}
-    ${buildAlarmBox()}`;
-  startClock();
-  if(existing)selectedEmotion=existing.emotion;
-}
-
-function pickEm(el,name,type){
-  document.querySelectorAll('.ep-chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');selectedEmotion=name;
-  const btn=document.getElementById('saveBtn');if(btn)btn.style.display='block';
-  const strip=document.getElementById('negStrip');if(strip)strip.style.display=type==='neg'?'block':'none';
-}
-function saveEmotion(key){
-  if(!selectedEmotion)return;
-  const n=new Date();const isPos=allEmotions.pos.includes(selectedEmotion);
-  const emotions=S.get('emotions')||{};
-  emotions[key]={emotion:selectedEmotion,type:isPos?'pos':'neg',
-    time:n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),slot:getCurrentSlot().label};
-  S.set('emotions',emotions);
-  const btn=document.getElementById('saveBtn');if(btn){btn.textContent='Saved ✓';btn.style.background='var(--green)';}
-  if(!isPos)setTimeout(()=>switchTab('negative'),800);
-  setTimeout(()=>{const box=document.getElementById('timelineBox');if(box)box.innerHTML=buildTimelineRows();},300);
-}
-function buildTimeline(){return`<div class="tl-box" id="timelineBox"><div class="tl-title">Today's Frequency Log</div>${buildTimelineRows()}</div>`;}
-function buildTimelineRows(){
-  const today=new Date().toDateString();const emotions=S.get('emotions')||{};
-  return slots.map(s=>{const k=today+'-'+s.h;const e=emotions[k];
-    if(!e)return`<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot empty"></div><div class="tl-em" style="color:var(--muted);font-style:italic">—</div></div>`;
-    return`<div class="tl-row"><div class="tl-time">${s.label}</div><div class="tl-dot ${e.type}"></div><div class="tl-em">${e.emotion}</div></div>`;}).join('');
-}
-function buildAlarmBox(){
-  const h=new Date().getHours();
-  const alarms=['6AM','8AM','10AM','12PM','2PM','4PM','6PM','8PM','10PM'];
-  const aH=[6,8,10,12,14,16,18,20,22];
-  return`<div class="tl-box" style="margin-top:.5rem"><div class="tl-title">Alarm Schedule — "Frequency Check"</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-bottom:.5rem">
-      ${alarms.map((a,i)=>`<div style="background:${h>=aH[i]&&h<aH[i]+2?'var(--wine)':'var(--white)'};border:.5px solid var(--border);border-radius:5px;padding:.4rem .2rem;text-align:center;font-size:11px;font-weight:700;color:${h>=aH[i]&&h<aH[i]+2?'var(--gold-pale)':'var(--wine)'}">${a}</div>`).join('')}
-    </div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">Alarm fires → open app → Check-In → log emotion → if negative, app takes you straight to fix it.</div></div>`;
-}
-
-// ═══════════════════════════════════════════════════════
-// AFFIRMATIONS SCREEN
-// ═══════════════════════════════════════════════════════
-function renderAffirmations(){
-  const el=document.getElementById('affirm-cards');if(!el)return;
-  el.innerHTML='<div class="affirm-section"><strong>\ud83d\udd14 Say each out loud \u00d73. Hand on chest. Full feeling.</strong></div>'+
-  AFFIRM_CATS.map(cat=>`<div style="margin-bottom:.9rem"><div style="font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;padding:0 .1rem">${cat.label}</div>${cat.items.map((text,i)=>{const gi=ALL_AFFIRMS.indexOf(text);return`<div class="affirm-card" onclick="openAffirmAt(${gi<0?0:gi})"><div class="affirm-card-head"><span class="affirm-card-area">${cat.key.toUpperCase()} ${i+1}</span><span style="color:var(--gold);font-size:12px">\u2192</span></div><div class="affirm-card-text">${text}</div></div>`;}).join('')}</div>`).join('');
-}
-function openAffirmAt(i){affirmIdx=i;showAffirmOv();}
-function showAffirmOv(){document.getElementById('affirmOvText').textContent=ALL_AFFIRMS[affirmIdx];document.getElementById('affirmOv').classList.add('active');}
-function nextAffirmOv(){affirmIdx=(affirmIdx+1)%ALL_AFFIRMS.length;document.getElementById('affirmOvText').textContent=ALL_AFFIRMS[affirmIdx];}
-function closeAffirmOv(){document.getElementById('affirmOv').classList.remove('active');}
-
-// ═══════════════════════════════════════════════════════
-// MICRO NUDGES (random, every 60-90 min while app open)
-// ═══════════════════════════════════════════════════════
-const nudges=[
-  {icon:'🌬️',title:'Time to Breathe',body:'One 4-2-6 breath right now. Anxiety drops.',action:'breathe'},
-  {icon:'💧',title:'Drink Water',body:'One full glass. Do it before you do anything else.',action:'water'},
-  {icon:'🧍',title:'Posture Check',body:'Chin up. Shoulders back. Chest open. 10 seconds.',action:'posture'},
-  {icon:'✦',title:'Say an Affirmation',body:'Out loud. 3 times. Full feeling.',action:'affirm'},
-  {icon:'🙏',title:'30-Second Gratitude',body:'Name 3 things. Specific. Right now.',action:'grateful'},
-  {icon:'🤍',title:'Ho\'oponopono Moment',body:'Say the 4 phrases once. Just once. Release.',action:'hopo'}
-];
-function scheduleNudge(){clearTimeout(nudgeTimer);nudgeTimer=setTimeout(showRandomNudge,(60+Math.random()*30)*60000);}
-function showRandomNudge(){
-  const n=nudges[Math.floor(Math.random()*nudges.length)];currentNudgeAction=n.action;
-  document.getElementById('nudgeOvIcon').textContent=n.icon;
-  document.getElementById('nudgeOvTitle').textContent=n.title;
-  document.getElementById('nudgeOvBody').textContent=n.body;
-  document.getElementById('nudgeOv').classList.add('active');
-  scheduleNudge();
-}
-function doNudgeAction(){
-  document.getElementById('nudgeOv').classList.remove('active');
-  switch(currentNudgeAction){
-    case 'breathe':startBreathe();break;
-    case 'water':addWater(500);switchTab('water');break;
-    case 'affirm':showAffirmOv();break;
-    case 'grateful':showPos('grateful');break;
-    case 'hopo':switchTab('hopo');break;
-  }
-}
-function closeNudgeOv(){document.getElementById('nudgeOv').classList.remove('active');}
-function nudgeDone(type){} // posture just closes
-
-// ═══════════════════════════════════════════════════════
-// NOTIFICATIONS
-// ═══════════════════════════════════════════════════════
-const notifSchedule=[
-  {h:7,m:0,type:'morning',icon:'\u2600\ufe0f',title:'Wake Up — Magic Water',body:`Good morning Ash! Magic water first. New day, new frequency.`},
-  {h:7,m:3,type:'breathe',icon:'\ud83c\udf2c\ufe0f',title:'3 Deep Breaths — Arrive',body:`3 slow breaths. In through nose, out through mouth. Arrive in your day.`},
-  {h:7,m:10,type:'morning',icon:'\ud83d\ude4f',title:'10 Gratitudes — Say Them Out Loud',body:`7:10 AM — 10 gratitudes out loud. Feel each one. This sets your frequency for the whole day.`},
-  {h:7,m:20,type:'morning',icon:'\ud83d\udebf',title:'Bathroom — Brush — Freshen Up',body:`7:20 AM — bathroom, brush teeth, wash face. Fresh start.`},
-  {h:7,m:30,type:'affirmation',icon:'\ud83e\uddd6',title:'Mirror Affirmations',body:`7:30 AM — mirror. Eyes on yourself. Say your affirmations out loud. Mean every word.`},
-  {h:7,m:45,type:'hopo',icon:'\ud83e\udd0d',title:"Ho'oponopono Morning — 4 Rounds",body:`7:45 AM — I am sorry. Please forgive me. Thank you. I love you. 4 rounds minimum.`},
-  {h:8,m:0,type:'morning',icon:'\ud83e\udd89',title:'Duolingo — 2 Lessons Now',body:`8:00 AM — open Duolingo. 2 lessons. The streak is your commitment to your future self.`},
-  {h:8,m:15,type:'morning',icon:'\ud83e\uddd8',title:'Surya Namaskar — 12 Rounds + Savasana',body:`8:15 AM — 12 rounds then 2 mins Savasana. Body before mind.`},
-  {h:8,m:30,type:'morning',icon:'\ud83c\udf3f',title:'Oil Massage + Shower',body:`8:30 AM — oil then shower. Full self-care. You are a temple.`},
-  {h:8,m:45,type:'morning',icon:'\ud83d\udc57',title:'Get Ready — Dress With Intention',body:`8:45 AM — dress with intention. You are stepping into who Ash is today.`},
-  {h:9,m:0,type:'morning',icon:'\ud83e\udd5a',title:'Breakfast — Boiled Egg + Banana',body:`9:00 AM — boiled egg, banana. Fuel the temple. Eat before you leave.`},
-  {h:9,m:15,type:'morning',icon:'\ud83d\ude97',title:'Head to Office',body:`9:15 AM — leave now. UAE audio or French listening on the drive.`},
-  {h:10,m:0,type:'morning',icon:'\ud83d\udccb',title:'List Your Top 3 Priority Tasks',body:`10:00 AM — write your top 3 must-do tasks today. Start with the hardest.`},
-  {h:8,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 8 AM',body:`How are you feeling right now? 30 seconds. Log it in My Buttons.`},
-  {h:10,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 10 AM',body:`Mid-morning check. Log your emotion. If negative — fix it now.`},
-  {h:12,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 12 PM',body:`Midday. What emotion are you carrying into the afternoon? Log it.`},
-  {h:14,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 2 PM',body:`2 PM check. Energy dip is normal. Log and adjust.`},
-  {h:16,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 4 PM',body:`4 PM. Almost through the day. How is Ash feeling?`},
-  {h:18,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 6 PM',body:`End of office day. Log your emotion. Leave work energy at work.`},
-  {h:20,m:0,type:'checkin',icon:'\ud83d\udd14',title:'Frequency Check-In — 8 PM',body:`Evening check. How did today feel? Log it.`},
-  {h:9,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 9 AM',body:`Glass 2. Drink before you leave. Hydrate the temple.`},
-  {h:11,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 11 AM',body:`2 more glasses. Before your next task. 5 litres is the goal.`},
-  {h:13,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 1 PM',body:`Lunch water. You should be past 2L now. Log it.`},
-  {h:15,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 3 PM',body:`One full glass. Cortisol drops. Clarity rises.`},
-  {h:17,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 5 PM',body:`Pre-evening. Push toward 4-5 litres now.`},
-  {h:19,m:0,type:'water',icon:'\ud83d\udca7',title:'Water — 7 PM',body:`2 glasses with dinner. Almost at goal.`},
-  {h:21,m:15,type:'water',icon:'\ud83d\udca7',title:'Final Water Glass of the Day',body:`Last glass. Log it. 5 litres done.`},
-  {h:19,m:30,type:'evening',icon:'\ud83c\udf19',title:'Evening Routine — Start Now',body:`7:30 PM — gratitude, affirmations, Ho'oponopono. Close the day from power.`},
-  {h:21,m:0,type:'dmp',icon:'\ud83c\udfaf',title:'DMP — 9 PM — DO NOT SKIP',body:`9 PM SHARP. Phone silent. Feel the farmhouse. Read your DMP. It is done. It is mine.`},
-  {h:21,m:30,type:'affirmation',icon:'\u2726',title:'Evening Affirmations',body:`9:30 PM — last affirmations before sleep. Say them with full feeling.`},
-  {h:21,m:45,type:'hopo',icon:'\ud83e\udd0d',title:"Ho'oponopono — Evening Clear",body:`9:45 PM — release the whole day. 4 rounds. Let it all go.`},
-  {h:22,m:30,type:'lift',icon:'\ud83d\ude34',title:'Phone Away — Sleep by 11 PM',body:`10:30 PM — phone down. Tomorrow is handled. Rest from power.`}
-];
-let notifTimer=null;
-async function toggleNotifications(){
-  if(!('Notification' in window)){alert('Notifications need the app installed to work reliably. Install it first via the banner at the top.');return;}
-  if(notifEnabled){notifEnabled=false;S.set('notif_on',false);updateNotifBtn();renderNotifSection();return;}
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){
-    notifEnabled=true;S.set('notif_on',true);updateNotifBtn();scheduleNextNotif();
-    new Notification('My Buttons ✦',{body:'Notifications active. Check-ins, affirmations, water reminders, and 9 PM DMP — all scheduled.',icon:'./icon.png'});
-  } else {
-    alert('Enable notifications:\nSettings → Apps → Chrome → Notifications → Allow\nThen tap Notify again.');
-  }
-  renderNotifSection();
-}
-function scheduleNextNotif(){
-  clearTimeout(notifTimer);if(!notifEnabled||Notification.permission!=='granted')return;
-  const now=new Date();
-  const next=notifSchedule.map(n=>{const t=new Date(now);t.setHours(n.h,n.m,0,0);if(t<=now)t.setDate(t.getDate()+1);return{...n,ms:t-now,fireAt:t};}).sort((a,b)=>a.ms-b.ms)[0];
-  if(!next)return;
-  notifTimer=setTimeout(()=>{
-    if(notifEnabled&&Notification.permission==='granted'){
-      const notif=new Notification(next.icon+' '+next.title,{body:next.body,tag:next.type+next.h,
-        icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="%235C2333"/><text x="32" y="44" text-anchor="middle" font-size="32" fill="%23E8C878">✦</text></svg>'});
-      notif.onclick=()=>{window.focus();
-        if(next.type==='morning')switchTab('morning');
-        else if(next.type==='checkin')switchTab('checkin');
-        else if(next.type==='affirmation')showAffirmOv();
-        else if(next.type==='water')switchTab('water');
-        else if(next.type==='evening'||next.type==='dmp')switchTab('evening');
-        else if(next.type==='hopo')switchTab('hopo');
-      };
-    }
-    scheduleNextNotif();
-  },next.ms);
-}
-function updateNotifBtn(){const btn=document.getElementById('notifBtn');if(!btn)return;
-  if(notifEnabled){btn.textContent='🔔 On';btn.classList.add('on');}else{btn.textContent='🔔 Notify';btn.classList.remove('on');}}
-function renderNotifSection(){
-  const el=document.getElementById('notif-section');if(!el)return;
-  el.innerHTML=`<div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-top:.8rem">
-    <div style="background:var(--wine);padding:.7rem .9rem;font-size:9.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-pale)">${notifEnabled?'🔔 Notifications Active':'Enable Notifications'}</div>
-    <div style="padding:.8rem .9rem">
-      <div style="font-size:12.5px;color:var(--ink);line-height:1.6;margin-bottom:.65rem">${notifEnabled?'<strong>Active.</strong> Morning (6 AM), check-ins every 2hrs, water reminders, affirmations at 7AM/12PM/9:30PM, Ho\'oponopono evening (9:45PM), DMP 9 PM.':'Enable and the app will tend your frequency throughout the day — not just when you remember to open it.'}</div>
-      <button style="width:100%;background:${notifEnabled?'var(--green)':'var(--wine)'};color:white;border:none;border-radius:7px;padding:.7rem;font-size:13.5px;font-weight:600;cursor:pointer" onclick="toggleNotifications()">${notifEnabled?'✓ Notifications On — Tap to Disable':'Enable Notifications'}</button>
-      <div style="margin-top:.55rem;font-size:10.5px;color:var(--muted);line-height:1.5">⚠ Android: for reliable background notifications — install app to home screen + Settings → Apps → Chrome → Battery → Unrestricted.</div>
-    </div>
-  </div>`;
-}
-
-// ═══════════════════════════════════════════════════════
-// NEGATIVE / POSITIVE DETAIL
-// ═══════════════════════════════════════════════════════
-function showNeg(key){
-  const d=negData[key];const posKey=negToPos[key]||'calm';const pos=posData[posKey];
-  const html=`<div class="d-card">
-    <div class="d-header"><div class="d-em">${d.name}</div><div class="d-trigger">${d.trigger}</div></div>
-    <div class="d-body">
-      <div class="threshold">${d.threshold}</div>
-      <div class="s2c2-title">Stop 1 — 100% Responsibility (say 5×)</div>
-      <div class="s2c2-row"><div class="s2c2-dot dot-stop">S1</div><div class="s2c2-text"><span class="s2c2-key">"${d.stop1}"</span></div></div>
-      <div class="s2c2-title">Stop 2 — Physical Pattern Interrupt</div>
-      <div class="s2c2-row"><div class="s2c2-dot dot-stop">S2</div><div class="s2c2-text">Shake. Jump 10x. Run. Break the body state.</div></div>
-      <button class="jump-btn" onclick="startJump()">Start 10-Jump Counter →</button>
-      <div class="s2c2-title">Step 3 — Body Language</div>
-      <div class="s2c2-row"><div class="s2c2-dot dot-step">3</div><div class="s2c2-text"><span class="s2c2-green">Chin up. Shoulders back. Chest open. Smile.</span></div></div>
-      <div class="s2c2-title">Step 4 — My Key + Song</div>
-      <div class="s2c2-row"><div class="s2c2-dot dot-step">4</div><div class="s2c2-text"><span class="s2c2-key">${d.key}</span></div></div>
-      ${d.actions.map(a=>`<div class="s2c2-row"><div class="s2c2-dot dot-step">→</div><div class="s2c2-text">${a}</div></div>`).join('')}
-      ${d.nap?'<button class="nap-btn" onclick="startNap()">10-Min Power Nap Timer</button>':''}
-      ${d.breathe?'<button class="breathe-btn" onclick="startBreathe()" style="margin-top:.6rem">4-2-6 Breath</button>':''}
-      <div class="switch-card">
-        <div class="switch-head"><span class="switch-lbl">Now switch to →</span><span style="color:#C0DD97;font-size:14px">↓</span></div>
-        <div class="switch-body">
-          <div class="switch-freq">${pos.name}</div>
-          <div class="switch-phrase">${pos.phrase}</div>
-          <div class="switch-why">${d.posWhy}<br><br>${pos.body}</div>
-          ${pos.breathe?'<button class="breathe-btn g" onclick="startBreathe()" style="margin-bottom:.55rem">4-2-6 Breath</button>':''}
-          <button class="switch-go" onclick="showPos('${posKey}')">Open ${pos.name} Easy Button →</button>
-        </div>
-      </div>
-    </div>
-  </div>`;
-  pushDetail(html);
-}
-function showPos(key){
-  const d=posData[key];if(!d)return;
-  const html=`<div class="d-card">
-    <div class="d-header pos"><div class="d-em">${d.name}</div></div>
-    <div class="d-body">
-      <div class="pos-phrase">${d.phrase}</div>
-      <div class="pos-row"><div class="pos-dot">→</div><div style="font-size:13px;line-height:1.65;color:var(--ink)">${d.body}</div></div>
-      <div class="pos-row" style="margin-top:.45rem"><div class="pos-dot">♪</div><div style="font-size:13px;line-height:1.65;color:var(--ink)"><strong>Song:</strong> ${d.song}</div></div>
-      ${d.breathe?'<button class="breathe-btn g" onclick="startBreathe()" style="margin-top:.7rem">Start 4-2-6 Breath</button>':''}
-    </div>
-  </div>`;
-  pushDetail(html);
-}
-function pushDetail(html){
-  document.getElementById('detail-content').innerHTML=html;
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('detail-screen').classList.add('active');
-  document.getElementById('tabs').style.display='none';
-  document.getElementById('backBtn').classList.add('visible');
-  inDetail=true;window.scrollTo(0,0);
-}
-
-// ═══════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════
-// PLANNER
-// ═══════════════════════════════════════════════════════
-const WEEKDAY=[
-  {id:'w0',time:'Wake',name:'Magic Water — First Thing',cat:'wellness',bell:true,desc:'Before phone. Before anything. One full glass.',subs:['Wake up intentionally','Drink magic water immediately — warm, with intention 🌊','Say: "Today I rise in my power"']},
-  {id:'w1',time:'+5',name:'10 Gratitude Statements',cat:'spirit',bell:true,desc:'Say each out loud. Feel it for 2 seconds.',subs:['Gratitudes 1-5: people, health, home, son, safety','Gratitudes 6-10: career, farmhouse dream, growth, opportunities, today']},
-  {id:'w2',time:'+20',name:'Freshen Up',cat:'self',bell:false,desc:'Bathroom, brush teeth, wash face. Fresh start.',subs:['Bathroom — let the body fully clear','Brush teeth — fresh start ✨','Wash face, feel awake and present']},
-  {id:'w3',time:'+30',name:'Mirror Talk — Self Affirmations',cat:'self',bell:true,desc:'Eyes on yourself. Say each one. Mean it.',subs:['Stand in front of mirror — look into your eyes','Say all affirmations: health, money, career, relationships','End: "I love you, Ashwathi. You are enough."']},
-  {id:'w4',time:'+40',name:"Ho'oponopono — Morning Clear",cat:'spirit',bell:true,desc:'Clear the slate. 4 rounds minimum.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'4 rounds — direct to anyone you carry tension with','More rounds if you feel resistance']},
-  {id:'w5',time:'+50',name:'Morning Affirmations — Mitesh Audio',cat:'spirit',bell:false,desc:'Play while preparing. Let it in.',subs:['All Mitesh affirmations: health, relationships, career, money','Power close — 4 statements','Play while getting ready if needed']},
-  {id:'w6',time:'+1h5',name:'Surya Namaskar — 12 rounds',cat:'wellness',bell:true,desc:'Body before mind. Energy before coffee.',subs:['3 slow warm-up rounds','9 full-pace rounds','2 min Savasana — breathe and absorb']},
-  {id:'w7',time:'+1h25',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson','Aim for 2 lessons on strong days']},
-  {id:'w8',time:'+1h45',name:'Mitesh Khatri — 1 Complete Session',cat:'spirit',bell:true,desc:'Full focus. No multitasking. This rewires you.',subs:['Watch or listen with complete focus','Note 1 key insight to carry into your day']},
-  {id:'w9',time:'+2h15',name:'Oil Massage + Bath + Get Ready',cat:'self',bell:true,desc:'Full self-care. You are stepping into your power.',subs:['Apply oil to scalp — 2-3 mins 🌿','Shower — wash off oil, feel completely renewed','Dress with intention — who is Ash today?','Breakfast: boiled egg + banana or oats 🥣']},
-  {id:'w10',time:'Leave',name:'Leave for Office',cat:'work',bell:true,desc:'18km — commute time is learning time.',subs:['Leave on time','Play French audio or Mitesh during drive','Arrive at 10 AM']},
-  {id:'w11',time:'10:00',name:'Office — Top 2 Priority Tasks',cat:'work',bell:true,desc:'Before email. Before meetings. 2 must-do tasks.',subs:['Write your 2 non-negotiable tasks for today','These get done before anything else','Start with the hardest one first']},
-  {id:'w12',time:'10:15',name:'Record Daily Intention',cat:'work',bell:false,desc:'30 seconds. What is your intention today?',subs:['Say out loud: "Today I will..."','Commit to your energy, presence, and leadership']},
-  {id:'w13',time:'10:30',name:'Water — Morning Round',cat:'wellness',bell:true,desc:'2 glasses before 11 AM.',subs:['Drink 2 full glasses 💧','Cortisol drops. Clarity rises.']},
-  {id:'w14',time:'12:30',name:'Lunch — Nourish the Temple',cat:'wellness',bell:true,desc:'Eat mindfully. Fuel the afternoon.',subs:['Dal khichdi / steak & veggies / fruit bowl 🥗','2 glasses of water with lunch 💧','Rest eyes 5 mins after eating']},
-  {id:'w15',time:'14:00',name:'Water + Check-In — 2 PM',cat:'wellness',bell:true,desc:'Hydrate. Log your emotion.',subs:['Drink 2 glasses of water 💧','Open Check-In tab — log your emotion','If negative — use Emotions tab to fix it now']},
-  {id:'w16',time:'16:00',name:'Water + Check-In — 4 PM',cat:'wellness',bell:true,desc:'Almost through the day. How is Ash?',subs:['Drink 1-2 glasses of water 💧','Log your emotion in Check-In','Finish priority tasks before 6 PM']},
-  {id:'w17',time:'Evening',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Clear the mind.',subs:['Walk 8,000 steps or 30-45 minutes','Listen to French audio or walk in silence','This is decompression time — leave work energy behind']},
-  {id:'w18',time:'21:00',name:'DMP Session — 9 PM',cat:'spirit',bell:true,desc:'DO NOT SKIP. This is the appointment that changes your life.',subs:['Phone silent. 100% presence. No skipping.','Feel the farmhouse — morning light, the feeling of having arrived','Read DMP statement out loud — feel it as already real','Close: "It is done. It is mine. I am grateful."']},
-  {id:'w19',time:'22:00',name:'Dinner',cat:'wellness',bell:true,desc:'Light meal. Eat slowly. Wind-down time.',subs:['Steak & veggies / dal khichdi / fruit + nuts 🍽️','2 glasses of water 💧','Eat slowly. No screens during eating.']},
-  {id:'w20',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the whole day. 4 rounds.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Direct it to the entire day','Let it all go. Sleep from clean.']},
-  {id:'w21',time:'23:00',name:'Sleep',cat:'rest',bell:true,desc:'8 hours. Rest is your first act of manifestation.',subs:['Phone away from bed — not the charger, away','Sleep by 11 PM — non-negotiable','Say: "Tomorrow is already handled."']}
-];
-
-const WEEKEND=[
-  {id:'e0',time:'8:00',name:'Magic Water + Wake Up Ritual',cat:'wellness',bell:true,desc:'Slower start. Same sacred foundation.',subs:['Drink magic water on waking 🌊','Bathroom — no rushing today','Breathe. Today is entirely yours.']},
-  {id:'e1',time:'8:15',name:'10 Gratitude Statements',cat:'spirit',bell:true,desc:'Weekend — go deeper. Feel every single one.',subs:['10 spoken gratitudes — really feel each one','Include gratitude for your son, your parents, your free time']},
-  {id:'e2',time:'8:30',name:'Mirror Talk + Full Affirmations',cat:'self',bell:true,desc:'Longer version. Sit in your power.',subs:['Mirror talk — 5 full minutes, eyes into your own eyes','All Mitesh affirmations: health, relationships, career, money','Power close: "I am Ashwathi. I build things. I lead. I create. I win."']},
-  {id:'e3',time:'8:50',name:"Ho'oponopono — Extended Session",cat:'spirit',bell:true,desc:'Deeper. Longer. Abundance focused.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'10 minutes — money, abundance, clearing all blocks','Visualise the farmhouse in vivid, joyful detail']},
-  {id:'e4',time:'9:10',name:'Surya Namaskar — Full Practice',cat:'wellness',bell:true,desc:'More time today. Go deeper.',subs:['3 slow warm-up rounds','9 full rounds with breath awareness','3 min Savasana — absorb completely']},
-  {id:'e5',time:'9:35',name:'Duolingo French — 2 Lessons',cat:'learn',bell:true,desc:'Weekend push — 2 lessons.',subs:['Lesson 1 — new content','Lesson 2 — review and practice']},
-  {id:'e6',time:'9:55',name:'Mitesh Khatri — 1 Full Session',cat:'spirit',bell:true,desc:'Full session. Take notes.',subs:['Complete focus — zero multitasking',"Journal 3 insights from today's session"]},
-  {id:'e7',time:'10:30',name:'Oil + Bath + Self-Care',cat:'self',bell:true,desc:'Full weekend ritual. Take your time.',subs:['Apply oil to scalp and body — 15 mins 🌿','Full shower — feel completely renewed','Dress comfortably — you deserve ease today']},
-  {id:'e8',time:'11:00',name:'Healthy Breakfast',cat:'wellness',bell:true,desc:'Nourishing weekend breakfast.',subs:['Overnight oats / fruit bowl / eggs 🥣','3 glasses of water by 11 AM 💧','Eat slowly. Enjoy it.']},
-  {id:'e9',time:'11:30',name:'UAE HR — Deep Study Session',cat:'learn',bell:true,desc:'Build the qualification. 2 modules.',subs:['Module study — read fully and take notes','Quiz — target 80%+','Practice 1 interview question aloud (STAR format)','Soft skills: communication, leadership, conflict resolution']},
-  {id:'e10',time:'13:00',name:'Read — 30 Mins',cat:'learn',bell:true,desc:'HR books, personal growth, LOA. Feed your mind.',subs:['1 chapter or 30 minutes — no phone','HR leadership / LOA / anything that builds you']},
-  {id:'e11',time:'13:30',name:'Lunch + Water',cat:'wellness',bell:true,desc:'Nourishing meal. Eat slowly.',subs:['Dal khichdi / steak & veggies / fruit + curd 🍽️','2-3 glasses of water 💧','Short rest after eating']},
-  {id:'e12',time:'14:30',name:'Time with Aaryan — Teach via App',cat:'self',bell:true,desc:'Your son. Your purpose. The most important hour.',subs:['Sit with Aaryan and open your teaching app','Go through one learning session together — maths, English, or whatever he needs','Be fully present. No phone. This is why you build everything.']},
-  {id:'e13',time:'15:30',name:'Tuition Business — Student Outreach',cat:'work',bell:true,desc:'Build your income stream. One action today.',subs:['Reach out to 2 potential students or parents','Prepare one lesson plan or syllabus section','Post 1 LinkedIn/WhatsApp post about your tutoring services']},
-  {id:'e14',time:'16:30',name:'YouTube Content Work',cat:'work',bell:true,desc:'Build the channel. One piece today.',subs:['Script or record 1 HR tip or content video','Edit or upload existing content','YouTube Shorts, LinkedIn Reels — any format that gets you out there']},
-  {id:'e15',time:'17:30',name:'Family Time — Mom, Dad, Aaryan',cat:'self',bell:true,desc:'The people who matter most. Be fully present.',subs:['Phone away','Ask your parents how they are — really listen','Do something together: walk, cook, sit, talk, laugh']},
-  {id:'e16',time:'19:00',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Family walk if possible.',subs:['Walk 8,000 steps or 40 minutes','Take Aaryan or parents if they want to join','This decompresses the whole week']},
-  {id:'e17',time:'21:00',name:'DMP Session — 9 PM',cat:'spirit',bell:true,desc:'Weekend DMP — full presence, no rushing.',subs:['Full session — zero distractions','Feel the farmhouse. Vivid. Real. Already yours.','Journal 1 key insight to carry into the week']},
-  {id:'e18',time:'22:00',name:'Dinner + Water',cat:'wellness',bell:true,desc:'Light evening meal.',subs:['Steak & roasted veggies / khichdi / fruit + curd 🍽️','2 glasses of water 💧','10 min gentle walk after if possible']},
-  {id:'e19',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the week. Return to love.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Release the whole week — every reaction, every friction, every moment','Sleep clean.']},
-  {id:'e20',time:'23:00',name:'Sleep',cat:'rest',bell:true,desc:'Rest and restore. Ready for a great week.',subs:['Phone away from bed','Sleep by 11 PM','Say: "I did enough today. Tomorrow is handled. My family is safe."']}
-];
-
-const STREAK_HABITS=[
-  {id:'water',       name:'5 litres water',           icon:'💧',check:d=>((d.water||0)>=14)},
-  {id:'magicwater',  name:'Magic water first',         icon:'🌊',check:d=>td(d,'w0')||td(d,'e0')},
-  {id:'gratitude',   name:'10 gratitudes',             icon:'🙏',check:d=>td(d,'w1')||td(d,'e1')},
-  {id:'mirror',      name:'Mirror talk',               icon:'🪞',check:d=>td(d,'w3')||td(d,'e2')},
-  {id:'hopo',        name:"Ho'oponopono morning",      icon:'🤍',check:d=>td(d,'w4')||td(d,'e3')},
-  {id:'surya',       name:'Surya Namaskar',            icon:'🌅',check:d=>td(d,'w6')||td(d,'e4')},
-  {id:'french',      name:'Duolingo French',           icon:'🇫🇷',check:d=>td(d,'w7')||td(d,'e5')},
-  {id:'mitesh',      name:'Mitesh session',            icon:'🎯',check:d=>td(d,'w8')||td(d,'e6')},
-  {id:'dmp',         name:'DMP 9 PM',                  icon:'🌙',check:d=>td(d,'w18')||td(d,'e17')},
-  {id:'walk',        name:'Evening walk',              icon:'🚶',check:d=>td(d,'w17')||td(d,'e16')},
-  {id:'uaestudy',    name:'UAE HR study',              icon:'📚',check:d=>td(d,'e9')},
-  {id:'aaryan',      name:'Time with Aaryan',          icon:'💛',check:d=>td(d,'e12')},
-  {id:'family',      name:'Family time',               icon:'💚',check:d=>td(d,'e15')||(S.get('family_log')||{})[new Date().toDateString()]},
-  {id:'tuition',     name:'Tuition prep',              icon:'📖',check:d=>td(d,'e13')},
-  {id:'youtube',     name:'YouTube content',           icon:'🎬',check:d=>td(d,'e14')},
-  {id:'steps',       name:'8,000 steps',               icon:'👟',check:d=>((d.steps||0)>=8000)},
-];
-function td(d,id){return d&&d.tasks&&!!d.tasks[id];}
-
-
-const emSlots=[{h:6,label:'6–8 AM'},{h:8,label:'8–10 AM'},{h:10,label:'10–12 PM'},
-  {h:12,label:'12–2 PM'},{h:14,label:'2–4 PM'},{h:16,label:'4–6 PM'},
-  {h:18,label:'6–8 PM'},{h:20,label:'8–10 PM'},{h:22,label:'10–12 AM'}];
-
-
-
-
-// ═══════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════
-let currentScreen='dash';
-let moreMenuOpen=false;
-let currentDay='weekday';
-let openBlock=null;
-let notifGranted=false;
-let scheduledNotifs={};
-
-// ═══════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════
-function navTo(id,nb){
-  if(inDetail)goBack();
-  currentScreen=id;
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-'+id).classList.add('active');
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  const nbEl=document.getElementById(nb);if(nbEl)nbEl.classList.add('on');
-  window.scrollTo(0,0);clearInterval(clockTimer);
-  if(id==='dash')renderDash();
-  else if(id==='morning')renderMorning();
-  else if(id==='hopo')renderHopo();
-  else if(id==='checkin')renderCheckin();
-  else if(id==='water')renderWater();
-  else if(id==='negative')renderNeg();
-  else if(id==='positive')renderPos();
-  else if(id==='affirm')renderAffirmScreen();
-  else if(id==='evening')renderEvening();
-  else if(id==='nudge')renderNudge();
-  else if(id==='reset')renderReset();
-  else if(id==='install')renderInstall();
-  else if(id==='plan'){initPlanner();}
-  else if(id==='streaks')renderStreaks();
-  else if(id==='history')renderHistory();
-  else if(id==='weekly')renderWeekly();
-}
-
-function toggleMoreMenu(){
-  moreMenuOpen=!moreMenuOpen;
-  document.getElementById('moreMenu').style.display=moreMenuOpen?'block':'none';
-}
-function closeMoreMenu(){moreMenuOpen=false;document.getElementById('moreMenu').style.display='none';}
-document.addEventListener('click',e=>{if(moreMenuOpen&&!e.target.closest('#moreMenu')&&!e.target.closest('.nb'))closeMoreMenu();});
-
-function goBack(){
-  document.getElementById('detail-screen').classList.remove('active');
-  document.getElementById('s-'+currentScreen).classList.add('active');
-  document.getElementById('backBtn').classList.remove('visible');
-  inDetail=false;
-  if(currentScreen==='checkin')startClock();
-}
-
-function pushDetail(html){
-  document.getElementById('detail-content').innerHTML=html;
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('detail-screen').classList.add('active');
-  document.getElementById('tabs').style.display='none';
-  document.getElementById('backBtn').classList.add('visible');
-  inDetail=true;window.scrollTo(0,0);
-}
-
-// ═══════════════════════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════════════════════
-function renderDash(){
-  const mrD=S.get('routine_'+new Date().toDateString())||{};
-  const mrDone=mrD.steps?mrD.steps.filter(Boolean).length:0;
-  const evD=S.get('evening_'+new Date().toDateString())||{};
-  const evDone=evD.steps?evD.steps.filter(Boolean).length:0;
-  const waterD=S.get('water_'+new Date().toDateString())||{ml:0};
-  const waterPct=Math.min(100,Math.round(waterD.ml/WATER_GOAL*100));
-  // use new emlog format
-  const emlog=getEmotionLog();
-  const todayPrefix=new Date().toDateString();
-  const todayEntries=Object.entries(emlog).filter(([k])=>k.startsWith(todayPrefix)).flatMap(([,v])=>v);
-  const posCount=todayEntries.filter(e=>e.type==='pos').length;
-  const negCount=todayEntries.filter(e=>e.type==='neg').length;
-  const n=new Date();const h=n.getHours();
-  const greeting=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let streak=0;
-  for(let i=0;i<30;i++){const d=new Date();d.setDate(d.getDate()-i);const rd=S.get('routine_'+d.toDateString());if(rd&&rd.steps&&rd.steps.filter(Boolean).length>=4)streak++;else if(i>0)break;}
-  // planner progress
-  const all=loadAll();const pday=all[todayKey()];
-  const blocks=currentDay==='weekend'?WEEKEND:WEEKDAY;
-  const planDone=pday?blocks.filter(b=>pday.tasks&&pday.tasks[b.id]).length:0;
-
-  document.getElementById('dash-content').innerHTML=`
-    <div class="dash-greeting">
-      <div class="dash-date">${days[n.getDay()]}, ${n.getDate()} ${months[n.getMonth()]}</div>
-      <div class="dash-name">${greeting}, <strong>Ash</strong> ✦</div>
-      <div class="dash-quote">"${ALL_AFFIRMS[affirmIdx%ALL_AFFIRMS.length]}"</div>
-    </div>
-    <div class="ring-row">
-      <div class="ring-card" onclick="switchTab('morning')">
-        <div class="ring-icon">☀️</div><div class="ring-lbl">Morning</div>
-        <div class="ring-val">${mrDone}/${MR_TOTAL}</div><div class="ring-sub">steps done</div>
-        <div class="prog-wrap" style="margin-top:.35rem"><div class="prog-fill pf-wine" style="width:${Math.round(mrDone/7*100)}%"></div></div>
-      </div>
-      <div class="ring-card" onclick="switchTab('water')">
-        <div class="ring-icon">💧</div><div class="ring-lbl">Water</div>
-        <div class="ring-val">${waterD.ml>=1000?(waterD.ml/1000).toFixed(1)+'L':waterD.ml+'ml'}</div><div class="ring-sub">of 5L</div>
-        <div class="prog-wrap" style="margin-top:.35rem"><div class="prog-fill pf-water" style="width:${waterPct}%"></div></div>
-      </div>
-      <div class="ring-card" onclick="switchTab('plan')">
-        <div class="ring-icon">📋</div><div class="ring-lbl">Planner</div>
-        <div class="ring-val">${planDone}/${blocks.length}</div><div class="ring-sub">tasks done</div>
-        <div class="prog-wrap" style="margin-top:.35rem"><div class="prog-fill pf-pg" style="width:${Math.round(planDone/blocks.length*100)}%"></div></div>
-      </div>
-    </div>
-    <div class="ring-row">
-      <div class="ring-card" onclick="switchTab('evening')">
-        <div class="ring-icon">🌙</div><div class="ring-lbl">Evening</div>
-        <div class="ring-val">${evDone}/6</div><div class="ring-sub">steps</div>
-        <div class="prog-wrap" style="margin-top:.35rem"><div class="prog-fill" style="width:${Math.round(evDone/6*100)}%;background:var(--indigo)"></div></div>
-      </div>
-      <div class="ring-card" onclick="switchTab('checkin')">
-        <div class="ring-icon">🟢</div><div class="ring-lbl">Positive</div>
-        <div class="ring-val" style="color:var(--green)">${posCount}</div><div class="ring-sub">logs today</div>
-      </div>
-      <div class="ring-card">
-        <div class="ring-icon">🔥</div><div class="ring-lbl">Streak</div>
-        <div class="ring-val" style="color:var(--gold)">${streak}</div><div class="ring-sub">days</div>
-      </div>
-    </div>
-    <div class="dash-section-title">Quick Actions</div>
-    <div class="quick-grid">
-      <div class="quick-card" onclick="switchTab('morning')"><div class="qc-icon">☀️</div><div><div class="qc-lbl">Morning Routine</div><div class="qc-sub">${mrDone}/${MR_TOTAL} complete</div></div></div>
-      <div class="quick-card" onclick="switchTab('plan')"><div class="qc-icon">📋</div><div><div class="qc-lbl">Daily Planner</div><div class="qc-sub">${planDone}/${blocks.length} done</div></div></div>
-      <div class="quick-card" onclick="switchTab('hopo')"><div class="qc-icon">🤍</div><div><div class="qc-lbl">Ho'oponopono</div><div class="qc-sub">Clear & release</div></div></div>
-      <div class="quick-card" onclick="showAffirmOv()"><div class="qc-icon">✦</div><div><div class="qc-lbl">Affirmation Now</div><div class="qc-sub">Say one now</div></div></div>
-      <div class="quick-card" onclick="addWater(500);switchTab('water')"><div class="qc-icon">💧</div><div><div class="qc-lbl">+500ml Water</div><div class="qc-sub">${waterPct}% done</div></div></div>
-      <div class="quick-card" onclick="switchTab('evening')"><div class="qc-icon">🌙</div><div><div class="qc-lbl">Evening Routine</div><div class="qc-sub">${evDone}/6 complete</div></div></div>
-    </div>
-    <div class="dash-section-title">Today's Frequency</div>
-    <div class="dash-freq-box"><div class="tl-title">Emotion Log</div>${buildTimelineRows()}</div>`;
-}
-
-// ═══════════════════════════════════════════════════════
-// MORNING ROUTINE
-// ═══════════════════════════════════════════════════════
-function getMr(){const d=S.get('routine_'+new Date().toDateString())||{steps:new Array(11).fill(false),grat:[]};
-  // migrate: extend old 7-step data to 11
-  while(d.steps.length<11)d.steps.push(false);
-  return d;}
-function saveMr(d){S.set('routine_'+new Date().toDateString(),d);}
-
-function renderMorning(){
   const el=document.getElementById('morning-content');
   const d=getMr();
   const done=d.steps.filter(Boolean).length;
   const pct=Math.round(done/MR_TOTAL*100);
+  
   el.innerHTML=`
     <div class="mr-done-banner${done===MR_TOTAL?' show':''}" id="mrDone">
       <div class="mr-done-title">✦ Morning Complete</div>
@@ -2118,21 +1404,20 @@ function renderMorning(){
       <div class="mr-hero-sub" id="mrSub">${done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete'}</div>
     </div>
     ${mrStepHTML(0,d,'🙏','Gratitude — 10 items','Name 10 things. Say each out loud. Feel it.',true)}
-    ${mrStepHTML(1,d,'💧','Drink Water — first glass','Before phone. Before anything. One full glass.',false)}
-    ${mrStepHTML(2,d,'🤍',"Ho'oponopono — Morning",'Clear the slate. 4 rounds minimum.',true)}
+    ${mrStepHTML(1,d,'💧','Magic Water — first glass','Before phone. Before anything. One full glass.',false)}
+    ${mrStepHTML(2,d,'🚿','Freshen Up','Bathroom, brush teeth, wash face.',false)}
     ${mrStepHTML(3,d,'🪞','Mirror Affirmations','Eyes in mirror. Say each one. Mean it.',true)}
-    ${mrStepHTML(4,d,'🎧','Affirmations Audio — Mitesh Khatri','Play while getting ready. Let it in.',true)}
-    ${mrStepHTML(5,d,'🧘','Surya Namaskar — 12 rounds','Body before mind. Energy before coffee.',true)}
-    ${mrStepHTML(6,d,'🦉','Duolingo — 15 mins','Keep the streak. Train the mind daily.',true)}`;
-
-  // Populate gratitude inputs
-  _populateGratGrid();
-  // Mirror affirmations
-  const mat=el.querySelector('#mirrorAffirmText');
-  if(mat)mat.innerHTML=ALL_AFFIRMS.slice(0,3).map((a,i)=>`<div style="margin-bottom:.55rem"><strong>${i+1}.</strong> <em style="color:var(--wine)">${a}</em></div>`).join('');
-  // Audio
-  loadAudioDB().then(blob=>{if(blob)setupAudio(URL.createObjectURL(blob));}).catch(()=>{});
-  if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';
+    ${mrStepHTML(4,d,'🤍',"Ho'oponopono — Morning",'Clear the slate. 4 rounds minimum.',true)}
+    ${mrStepHTML(5,d,'🎧','Morning Affirmations — Mitesh','Play while getting ready. Let it in.',true)}
+    ${mrStepHTML(6,d,'🧘','Surya Namaskar — 12 rounds','Body before mind. Energy before coffee.',true)}
+    ${mrStepHTML(7,d,'🦉','Duolingo French — 15 mins','Protect the streak. Every day.',true)}
+    ${mrStepHTML(8,d,'🎯','Mitesh Khatri — 1 Session','Full focus. This rewires you.',true)}
+    ${mrStepHTML(9,d,'🌿','Oil + Bath + Get Ready','Full self-care. Step into your power.',true)}
+    ${mrStepHTML(10,d,'🚗','Leave for Office','18km — commute = learning time.',false)}
+  `;
+  
+  if(done===MR_TOTAL && document.getElementById('hdrSub'))
+    document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';
 }
 
 function mrStepHTML(i,d,icon,name,hint,expandable){
@@ -2148,42 +1433,88 @@ function mrStepHTML(i,d,icon,name,hint,expandable){
 }
 
 function mrExpandContent(i){
-  // Step 0: Gratitudes
-  if(i===0)return`<div class="mr-expand-body">Say each one out loud. Feel it for 2 seconds.<br><strong style="color:var(--wine)">Don't rush. This sets your frequency for the whole day.</strong></div><div class="grat-grid" id="gratGrid"></div><button class="step-btn step-btn-gold" onclick="saveGratitude()">Save & Complete ✓</button>`;
-  if(i===1)return`<div class="mr-expand-body">Say each one out loud. Feel it for 2 seconds.<br><strong style="color:var(--wine)">Don't rush. This sets your frequency for the whole day.</strong></div><div class="grat-grid" id="gratGrid"></div><button class="step-btn step-btn-gold" onclick="saveGratitude()">Save & Complete ✓</button>`;
-  // Step 3: Mirror affirmations
-  if(i===3)return`<div style="background:var(--gold-bg);border:.5px solid var(--gold);border-radius:8px;padding:.6rem .8rem;margin-bottom:.55rem;font-size:12px;color:var(--ink);line-height:1.5"><strong>Say each affirmation 3 times.</strong> Hand on chest. Eyes on yourself in the mirror. Full feeling.</div><div id="mirrorAffirmText" class="mr-expand-body"></div><button class="step-btn step-btn-wine" onclick="completeMr(3)">Done — I said them all ×3 ✓</button>`;
-  // Step 4: Ho'oponopono
-  if(i===4)return`<div class="mr-expand-body">Eyes closed. Hand on chest.<br><em style="color:var(--indigo);font-size:14px">"I'm sorry. Please forgive me. Thank you. I love you."</em><br><br><strong style="color:var(--wine)">4 rounds minimum. Direct it to anyone you carry tension with.</strong></div><button class="step-btn step-btn-wine" onclick="completeMr(4);switchTab('hopo')">Go to Full Ho'oponopono →</button><button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(4)">Done ✓</button>`;
-  // Step 5: Mitesh audio
-  if(i===5)return`<div class="audio-wrap" id="audioPlayer"><button class="audio-play" id="audioPlayBtn" onclick="toggleAudio()">▶</button><div class="audio-info"><div class="audio-title-txt">Morning Affirmations — Mitesh Khatri</div><div class="audio-status" id="audioStatusTxt">Load file once — saves forever</div><div class="audio-prog-bar" onclick="seekAudio(event)"><div class="audio-prog-fill" id="audioProgFill"></div></div></div><label class="audio-load-lbl" for="audioFileIn">Load</label><input type="file" id="audioFileIn" accept="audio/*" style="display:none" onchange="loadAudioFile(event)"></div><div style="font-size:10px;color:var(--muted);margin-top:.3rem">💡 Tap Load → select your Mitesh Khatri audio → saved for next time.</div><button class="step-btn step-btn-green" onclick="completeMr(5)">Done ✓</button>`;
-  // Step 6: Surya Namaskar
-  if(i===6)return`<div class="mr-expand-body"><strong style="color:var(--wine)">12 rounds.</strong> Each = left + right side.<br>Say: <em style="color:var(--wine)">"My body is strong. My energy is building. I am ready."</em></div><div class="inline-timer" id="suryaTimer"><div class="inline-timer-val" id="suryaTime" style="color:var(--wine)">0:00</div><div class="inline-timer-lbl">elapsed</div></div><button class="step-btn step-btn-outline" id="suryaStartBtn" onclick="startSurya()">▶ Start Timer</button><button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(6)">Done ✓</button>`;
-  // Step 7: Duolingo French
-  if(i===7)return`<div class="mr-expand-body"><strong style="color:var(--wine)">15 minutes. No excuses.</strong><br>The streak is your commitment to the future version of you. She needs this every single day.</div><div class="inline-timer" id="duoTimer"><div class="inline-timer-val" id="duoTime" style="color:var(--green)">15:00</div><div class="inline-timer-lbl">remaining</div></div><button class="step-btn step-btn-outline" id="duoStartBtn" onclick="startDuo()">▶ Start 15-Min Timer</button><button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(7)">Done ✓</button>`;
-  // Step 8: Mitesh Khatri session
-  if(i===8)return`<div class="mr-expand-body"><strong style="color:var(--wine)">One complete session.</strong> Full attention. Note 1 key insight to carry into your day.<br><br>This is the hour that rewires you.</div><button class="step-btn step-btn-wine" onclick="completeMr(8)">Session Complete ✓</button>`;
-  // Step 9: Oil + Bath + Ready
-  if(i===9)return`<div class="mr-expand-body"><strong style="color:var(--wine)">Full self-care ritual.</strong><br>Apply oil to scalp (2-3 mins) 🌿<br>Shower — wash off oil, feel completely renewed.<br>Dress with intention — you are stepping into who Ash is today.<br>Breakfast: boiled egg + banana, or oats 🥣</div><button class="step-btn step-btn-green" onclick="completeMr(9)">Ready — I'm stepping into my power ✓</button>`;
+  if(i===0)return`
+    <div class="mr-expand-body">Say each one out loud. Feel it for 2 seconds.<br>
+    <strong style="color:var(--wine)">Don't rush. This sets your frequency for the whole day.</strong></div>
+    <div class="grat-grid" id="gratGrid0"></div>
+    <button class="step-btn step-btn-gold" onclick="saveGratitude()">✓ Save & Mark Done</button>`;
+  if(i===3)return`
+    <div style="background:var(--gold-bg);border:.5px solid var(--gold);border-radius:8px;padding:.6rem .8rem;margin-bottom:.55rem;font-size:12px;color:var(--ink)">
+    <strong>Say each affirmation 3 times.</strong> Hand on chest. Eyes on yourself. Full feeling.</div>
+    <div id="mirrorAffirmText" class="mr-expand-body"></div>
+    <button class="step-btn step-btn-wine" onclick="completeMr(3)">✓ Done — I said them all</button>`;
+  if(i===4)return`
+    <div class="mr-expand-body">Eyes closed. Hand on chest.<br>
+    <em style="color:var(--indigo);font-size:14px">"I'm sorry. Please forgive me. Thank you. I love you."</em><br><br>
+    <strong style="color:var(--wine)">4 rounds minimum.</strong></div>
+    <button class="step-btn step-btn-wine" onclick="completeMr(4);switchTab('hopo')">Open Full Ho'oponopono →</button>
+    <button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(4)">✓ Done</button>`;
+  if(i===5)return`
+    <div class="audio-wrap" id="audioPlayer">
+      <button class="audio-play" id="audioPlayBtn" onclick="toggleAudio()">▶</button>
+      <div class="audio-info">
+        <div class="audio-title-txt">Morning Affirmations — Mitesh Khatri</div>
+        <div class="audio-status" id="audioStatusTxt">Load file once — saves forever</div>
+        <div class="audio-prog-bar" onclick="seekAudio(event)"><div class="audio-prog-fill" id="audioProgFill"></div></div>
+      </div>
+      <label class="audio-load-lbl" for="audioFileIn">Load</label>
+      <input type="file" id="audioFileIn" accept="audio/*" style="display:none" onchange="loadAudioFile(event)">
+    </div>
+    <button class="step-btn step-btn-green" onclick="completeMr(5)">✓ Done</button>`;
+  if(i===6)return`
+    <div class="mr-expand-body"><strong style="color:var(--wine)">12 rounds.</strong> Left + right = 1 round.<br>
+    <em style="color:var(--wine)">"My body is strong. My energy is building."</em></div>
+    <div class="inline-timer" id="suryaTimer" style="display:none">
+      <div class="inline-timer-val" id="suryaTime" style="color:var(--wine)">0:00</div>
+      <div class="inline-timer-lbl">elapsed</div>
+    </div>
+    <button class="step-btn step-btn-outline" id="suryaStartBtn" onclick="startSurya()">▶ Start Timer</button>
+    <button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(6)">✓ Done</button>`;
+  if(i===7)return`
+    <div class="mr-expand-body"><strong style="color:var(--wine)">15 minutes.</strong> The streak is your commitment to your future self.</div>
+    <div class="inline-timer" id="duoTimer" style="display:none">
+      <div class="inline-timer-val" id="duoTime" style="color:var(--green)">15:00</div>
+      <div class="inline-timer-lbl">remaining</div>
+    </div>
+    <button class="step-btn step-btn-outline" id="duoStartBtn" onclick="startDuo()">▶ Start 15-Min Timer</button>
+    <button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeMr(7)">✓ Done</button>`;
+  if(i===8)return`
+    <div class="mr-expand-body"><strong style="color:var(--wine)">One complete session.</strong> Full attention. Note 1 insight.</div>
+    <button class="step-btn step-btn-wine" onclick="completeMr(8)">✓ Session Complete</button>`;
+  if(i===9)return`
+    <div class="mr-expand-body"><strong style="color:var(--wine)">Full self-care ritual.</strong><br>
+    Oil on scalp 🌿 → shower → dress with intention → breakfast 🥣</div>
+    <button class="step-btn step-btn-green" onclick="completeMr(9)">✓ Ready — stepping into my power</button>`;
   return '';
 }
 
 
-function _populateGratGrid(){
-  const gg=document.getElementById('gratGrid');
-  if(!gg||gg.children.length>0)return; // already populated
-  const d=getMr();
-  for(let i=0;i<10;i++){
-    const inp=document.createElement('input');inp.type='text';inp.className='grat-input';
-    inp.placeholder='Grateful for '+(i+1)+'…';inp.value=d.grat[i]||'';inp.dataset.idx=i;
-    inp.addEventListener('input',e=>{const dd=getMr();dd.grat[parseInt(e.target.dataset.idx)]=e.target.value;saveMr(dd);});
-    gg.appendChild(inp);
+function toggleMr(i){
+  const el=document.getElementById('mrstep-'+i);if(!el)return;
+  const was=el.classList.contains('expanded');
+  document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));
+  if(!was){
+    el.classList.add('expanded');
+    if(i===0){
+      const gg=document.getElementById('gratGrid0');
+      if(gg&&gg.children.length===0){
+        const d=getMr();
+        for(let j=0;j<10;j++){
+          const inp=document.createElement('input');inp.type='text';inp.className='grat-input';
+          inp.placeholder='Grateful for '+(j+1)+'…';inp.value=d.grat[j]||'';inp.dataset.idx=j;
+          inp.addEventListener('input',e=>{const dd=getMr();dd.grat[parseInt(e.target.dataset.idx)]=e.target.value;saveMr(dd);});
+          gg.appendChild(inp);
+        }
+      }
+    }
+    if(i===3){
+      const mat=document.getElementById('mirrorAffirmText');
+      if(mat&&!mat.innerHTML)mat.innerHTML=ALL_AFFIRMS.slice(0,5).map((a,j)=>`<div style="margin-bottom:.5rem"><strong>${j+1}.</strong> <em style="color:var(--wine)">${a}</em></div>`).join('');
+    }
   }
 }
-
-function toggleMr(i){const el=document.getElementById('mrstep-'+i);if(!el)return;const was=el.classList.contains('expanded');document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));if(!was){el.classList.add('expanded');if(i===0)_populateGratGrid();}}
 function completeMr(i){const d=getMr();d.steps[i]=true;saveMr(d);const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-'+i);if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
-function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('.grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-0');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
+function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('#gratGrid0 input, .grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-0');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
 function updateMrProgress(){const d=getMr();const done=d.steps.filter(Boolean).length;const pct=Math.round(done/MR_TOTAL*100);const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';const db=document.getElementById('mrDone');if(db)db.classList.toggle('show',done===MR_TOTAL);if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';}
 
 function startSurya(){document.getElementById('suryaTimer').style.display='block';document.getElementById('suryaStartBtn').textContent='⏱ Running…';clearInterval(suryaInt);suryaSec=0;suryaInt=setInterval(()=>{suryaSec++;const m=Math.floor(suryaSec/60),s=suryaSec%60;const el=document.getElementById('suryaTime');if(el)el.textContent=m+':'+String(s).padStart(2,'0');},1000);}
