@@ -2108,7 +2108,7 @@ function renderMorning(){
   const done=d.steps.filter(Boolean).length;
   const pct=Math.round(done/MR_TOTAL*100);
   el.innerHTML=`
-    <div class="mr-done${done===MR_TOTAL?' show':''}" id="mrDone">
+    <div class="mr-done-banner${done===MR_TOTAL?' show':''}" id="mrDone">
       <div class="mr-done-title">✦ Morning Complete</div>
       <div class="mr-done-sub">You started from your power today.</div>
     </div>
@@ -2126,15 +2126,7 @@ function renderMorning(){
     ${mrStepHTML(6,d,'🦉','Duolingo — 15 mins','Keep the streak. Train the mind daily.',true)}`;
 
   // Populate gratitude inputs
-  const gg=el.querySelector('#gratGrid');
-  if(gg){
-    for(let i=0;i<10;i++){
-      const inp=document.createElement('input');inp.type='text';inp.className='grat-input';
-      inp.placeholder='Grateful for '+(i+1)+'…';inp.value=d.grat[i]||'';inp.dataset.idx=i;
-      inp.addEventListener('input',e=>{const dd=getMr();dd.grat[e.target.dataset.idx]=e.target.value;saveMr(dd);});
-      gg.appendChild(inp);
-    }
-  }
+  _populateGratGrid();
   // Mirror affirmations
   const mat=el.querySelector('#mirrorAffirmText');
   if(mat)mat.innerHTML=ALL_AFFIRMS.slice(0,3).map((a,i)=>`<div style="margin-bottom:.55rem"><strong>${i+1}.</strong> <em style="color:var(--wine)">${a}</em></div>`).join('');
@@ -2176,7 +2168,20 @@ function mrExpandContent(i){
   return '';
 }
 
-function toggleMr(i){const el=document.getElementById('mrstep-'+i);if(!el)return;const was=el.classList.contains('expanded');document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));if(!was)el.classList.add('expanded');}
+
+function _populateGratGrid(){
+  const gg=document.getElementById('gratGrid');
+  if(!gg||gg.children.length>0)return; // already populated
+  const d=getMr();
+  for(let i=0;i<10;i++){
+    const inp=document.createElement('input');inp.type='text';inp.className='grat-input';
+    inp.placeholder='Grateful for '+(i+1)+'…';inp.value=d.grat[i]||'';inp.dataset.idx=i;
+    inp.addEventListener('input',e=>{const dd=getMr();dd.grat[parseInt(e.target.dataset.idx)]=e.target.value;saveMr(dd);});
+    gg.appendChild(inp);
+  }
+}
+
+function toggleMr(i){const el=document.getElementById('mrstep-'+i);if(!el)return;const was=el.classList.contains('expanded');document.querySelectorAll('.mr-step').forEach(s=>s.classList.remove('expanded'));if(!was){el.classList.add('expanded');if(i===0)_populateGratGrid();}}
 function completeMr(i){const d=getMr();d.steps[i]=true;saveMr(d);const el=document.getElementById('mrstep-'+i);if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-'+i);if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
 function saveGratitude(){const d=getMr();const inputs=document.querySelectorAll('.grat-input');if(Array.from(inputs).filter(i=>i.value.trim()).length<3){showToast('Add at least 3 items.');return;}d.grat=Array.from(inputs).map(i=>i.value);d.steps[0]=true;saveMr(d);const el=document.getElementById('mrstep-0');if(el){el.classList.remove('expanded');el.classList.add('done');}const ck=document.getElementById('mrck-0');if(ck){ck.classList.add('done');ck.textContent='✓';}updateMrProgress();}
 function updateMrProgress(){const d=getMr();const done=d.steps.filter(Boolean).length;const pct=Math.round(done/MR_TOTAL*100);const pctEl=document.getElementById('mrPct');if(pctEl)pctEl.textContent=pct+'%';const bar=document.getElementById('mrBar');if(bar)bar.style.width=pct+'%';const sub=document.getElementById('mrSub');if(sub)sub.textContent=done===MR_TOTAL?'Morning complete ✦ You showed up for yourself today.':done+' of '+MR_TOTAL+' complete';const db=document.getElementById('mrDone');if(db)db.classList.toggle('show',done===MR_TOTAL);if(done===MR_TOTAL)document.getElementById('hdrSub').textContent='☀️ Morning complete ✦';}
