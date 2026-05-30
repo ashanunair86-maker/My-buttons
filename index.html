@@ -1409,8 +1409,7 @@ const WEEKDAY=[
   {id:'w4',time:'+40',name:"Ho'oponopono — Morning Clear",cat:'spirit',bell:true,desc:'Clear the slate. 4 rounds minimum.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'4 rounds — direct to anyone you carry tension with']},
   {id:'w5',time:'+42',name:'Morning Affirmations — Mitesh Audio',cat:'spirit',bell:false,desc:'Play while preparing. Let it in.',subs:['All affirmations: health, relationships, career, money','Power close — 4 statements']},
   {id:'w6',time:'+57',name:'Surya Namaskar — 12 rounds',cat:'wellness',bell:true,desc:'Body before mind. Energy before coffee.',subs:['3 slow warm-up rounds','9 full-pace rounds','2 min Savasana']},
-  {id:'wDC',time:'+77',name:'Daily Core — Shloka',cat:'spirit',bell:true,desc:'10 minutes. One shloka. Learn it. Feel it. Recite.',subs:['Tap to open today\'s shloka']},
-  {id:'w7',time:'+97',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson']},
+  {id:'w7',time:'+77',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson']},
   {id:'w8',time:'+92',name:'Mitesh Khatri — 1 Complete Session',cat:'spirit',bell:true,desc:'Full focus. This rewires you.',subs:['Watch or listen with complete focus','Note 1 key insight']},
   {id:'w9',time:'+122',name:'Oil Massage + Bath + Get Ready',cat:'self',bell:true,desc:'Full self-care. You are stepping into your power.',subs:['Apply oil to scalp — 2-3 mins 🌿','Shower — feel completely renewed','Dress with intention 👗','Breakfast: boiled egg + banana 🥣']},
   {id:'w10',time:'Leave',name:'Leave for Office',cat:'work',bell:true,desc:'18km — commute time is learning time.',subs:['Leave on time','Play French audio or Mitesh during drive','Arrive at 10 AM']},
@@ -1434,12 +1433,11 @@ const WEEKEND=[
   {id:'e2',time:'8:30',name:'Mirror Talk + Full Affirmations',cat:'self',bell:true,desc:'Longer version. Sit in your power.',subs:['Mirror talk — 5 full minutes','Power close: "I am Ashwathi. I build. I lead. I win."']},
   {id:'e3',time:'8:50',name:"Ho'oponopono — Extended Session",cat:'spirit',bell:true,desc:'Deeper. Longer. Abundance focused.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'10 minutes — money, abundance, clearing all blocks']},
   {id:'e4',time:'9:10',name:'Surya Namaskar — Full Practice',cat:'wellness',bell:true,desc:'More time today. Go deeper.',subs:['12 rounds + 3 min Savasana']},
-  {id:'eDC',time:'9:30',name:'Daily Core — Shloka',cat:'spirit',bell:true,desc:'10 minutes. One shloka. Learn it. Feel it. Recite.',subs:['Tap to open today\'s shloka']},
+  {id:'eDC',time:'9:30',name:'Daily Core — Shloka',cat:'spirit',bell:true,desc:'10 minutes. One shloka. Learn it. Feel it.',subs:['Tap to open today\'s shloka']},
   {id:'e5',time:'9:50',name:'Duolingo French — 2 Lessons',cat:'learn',bell:true,desc:'Weekend push.',subs:['Lesson 1 — new content','Lesson 2 — review']},
   {id:'e6',time:'9:55',name:'Mitesh Khatri — 1 Full Session',cat:'spirit',bell:true,desc:'Full session. Take notes.',subs:['Complete focus — zero multitasking']},
   {id:'e7',time:'10:30',name:'Oil + Bath + Self-Care',cat:'self',bell:true,desc:'Full weekend ritual.',subs:['Apply oil — 15 mins 🌿','Full shower — feel renewed']},
   {id:'e8',time:'11:00',name:'Healthy Breakfast',cat:'wellness',bell:true,desc:'Nourishing weekend breakfast.',subs:['Overnight oats / fruit / eggs 🥣','3 glasses of water 💧']},
-  {id:'e9',time:'11:30',name:'UAE HR — Deep Study Session',cat:'learn',bell:true,desc:'Build the qualification.',subs:['Module study — read + take notes','Quiz — target 80%+','Practice 1 interview question (STAR)']},
   {id:'e10',time:'13:00',name:'Read — 30 Mins',cat:'learn',bell:true,desc:'Feed your mind.',subs:['1 chapter or 30 minutes — no phone']},
   {id:'e11',time:'13:30',name:'Lunch + Water',cat:'wellness',bell:true,desc:'Nourishing meal.',subs:['Dal khichdi / steak & veggies 🍽️','2-3 glasses 💧']},
   {id:'e12',time:'14:30',name:'Time with Aaryan — Teach via App',cat:'self',bell:true,desc:'Your son. Your purpose.',subs:['Sit with Aaryan and open your teaching app','Be fully present. No phone.']},
@@ -4243,6 +4241,8 @@ _loadAll().then(()=>{
   }
   notifEnabled=S.get('notif_on')===true;
   updateNotifBtn();updateClock();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
+  // Show time-aware prompt after 1.5s delay
+  setTimeout(showTimeAwarePrompt, 1500);
 }).catch(()=>{
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
   updateNotifBtn();scheduleNudge();renderDash();
@@ -4983,13 +4983,130 @@ function showNudgeOv(icon, title, body, action){
 
 
 // ═══════════════════════════════════════════════════════
-// DAILY CORE — Shloka rotation (4-day rolling cycle)
+// TIME-AWARE PROMPT — shows on every app open
+// ═══════════════════════════════════════════════════════
+function getTimeAwareTask(){
+  const w=getWakeHour();
+  const now=new Date();
+  const h=now.getHours();
+  const m=now.getMinutes();
+  const totalMins=h*60+m;
+  const wMins=w*60;
+  const diff=totalMins-wMins;
+  // Morning sequence tasks based on wake-relative time
+  const tasks=[
+    {from:0,   to:2,   icon:'💧', title:'Magic Water — right now',      body:'Before phone. Before anything. One full glass.',           action:'water',   tab:'morning'},
+    {from:2,   to:12,  icon:'🙏', title:'10 Gratitudes',                body:'Say each one out loud. Feel it for 2 seconds.',            action:'gratitude',tab:'morning'},
+    {from:12,  to:27,  icon:'🪞', title:'Mirror + Affirmations',        body:'Eyes on yourself. Say each one. Mean it.',                 action:'mirror',  tab:'morning'},
+    {from:27,  to:42,  icon:'🤍', title:"Ho'oponopono",                 body:'4 rounds minimum. Clear the slate.',                       action:'hopo',    tab:'hopo'},
+    {from:42,  to:62,  icon:'🌅', title:'Surya Namaskar — 20 min',      body:'12 rounds. Body before mind.',                             action:'surya',   tab:'morning'},
+    {from:62,  to:92,  icon:'🎧', title:'Mitesh Audio — 30 min',        body:'Full session. Tune your frequency.',                       action:'mitesh',  tab:'morning'},
+    {from:92,  to:112, icon:'🇫🇷', title:'Duolingo — 20 min',           body:'Protect the streak. Every day.',                           action:'duolingo',tab:'morning'},
+    {from:112, to:142, icon:'🌿', title:'Bath + Get Ready',             body:'Full self-care. Step into your power.',                    action:'ready',   tab:'morning'},
+    {from:142, to:180, icon:'🚗', title:'Leave for Office',             body:'Commute time = learning time.',                            action:'plan',    tab:'plan'},
+    // Office hours — fixed clock times
+    {from:150, to:160, icon:'💧', title:'Drink water — Slot 1',         body:'One full glass now.',                                      action:'water',   tab:'habits', fixed:true, fh:10, fm:30},
+    {from:160, to:180, icon:'🚶', title:'5-min walk — Slot 1',          body:'Quick walk. Clear the mind.',                              action:'walk',    tab:'habits', fixed:true, fh:10, fm:40},
+    {from:180, to:270, icon:'📋', title:'Office — Focus time',          body:'Top 2 priorities. Before email.',                         action:'plan',    tab:'plan'},
+    {from:270, to:280, icon:'💧', title:'Drink water — Slot 2',         body:'Keep going toward 5L.',                                   action:'water',   tab:'habits', fixed:true, fh:12, fm:30},
+    {from:280, to:300, icon:'🚶', title:'5-min walk — Slot 2',          body:'Lunch walk. Reset energy.',                               action:'walk',    tab:'habits', fixed:true, fh:12, fm:40},
+    {from:300, to:390, icon:'⚡', title:'Afternoon check-in',           body:'How are you feeling right now?',                          action:'checkin', tab:'habits'},
+    {from:390, to:400, icon:'💧', title:'Drink water — Slot 3',         body:'Mid-afternoon push.',                                     action:'water',   tab:'habits', fixed:true, fh:14, fm:30},
+    {from:400, to:420, icon:'🚶', title:'5-min walk — Slot 3',          body:'Afternoon walk.',                                         action:'walk',    tab:'habits', fixed:true, fh:14, fm:40},
+    {from:420, to:510, icon:'😌', title:'Unclench + check-in',          body:'Jaw. Shoulders. Hands. Breathe.',                         action:'checkin', tab:'habits'},
+    {from:510, to:520, icon:'💧', title:'Drink water — Slot 4',         body:'One more glass.',                                         action:'water',   tab:'habits', fixed:true, fh:16, fm:30},
+    {from:520, to:540, icon:'🚶', title:'5-min walk — Slot 4',          body:'End of afternoon walk.',                                  action:'walk',    tab:'habits', fixed:true, fh:16, fm:40},
+    {from:540, to:660, icon:'✨', title:'Affirmation + check-in',       body:'Say one affirmation out loud. Mean it.',                  action:'affirm',  tab:'habits'},
+    {from:660, to:670, icon:'💧', title:'Last water push',              body:'Almost at 5L. Drink now.',                                action:'water',   tab:'habits'},
+    {from:670, to:690, icon:'🚶', title:'Evening walk',                 body:'Move before DMP. Clear everything.',                      action:'walk',    tab:'habits'},
+    {from:690, to:720, icon:'💛', title:'Time with Aaryan',             body:'Real conversation. Teach. Be present.',                   action:'plan',    tab:'plan'},
+    {from:720, to:780, icon:'🤍', title:"Ho'oponopono — Evening",       body:'Release the day. 4 rounds.',                              action:'hopo',    tab:'hopo'},
+    {from:780, to:840, icon:'🎯', title:'DMP — DO NOT SKIP',            body:'YOUR VISION. Phone silent. Full presence.',               action:'dmp',     tab:'evening'},
+    {from:840, to:870, icon:'🪞', title:'Mirror moment',               body:'Look at yourself. I am enough. Mean it.',                 action:'mirror',  tab:'morning'},
+    {from:870, to:900, icon:'✦',  title:'Evening Affirmations',         body:'Last thing the mind hears tonight.',                      action:'affirm',  tab:'evening'},
+    {from:900, to:960, icon:'📵', title:'Phone Away — Sleep now',       body:'Tomorrow is handled. Rest now.',                          action:'sleep',   tab:'evening'},
+  ];
+  // Match current time to task
+  for(const t of tasks){
+    if(diff>=t.from && diff<t.to) return t;
+  }
+  // Default based on time of day
+  if(h>=23||h<w) return {icon:'😴',title:'Rest time',body:'Sleep is your first act of manifestation.',action:'sleep',tab:'evening'};
+  return {icon:'📋',title:'Check your planner',body:'See what needs attention now.',action:'plan',tab:'plan'};
+}
+
+let _tapPromptShown=false;
+let _lastPromptTime=0;
+
+function showTimeAwarePrompt(){
+  // Don't show too frequently — max once per 30 mins
+  const now=Date.now();
+  if(now-_lastPromptTime < 30*60*1000 && _tapPromptShown) return;
+  const task=getTimeAwareTask();
+  if(!task) return;
+  // Don't show sleep prompt during day or ready/leave prompts at night
+  const h=new Date().getHours();
+  if(task.action==='sleep' && h>6 && h<21) return;
+  _lastPromptTime=now;
+  _tapPromptShown=true;
+  const existing=document.getElementById('tapPromptOv');
+  if(existing)existing.remove();
+  const ov=document.createElement('div');
+  ov.id='tapPromptOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:3500;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML=`
+    <div style="background:var(--cream);border-radius:18px 18px 0 0;padding:1.4rem 1.1rem 2.5rem;width:100%;max-width:480px">
+      <div style="width:38px;height:4px;background:var(--border);border-radius:99px;margin:0 auto .9rem"></div>
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+        <div style="font-size:36px;line-height:1">${task.icon}</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">RIGHT NOW</div>
+          <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:1.2">${task.title}</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:1.2rem;padding-left:.2rem;line-height:1.5">${task.body}</div>
+      <button onclick="_tapPromptGo('${task.action}','${task.tab}')" style="width:100%;background:var(--wine);color:var(--cream);border:none;border-radius:12px;padding:.9rem;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:.5rem">
+        ${task.icon} Start now →
+      </button>
+      <button onclick="_tapPromptDismiss()" style="width:100%;background:var(--cream-2);color:var(--muted);border:.5px solid var(--border);border-radius:12px;padding:.7rem;font-size:13px;font-weight:600;cursor:pointer">
+        Already done — skip
+      </button>
+    </div>`;
+  document.body.appendChild(ov);
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+}
+
+function _tapPromptGo(action, tab){
+  const ov=document.getElementById('tapPromptOv');
+  if(ov)ov.remove();
+  switchTab(tab);
+  setTimeout(()=>{
+    if(action==='water')     showWaterOv('💧 Time for water','One full glass right now.');
+    else if(action==='walk') showWalkOv('🚶 5-min walk','Move the body. Clear the mind.');
+    else if(action==='mirror')showMirrorOv();
+    else if(action==='hopo') showHopoChoice();
+    else if(action==='surya') showSuryaOv();
+    else if(action==='dmp')  showDmpOv();
+    else if(action==='affirm')showAffirmOv();
+    else if(action==='shloka')showShlokaOv();
+    else if(action==='checkin'){const slots=eftGetSlots();const h=new Date().getHours();const match=slots.find(s=>Math.abs(s.h-h)<=1)||slots[0];if(match)eftOpenSlot(match.h,match.label);}
+  },300);
+}
+
+function _tapPromptDismiss(){
+  const ov=document.getElementById('tapPromptOv');
+  if(ov)ov.remove();
+}
+
+
+// ═══════════════════════════════════════════════════════
+// DAILY CORE — Shloka system with 108 counter
 // ═══════════════════════════════════════════════════════
 const SHLOKAS=[
   {id:'vakratunda',name:'Vakratunda Mahakaya',deity:'Ganesha',icon:'🐘',
    purpose:'Remove obstacles. Begin with clarity.',
    lines:[
-    {devanagari:'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ',roman:'Vakratunda Mahakaya Suryakoti Samaprabha',meaning:'O Lord with a curved trunk and a mighty body, radiant as a million suns'},
+    {devanagari:'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ',roman:'Vakratunda Mahakaya Suryakoti Samaprabha',meaning:'O Lord with a curved trunk and mighty body, radiant as a million suns'},
     {devanagari:'निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा',roman:'Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada',meaning:'Please make all my work free of obstacles, always'}
    ]},
   {id:'yadevi',name:'Ya Devi Sarvabhuteshu',deity:'Durga',icon:'🌸',
@@ -5000,15 +5117,16 @@ const SHLOKAS=[
    ]},
   {id:'mahamrityunjaya',name:'Maha Mrityunjaya',deity:'Shiva',icon:'🔱',
    purpose:'Heal. Protect. Conquer fear.',
+   count108:true,
    lines:[
-    {devanagari:'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्',roman:'Om Tryambakam Yajamahe Sugandhim Pushtivardhanam',meaning:'We worship the three-eyed Lord Shiva who is fragrant and nourishes all beings'},
-    {devanagari:'उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय माऽमृतात्',roman:'Urvarukamiva Bandhanat Mrityormukshiya Mamritat',meaning:'May He liberate us from death as a ripened cucumber from its vine, never from immortality'}
+    {devanagari:'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्',roman:'Om Tryambakam Yajamahe Sugandhim Pushtivardhanam',meaning:'We worship the three-eyed Lord Shiva, fragrant and nourishing'},
+    {devanagari:'उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय माऽमृतात्',roman:'Urvarukamiva Bandhanat Mrityormukshiya Mamritat',meaning:'May He liberate us from death as a ripened cucumber from its vine'}
    ]},
   {id:'shantakaram',name:'Shantakaram Bhujagashayanam',deity:'Vishnu',icon:'🪷',
    purpose:'Invite peace. Rest in divine protection.',
    lines:[
     {devanagari:'शान्ताकारं भुजगशयनं पद्मनाभं सुरेशम्',roman:'Shantakaram Bhujagashayanam Padmanabham Suresham',meaning:'Peaceful, resting on the serpent, lotus-naveled, lord of gods'},
-    {devanagari:'विश्वाधारं गगनसदृशं मेघवर्णं शुभाङ्गम्',roman:'Vishvadharam Gaganasadrisham Meghavarnam Shubhangam',meaning:'Support of the universe, vast as the sky, cloud-coloured, auspicious form'},
+    {devanagari:'विश्वाधारं गगनसदृशं मेघवर्णं शुभाङ्गम्',roman:'Vishvadharam Gaganasadrisham Meghavarnam Shubhangam',meaning:'Support of the universe, vast as the sky, cloud-coloured'},
     {devanagari:'लक्ष्मीकान्तं कमलनयनं योगिभिर्ध्यानगम्यम्',roman:'Lakshmikantam Kamalanayanam Yogibhirdhyanagamyam',meaning:'Beloved of Lakshmi, lotus-eyed, meditated upon by yogis'},
     {devanagari:'वन्दे विष्णुं भवभयहरं सर्वलोकैकनाथम्',roman:'Vande Vishnum Bhavabhayaharam Sarvalokaikanatham',meaning:'I bow to Vishnu, remover of worldly fears, lord of all worlds'}
    ]}
@@ -5020,22 +5138,29 @@ function getTodayShloka(){
   return SHLOKAS[dayOfYear%4];
 }
 
-let _shlokaLineIdx=0,_currentShloka=null;
+let _shlokaLineIdx=0,_currentShloka=null,_shloka108Count=0,_shloka108Mode=false;
 
-function showShlokaOv(){
-  _currentShloka=getTodayShloka();
+function showShlokaOv(forceId){
+  _currentShloka=forceId?SHLOKAS.find(s=>s.id===forceId)||getTodayShloka():getTodayShloka();
   _shlokaLineIdx=0;
-  _renderShlokaLine();
+  _shloka108Count=0;
+  _shloka108Mode=false;
+  _renderShlokaOv();
   document.getElementById('shlokaOv').classList.add('active');
 }
 
-function _renderShlokaLine(){
+function _renderShlokaOv(){
   const s=_currentShloka;
+  const isToday=s.id===getTodayShloka().id;
+  document.getElementById('shlokaOvIcon').textContent=s.icon;
+  document.getElementById('shlokaOvDeity').textContent=s.deity+' · '+s.name+(isToday?' · Today':'');
+  document.getElementById('shlokaOvPurpose').textContent=s.purpose;
+  if(_shloka108Mode){
+    _render108Mode();
+    return;
+  }
   const line=s.lines[_shlokaLineIdx];
   const total=s.lines.length;
-  document.getElementById('shlokaOvIcon').textContent=s.icon;
-  document.getElementById('shlokaOvDeity').textContent=s.deity+' · '+s.name;
-  document.getElementById('shlokaOvPurpose').textContent=s.purpose;
   document.getElementById('shlokaOvDevanagari').textContent=line.devanagari;
   document.getElementById('shlokaOvRoman').textContent=line.roman;
   document.getElementById('shlokaOvMeaning').textContent=line.meaning;
@@ -5043,17 +5168,58 @@ function _renderShlokaLine(){
   const bar=document.getElementById('shlokaOvBar');
   if(bar)bar.style.width=((_shlokaLineIdx+1)/total*100)+'%';
   const btn=document.getElementById('shlokaOvNext');
-  if(btn)btn.textContent=_shlokaLineIdx<total-1?'Next line →':'Done — I recited it ✓';
+  if(btn)btn.textContent=_shlokaLineIdx<total-1?'Next line →':s.count108?'Start 108 Jaap →':'Done — I recited it ✓';
+  // Browse buttons
+  const browse=document.getElementById('shlokaOvBrowse');
+  if(browse){
+    browse.innerHTML=SHLOKAS.map(sh=>
+      '<button onclick="showShlokaOv(\''+sh.id+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:.5px solid var(--border);background:'+(sh.id===s.id?'rgba(255,210,100,.3)':'rgba(255,255,255,.05)')+';color:rgba(255,255,255,.7);margin:.2rem">'+sh.icon+' '+sh.deity+'</button>'
+    ).join('');
+  }
+}
+
+function _render108Mode(){
+  const s=_currentShloka;
+  const pct=Math.round(_shloka108Count/108*100);
+  document.getElementById('shlokaOvDevanagari').textContent=s.lines[0].devanagari;
+  document.getElementById('shlokaOvRoman').textContent=s.lines[0].roman;
+  document.getElementById('shlokaOvMeaning').textContent='Tap the counter each time you complete one recitation';
+  document.getElementById('shlokaOvProgress').textContent=_shloka108Count+' / 108';
+  const bar=document.getElementById('shlokaOvBar');
+  if(bar)bar.style.width=pct+'%';
+  const btn=document.getElementById('shlokaOvNext');
+  if(btn){
+    btn.style.cssText='width:100%;padding:1.2rem;border-radius:12px;border:.5px solid rgba(255,210,100,.4);background:rgba(255,210,100,.15);color:rgba(255,210,100,.9);font-size:28px;font-weight:700;cursor:pointer;margin-bottom:.5rem';
+    btn.textContent=_shloka108Count>=108?'Complete ✓':'Tap — '+(_shloka108Count)+'/108';
+  }
 }
 
 function shlokaOvNext(){
+  if(_shloka108Mode){
+    if(_shloka108Count<108){
+      _shloka108Count++;
+      if(navigator.vibrate)navigator.vibrate(40);
+      _render108Mode();
+      if(_shloka108Count===108){
+        const tk=todayKey();S.set('shloka_done_'+tk,true);
+        showToast('🔱 108 Mrityunjaya complete! Powerful.');
+        if(navigator.vibrate)navigator.vibrate([200,100,200,100,400]);
+      }
+    } else {
+      document.getElementById('shlokaOv').classList.remove('active');
+      if(currentTab==='plan')renderSchedule();
+    }
+    return;
+  }
   const total=_currentShloka.lines.length;
   if(_shlokaLineIdx<total-1){
     _shlokaLineIdx++;
-    _renderShlokaLine();
+    _renderShlokaOv();
+  } else if(_currentShloka.count108){
+    _shloka108Mode=true;
+    _render108Mode();
   } else {
-    const tk=todayKey();
-    S.set('shloka_done_'+tk,true);
+    const tk=todayKey();S.set('shloka_done_'+tk,true);
     document.getElementById('shlokaOv').classList.remove('active');
     showToast('🙏 '+_currentShloka.name+' complete');
     if(currentTab==='plan')renderSchedule();
@@ -5073,48 +5239,41 @@ function _injectShloka(blockId){
   const div=document.createElement('div');
   div.id='inline-shloka-'+blockId;
   div.style.cssText='padding:.75rem';
-  // Header
   const hdr=document.createElement('div');
-  hdr.style.cssText='display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem';
-  hdr.innerHTML='<div style="font-size:28px">'+s.icon+'</div><div><div style="font-size:13px;font-weight:700;color:var(--ink)">'+s.name+'</div><div style="font-size:11px;color:var(--muted)">'+s.deity+' · '+s.purpose+'</div></div>';
-  // First line preview
+  hdr.style.cssText='display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem';
+  hdr.innerHTML='<div style="font-size:28px">'+s.icon+'</div><div><div style="font-size:13px;font-weight:700;color:var(--ink)">'+s.name+'</div><div style="font-size:11px;color:var(--muted)">'+s.deity+' · Today</div></div>';
   const preview=document.createElement('div');
   preview.style.cssText='background:var(--cream-2);border-radius:8px;padding:.6rem .8rem;margin-bottom:.5rem';
   preview.innerHTML='<div style="font-size:17px;color:var(--ink);font-family:serif;line-height:1.6;margin-bottom:.3rem">'+s.lines[0].devanagari+'</div><div style="font-size:11px;color:var(--wine);font-style:italic;margin-bottom:.3rem">'+s.lines[0].roman+'</div><div style="font-size:11px;color:var(--muted)">'+s.lines[0].meaning+'</div>';
-  // Open button
+  // Browse all shlokas row
+  const browseRow=document.createElement('div');
+  browseRow.style.cssText='display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem';
+  SHLOKAS.forEach(sh=>{
+    const btn=document.createElement('button');
+    btn.style.cssText='padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:.5px solid var(--border);background:'+(sh.id===s.id?'var(--wine)':'var(--cream-2)')+';color:'+(sh.id===s.id?'white':'var(--muted)');
+    btn.textContent=sh.icon+' '+sh.deity;
+    btn.addEventListener('click',function(){showShlokaOv(sh.id);});
+    browseRow.appendChild(btn);
+  });
   const openBtn=document.createElement('button');
   openBtn.style.cssText='width:100%;background:linear-gradient(135deg,#0A0A2A,#1A1A4A);color:rgba(255,210,100,.9);border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:.4rem';
-  openBtn.textContent='Open Full Shloka';
-  openBtn.onclick=function(){showShlokaOv();};
-  // Done button
+  openBtn.textContent='Open Full Shloka'+(s.count108?' + 108 Jaap':'');
+  openBtn.addEventListener('click',function(){showShlokaOv(s.id);});
   const doneEl=document.createElement(done?'div':'button');
   if(done){
     doneEl.style.cssText='font-size:11px;color:var(--green);text-align:center;padding:.3rem';
     doneEl.textContent='Done today';
   } else {
     doneEl.style.cssText='width:100%;background:var(--green);color:white;border:none;border-radius:7px;padding:.6rem;font-size:13px;font-weight:600;cursor:pointer';
-    doneEl.textContent='Done - I recited it';
-    doneEl.onclick=function(){_markPlannerDone(blockId);};
+    doneEl.textContent='Done — I recited it';
+    doneEl.addEventListener('click',function(){_markPlannerDone(blockId);});
   }
   div.appendChild(hdr);
   div.appendChild(preview);
+  div.appendChild(browseRow);
   div.appendChild(openBtn);
   div.appendChild(doneEl);
   sub.appendChild(div);
-}
-
-
-// Auto-schedule tomorrow's notifications at midnight
-function scheduleNextDayAtMidnight(){
-  const now=new Date();
-  const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,1,0);
-  const delay=midnight-now;
-  setTimeout(async ()=>{
-    console.log('[Notif] Midnight — scheduling fresh notifications for today');
-    await scheduleNotifications();
-    scheduleNextDayAtMidnight(); // set up next midnight too
-  }, delay);
-  console.log('[Notif] Next auto-schedule in '+Math.round(delay/60000)+' minutes');
 }
 
 async function scheduleNotifications(wakeHour){
@@ -5162,21 +5321,17 @@ async function scheduleNotifications(wakeHour){
     // Helper: fixed time
     function ft(h,m){return{hour:h,minute:m};}
     // Base notification entry
-    // Build actual today's date for each notification time
-    function n(id,title,body,sched){
-      const now=new Date();
-      const fireDate=new Date(now.getFullYear(),now.getMonth(),now.getDate(),sched.hour,sched.minute,0);
-      // If time already passed today, skip (return null — filtered below)
-      if(fireDate<=now) return null;
+    function n(id,title,body,schedule){
       return{
         id, title, body,
-        schedule:{at:fireDate, repeats:false, allowWhileIdle:true},
+        schedule:{on:schedule, repeats:true, allowWhileIdle:true},
         actionTypeId:'ASH_ALARM',
         channelId:'mybuttons-main',
         sound:'default',
-        extra:{v:'1'},
+        extra:{v:'1', action: 'open'},
         autoCancel:true,
         ongoing:false,
+        // Samsung Android 16 — force heads-up popup
         smallIcon:'ic_stat_icon_config_sample',
         iconColor:'#B07830',
       };
@@ -5228,6 +5383,7 @@ async function scheduleNotifications(wakeHour){
       // Night prep reminder — every night 10:10 PM
       n(53, 'Methi + Magic Water', 'Soak methi seeds. Fill magic water. 2 minutes.', {hour:22,minute:10}),
       // ── MINDSET + FREQUENCY NUDGES (wake-relative) ──
+      n(61, 'Daily Core — Shloka time',  'Your shloka for today. 10 minutes.',            wa(77)),
       n(54, 'Breathe',                   '4 counts in. 2 hold. 6 out. Three rounds.',    wa(60)),
       n(55, 'One gratitude',             'Name one thing. Say it out loud. Feel it.',    wa(270)),
       n(56, 'Unclench everything',       'Jaw. Shoulders. Hands. Breathe out slowly.',   wa(420)),
@@ -5240,12 +5396,9 @@ async function scheduleNotifications(wakeHour){
       n(51, 'Mitesh Audio not done yet', 'Still time — tune your frequency.',            ft(19,30)),
     ];
 
-    const validNotifs=notifs.filter(x=>x!==null);
-    console.log('[Notif] Scheduling '+validNotifs.length+' notifications for today');
-    await LocalNotifications.schedule({notifications:validNotifs});
+    await LocalNotifications.schedule({notifications:notifs});
     localStorage.setItem('mb_notif_scheduled_date', new Date().toDateString());
     localStorage.setItem('mb_notif_wake_hour', String(w));
-    console.log('[Notif] Scheduled for today: wake='+w+'AM');
     localStorage.setItem('mb_wake_hour', String(w));
     console.log('[Notif] Scheduled '+notifs.length+' notifications for wake='+w+':00');
     return true;
@@ -5329,7 +5482,6 @@ async function setupNotifListener(){
     32:{tab:'habits',  icon:'🚶', action:'walk'},
     53:{tab:'plan',    icon:'🌿', action:'nightprep'},
     54:{tab:'morning', icon:'🌬️', action:'breathe'},
-    61:{tab:'plan',    icon:'🙏',  action:'shloka'},
     55:{tab:'habits',  icon:'🙏', action:'grateful'},
     56:{tab:'habits',  icon:'😌', action:'unclench'},
     57:{tab:'morning', icon:'✨', action:'affirm'},
@@ -5399,7 +5551,6 @@ async function setupNotifListener(){
       if(route.action==='dmp'){showDmpOv();return;}
       if(route.action==='freqcheck'){showFreqOv(notif.title);return;}
       if(route.action==='hopo'){showHopoChoice();return;}
-      if(route.action==='shloka'){showShlokaOv();return;}
       if(route.action==='nightprep'){
         switchTab('plan');
         setTimeout(()=>{const b=getBlocks().find(x=>x.id==='w21a'||x.id==='e21a');if(b){openBlock=b.id;renderSchedule();toggleBlock(b.id);}},600);
@@ -6316,7 +6467,6 @@ function switchTab(tab){
   else if(tab==='vision')renderVision();
   else if(tab==='plan'){
   initPlanner();
-  // Fallback re-render after 400ms in case rAF wasn't enough (notification cold start)
   setTimeout(()=>{
     const el=document.getElementById('schedule');
     if(el&&el.children.length===0)renderSchedule();
@@ -6432,6 +6582,8 @@ _loadAll().then(()=>{
   }
   notifEnabled=S.get('notif_on')===true;
   updateNotifBtn();updateClock();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
+  // Show time-aware prompt after 1.5s delay
+  setTimeout(showTimeAwarePrompt, 1500);
 }).catch(()=>{
   clearTimeout(_loadTimeout);
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
@@ -7100,20 +7252,22 @@ setTimeout(function(){updateSOSBtn();},600);
 
 <!-- ══ DAILY CORE SHLOKA OVERLAY ══ -->
 <div class="ov" id="shlokaOv" style="z-index:2100;background:linear-gradient(160deg,#0A0A2A,#050515);overflow-y:auto;justify-content:flex-start;padding:2rem 1.2rem 3rem">
-  <div style="text-align:center;margin-bottom:1rem">
+  <div style="text-align:center;margin-bottom:.8rem">
     <div style="font-size:48px;margin-bottom:.3rem" id="shlokaOvIcon">🐘</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,210,100,.6);margin-bottom:.2rem" id="shlokaOvDeity">Ganesha</div>
     <div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic" id="shlokaOvPurpose">Remove obstacles.</div>
   </div>
+  <!-- Browse all shlokas -->
+  <div id="shlokaOvBrowse" style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;margin-bottom:.8rem"></div>
   <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:.5rem">
     <div id="shlokaOvBar" style="height:3px;background:rgba(255,210,100,.7);border-radius:2px;width:50%;transition:width .3s"></div>
   </div>
-  <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:1rem" id="shlokaOvProgress">Line 1 of 2</div>
+  <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:.8rem" id="shlokaOvProgress">Line 1 of 2</div>
   <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem;text-align:center">
     <div style="font-size:22px;color:white;line-height:1.7;font-family:serif;margin-bottom:.6rem" id="shlokaOvDevanagari">वक्रतुण्ड महाकाय</div>
     <div style="font-size:13px;color:rgba(255,210,100,.8);font-style:italic;line-height:1.5" id="shlokaOvRoman">Vakratunda Mahakaya</div>
   </div>
-  <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.5rem;border:.5px solid rgba(255,255,255,.08)">
+  <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.2rem;border:.5px solid rgba(255,255,255,.08)">
     <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.4rem">Meaning</div>
     <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.6" id="shlokaOvMeaning">O Lord with a curved trunk</div>
   </div>
