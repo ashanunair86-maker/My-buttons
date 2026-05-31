@@ -2056,6 +2056,7 @@ function renderHopo(){
       ${catBtn('money','💰','Money')}
       ${catBtn('gratitude','🙏','Gratitude')}
       ${catBtn('recovery','💛','Recovery')}
+      ${catBtn('evening','🌙','Evening Close')}
     </div>
 
     <div class="hopo-script-wrap">
@@ -2119,6 +2120,7 @@ function hopoComplete(){
       money:'✅ Money cleared — I am open to abundance.',
       gratitude:'✅ Gratitude complete — I choose abundance today.',
       recovery:'✅ I am not trying to forget him. I am trying to remember myself.',
+      evening:'✅ Day released. I choose peace. I am ready to begin again.',
     };
     banner.textContent=msgs[_hopoScript]||'✅ Session Complete — Cleared & Recorded';
     banner.style.display='block';
@@ -2133,6 +2135,7 @@ function hopoComplete(){
     money:"💰 Money cleared. Abundance flows.",
     gratitude:"🙏 Gratitude complete. I choose abundance.",
     recovery:"💛 I remember myself. I choose myself.",
+    evening:"🌙 Day released. I choose peace. Rest now.",
   };
   showToast(toasts[_hopoScript]||"Ho'oponopono complete ✓");
   if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
@@ -2205,7 +2208,28 @@ function evStepHTML(i,d,icon,name,hint,expandable){
 function evExpandContent(i){
   if(i===0)return`<div class="ev-expand-body">Name 3 wins from today. Small counts. Say them out loud.<br><strong style="color:var(--indigo)">This rewires the brain to notice progress, not just problems.</strong></div><div style="display:flex;flex-direction:column;gap:.3rem;margin:.4rem 0"><input type="text" class="grat-input" id="evwin1" placeholder="Win 1 today…"><input type="text" class="grat-input" id="evwin2" placeholder="Win 2 today…"><input type="text" class="grat-input" id="evwin3" placeholder="Win 3 today…"></div><button class="step-btn step-btn-wine" onclick="saveEvWins()">Save & Complete ✓</button>`;
   if(i===1)return`<div id="evAffirmText" class="ev-expand-body"></div><button class="step-btn step-btn-wine" onclick="completeEv(1)">Done — I said them ✓</button>`;
-  if(i===2)return`<div class="ev-expand-body">Close your eyes. Direct these words to the entire day:<br><br><em style="color:var(--indigo);font-size:14px">"I'm sorry. Please forgive me. Thank you. I love you."</em><br><br><strong style="color:var(--indigo)">4 rounds. Let the day be released.</strong></div><button class="step-btn" style="background:var(--indigo);color:white" onclick="completeEv(2);switchTab('hopo')">Go to Full Ho'oponopono →</button><button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeEv(2)">Done ✓</button>`;
+  if(i===2)return`<div class="ev-expand-body" style="color:var(--ink);line-height:1.8">
+  <div style="background:linear-gradient(135deg,#1A1030,#2D1F4A);border-radius:10px;padding:1rem 1.1rem;margin-bottom:.75rem">
+    <div style="font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,180,255,.5);margin-bottom:.5rem">🤍 MASTER HO'OPONOPONO — Evening Close</div>
+    <div style="font-size:13px;color:rgba(230,220,255,.85);line-height:1.9;font-style:italic">
+      I'm sorry for abandoning myself while waiting for someone else.<br><br>
+      Please forgive me for choosing fear over peace.<br><br>
+      Thank you for showing me my strength through this pain.<br>
+      Thank you for every lesson, every memory, and every blessing.<br><br>
+      I release what I cannot keep.<br>
+      I release the future I imagined.<br>
+      I release the need to be chosen.<br><br>
+      <strong style="color:rgba(255,210,100,.9);font-style:normal">I choose myself.<br>
+      I choose my son.<br>
+      I choose my future.<br>
+      I choose peace.</strong><br><br>
+      I am ready to begin again.
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:.65rem">Eyes closed. Hand on chest. Say each line slowly. Feel it.</div>
+</div>
+<button class="step-btn" style="background:var(--indigo);color:white" onclick="completeEv(2);switchTab('hopo')">Open Full Ho'oponopono →</button>
+<button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeEv(2)">Done — I released the day ✓</button>`;
   if(i===3)return`<div class="dmp-hero"><div class="dmp-lbl">🎯 DMP — Definite Major Purpose</div><div class="dmp-title">Your vision doesn't wait for the right time.</div><div class="dmp-sub">9 PM. Every night. No skipping. This is the appointment that changes your life.</div></div><div class="dmp-step"><div class="dmp-num">1</div><div class="dmp-text">Find a quiet place. Sit upright. Phone away. 3 deep breaths to arrive.</div></div><div class="dmp-step"><div class="dmp-num">2</div><div class="dmp-text">Close your eyes. Feel the farmhouse — morning light, sounds, the feeling of having arrived. Hold it for 60 seconds.</div></div><div class="dmp-step"><div class="dmp-num">3</div><div class="dmp-text">Read your DMP statement out loud. <span class="dmp-key">Feel it as if it's already real. Your subconscious cannot tell the difference.</span></div></div><div class="dmp-step"><div class="dmp-num">4</div><div class="dmp-text">State one action you'll take tomorrow. Just one. Commit to it.</div></div><div class="dmp-step"><div class="dmp-num">5</div><div class="dmp-text">Close with: <span class="dmp-key">"It is done. It is mine. I am grateful."</span></div></div><button class="dmp-done-btn" onclick="completeEv(3)">✓ DMP Session Complete — It is done.</button>`;
   if(i===4)return`<div class="ev-expand-body">3 rounds of 4-2-6 breathing. This activates the parasympathetic nervous system — the body knows it's safe to rest.</div><button class="step-btn step-btn-wine" onclick="startBreathe()">Start 4-2-6 Breathing</button><button class="step-btn step-btn-green" style="margin-top:.35rem" onclick="completeEv(4)">Done ✓</button>`;
   return '';
