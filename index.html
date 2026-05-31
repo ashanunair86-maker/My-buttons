@@ -1409,8 +1409,8 @@ const WEEKDAY=[
   {id:'w4',time:'+40',name:"Ho'oponopono — Morning Clear",cat:'spirit',bell:true,desc:'Clear the slate. 4 rounds minimum.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'4 rounds — direct to anyone you carry tension with']},
   {id:'w5',time:'+42',name:'Morning Affirmations — Mitesh Audio',cat:'spirit',bell:false,desc:'Play while preparing. Let it in.',subs:['All affirmations: health, relationships, career, money','Power close — 4 statements']},
   {id:'w6',time:'+57',name:'Surya Namaskar — 12 rounds',cat:'wellness',bell:true,desc:'Body before mind. Energy before coffee.',subs:['3 slow warm-up rounds','9 full-pace rounds','2 min Savasana']},
-  {id:'w7',time:'+77',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson']},
-  {id:'w8',time:'+92',name:'Mitesh Khatri — 1 Complete Session',cat:'spirit',bell:true,desc:'Full focus. This rewires you.',subs:['Watch or listen with complete focus','Note 1 key insight']},
+  {id:'wDC',time:'+62',name:'Daily Core — Shloka',cat:'spirit',bell:true,desc:'10 minutes. One shloka. Learn it. Feel it.',subs:['Tap to open today\'s shloka']},
+  {id:'w7',time:'+82',name:'Duolingo French — 15 mins',cat:'learn',bell:true,desc:'Protect the streak. Every day without fail.',subs:['Complete at least 1 full lesson']},
   {id:'w9',time:'+122',name:'Oil Massage + Bath + Get Ready',cat:'self',bell:true,desc:'Full self-care. You are stepping into your power.',subs:['Apply oil to scalp — 2-3 mins 🌿','Shower — feel completely renewed','Dress with intention 👗','Breakfast: boiled egg + banana 🥣']},
   {id:'w10',time:'Leave',name:'Leave for Office',cat:'work',bell:true,desc:'18km — commute time is learning time.',subs:['Leave on time','Play French audio or Mitesh during drive','Arrive at 10 AM']},
   {id:'w11',time:'10:00',name:'Office — Top 2 Priority Tasks',cat:'work',bell:true,desc:'Before email. Before meetings. 2 must-do tasks.',subs:['Write your 2 non-negotiable tasks for today','Start with the hardest one first']},
@@ -1447,6 +1447,8 @@ const WEEKEND=[
   {id:'e16',time:'19:00',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Family walk if possible.',subs:['Walk 8,000 steps or 40 minutes']},
   {id:'e17',time:'17:00',name:'DMP Session — 5 PM',cat:'spirit',bell:true,desc:'Weekend DMP — full presence.',subs:['Feel the farmhouse. Vivid. Real. Already yours.']},
   {id:'e18',time:'22:00',name:'Dinner + Water',cat:'wellness',bell:true,desc:'Light evening meal.',subs:['Steak & veggies / khichdi 🍽️','2 glasses 💧']},
+  {id:'eFM',time:'22:00',name:'Face Massage — Self Care',cat:'self',bell:true,desc:'Watch the video. Take care of your face. 10-15 minutes.',subs:['Tap to open face massage video','Phone propped up, follow along','Consistency is what works']},
+  {id:'eMitesh',time:'22:15',name:'Mitesh Khatri — Weekend Session',cat:'spirit',bell:true,desc:'Full session. Tune your frequency before sleep.',subs:['Open Mitesh website or play uploaded audio','Full focus','Note 1 key insight']},
   {id:'e19',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the week.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Sleep clean.']},
   {id:'e21a',time:'22:15',name:'Night Prep — Methi + Magic Water',cat:'wellness',bell:true,
     desc:'2 min. Do it before you forget.',
@@ -2052,6 +2054,8 @@ function renderHopo(){
       ${catBtn('relationships','❤️','Relationships')}
       ${catBtn('career','🚀','Career')}
       ${catBtn('money','💰','Money')}
+      ${catBtn('gratitude','🙏','Gratitude')}
+      ${catBtn('recovery','💛','Recovery')}
     </div>
 
     <div class="hopo-script-wrap">
@@ -2113,6 +2117,8 @@ function hopoComplete(){
       relationships:'✅ Relationships cleared — love flows freely.',
       career:'✅ Career cleared — I step forward with confidence.',
       money:'✅ Money cleared — I am open to abundance.',
+      gratitude:'✅ Gratitude complete — I choose abundance today.',
+      recovery:'✅ I am not trying to forget him. I am trying to remember myself.',
     };
     banner.textContent=msgs[_hopoScript]||'✅ Session Complete — Cleared & Recorded';
     banner.style.display='block';
@@ -2125,6 +2131,8 @@ function hopoComplete(){
     relationships:"❤️ Relationships cleared. Love flows.",
     career:"🚀 Career cleared. I step forward.",
     money:"💰 Money cleared. Abundance flows.",
+    gratitude:"🙏 Gratitude complete. I choose abundance.",
+    recovery:"💛 I remember myself. I choose myself.",
   };
   showToast(toasts[_hopoScript]||"Ho'oponopono complete ✓");
   if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
@@ -2663,14 +2671,18 @@ function initPlanner(){
     const {all,key,day}=getToday();
     if(day.dayType&&day.dayType!=='weekend')currentDay=day.dayType;
   }
-  document.getElementById('ds-wd').classList.toggle('active',currentDay==='weekday');
-  document.getElementById('ds-we').classList.toggle('active',currentDay==='weekend');
-  // Lock the toggle buttons on weekends
   const wdBtn=document.getElementById('ds-wd');
   const weBtn=document.getElementById('ds-we');
-  if(isWeekend&&wdBtn)wdBtn.style.opacity='0.4';
-  if(!isWeekend&&weBtn)weBtn.style.opacity='0.4';
-  renderGlasses();renderSteps();renderSchedule();updateSummary();renderCustomTasksFull();
+  if(wdBtn)wdBtn.classList.toggle('active',currentDay==='weekday');
+  if(weBtn)weBtn.classList.toggle('active',currentDay==='weekend');
+  if(isWeekend&&wdBtn){wdBtn.style.opacity='0.4';wdBtn.disabled=true;}
+  if(!isWeekend&&weBtn){weBtn.style.opacity='0.4';weBtn.disabled=true;}
+  // Double rAF ensures DOM is ready before render
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      renderGlasses();renderSteps();renderSchedule();updateSummary();renderCustomTasksFull();
+    });
+  });
   // Auto-schedule task reminders if permission already granted
   if(Notification.permission==='granted'){notifGranted=true;scheduleAllNotifs();}
 }
@@ -3166,6 +3178,8 @@ function toggleBlock(id){
     else if(id==='w6'||id==='e4') _injectSurya(id);
     else if(id==='w11') _injectPriority(id);
     else if(id==='wDC'||id==='eDC') _injectShloka(id);
+    else if(id==='eFM') _injectFaceMassage(id);
+    else if(id==='eMitesh') _injectMitesh(id);
     else if(id==='w7') _injectDuolingo(id);
     else if(id==='w8') _injectMitesh(id);
     else if(id.startsWith('wc')||['w15','w16','w17','w18','ww17','ec1','ec2','ec3','ec4'].includes(id)) _injectWellnessCheckin(id);
@@ -3870,7 +3884,9 @@ function _updateWakeHdrLabel(){
   const el=document.getElementById('wakeHdrLabel');
   if(el){
     const h=getWakeHour();
-    el.textContent=h+':00 AM';
+    const hh=Math.floor(h);
+    const mm=h%1===0.5?'30':'00';
+    el.textContent=hh+':'+mm+' AM';
   }
 }
 
@@ -4241,8 +4257,6 @@ _loadAll().then(()=>{
   }
   notifEnabled=S.get('notif_on')===true;
   updateNotifBtn();updateClock();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
-  // Show time-aware prompt after 1.5s delay
-  setTimeout(showTimeAwarePrompt, 1500);
 }).catch(()=>{
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
   updateNotifBtn();scheduleNudge();renderDash();
@@ -4983,214 +4997,156 @@ function showNudgeOv(icon, title, body, action){
 
 
 // ═══════════════════════════════════════════════════════
-// TIME-AWARE PROMPT — shows on every app open
-// ═══════════════════════════════════════════════════════
-function getTimeAwareTask(){
-  const w=getWakeHour();
-  const now=new Date();
-  const h=now.getHours();
-  const m=now.getMinutes();
-  const totalMins=h*60+m;
-  const wMins=w*60;
-  const diff=totalMins-wMins;
-  // Morning sequence tasks based on wake-relative time
-  const tasks=[
-    {from:0,   to:2,   icon:'💧', title:'Magic Water — right now',      body:'Before phone. Before anything. One full glass.',           action:'water',   tab:'morning'},
-    {from:2,   to:12,  icon:'🙏', title:'10 Gratitudes',                body:'Say each one out loud. Feel it for 2 seconds.',            action:'gratitude',tab:'morning'},
-    {from:12,  to:27,  icon:'🪞', title:'Mirror + Affirmations',        body:'Eyes on yourself. Say each one. Mean it.',                 action:'mirror',  tab:'morning'},
-    {from:27,  to:42,  icon:'🤍', title:"Ho'oponopono",                 body:'4 rounds minimum. Clear the slate.',                       action:'hopo',    tab:'hopo'},
-    {from:42,  to:62,  icon:'🌅', title:'Surya Namaskar — 20 min',      body:'12 rounds. Body before mind.',                             action:'surya',   tab:'morning'},
-    {from:62,  to:92,  icon:'🎧', title:'Mitesh Audio — 30 min',        body:'Full session. Tune your frequency.',                       action:'mitesh',  tab:'morning'},
-    {from:92,  to:112, icon:'🇫🇷', title:'Duolingo — 20 min',           body:'Protect the streak. Every day.',                           action:'duolingo',tab:'morning'},
-    {from:112, to:142, icon:'🌿', title:'Bath + Get Ready',             body:'Full self-care. Step into your power.',                    action:'ready',   tab:'morning'},
-    {from:142, to:180, icon:'🚗', title:'Leave for Office',             body:'Commute time = learning time.',                            action:'plan',    tab:'plan'},
-    // Office hours — fixed clock times
-    {from:150, to:160, icon:'💧', title:'Drink water — Slot 1',         body:'One full glass now.',                                      action:'water',   tab:'habits', fixed:true, fh:10, fm:30},
-    {from:160, to:180, icon:'🚶', title:'5-min walk — Slot 1',          body:'Quick walk. Clear the mind.',                              action:'walk',    tab:'habits', fixed:true, fh:10, fm:40},
-    {from:180, to:270, icon:'📋', title:'Office — Focus time',          body:'Top 2 priorities. Before email.',                         action:'plan',    tab:'plan'},
-    {from:270, to:280, icon:'💧', title:'Drink water — Slot 2',         body:'Keep going toward 5L.',                                   action:'water',   tab:'habits', fixed:true, fh:12, fm:30},
-    {from:280, to:300, icon:'🚶', title:'5-min walk — Slot 2',          body:'Lunch walk. Reset energy.',                               action:'walk',    tab:'habits', fixed:true, fh:12, fm:40},
-    {from:300, to:390, icon:'⚡', title:'Afternoon check-in',           body:'How are you feeling right now?',                          action:'checkin', tab:'habits'},
-    {from:390, to:400, icon:'💧', title:'Drink water — Slot 3',         body:'Mid-afternoon push.',                                     action:'water',   tab:'habits', fixed:true, fh:14, fm:30},
-    {from:400, to:420, icon:'🚶', title:'5-min walk — Slot 3',          body:'Afternoon walk.',                                         action:'walk',    tab:'habits', fixed:true, fh:14, fm:40},
-    {from:420, to:510, icon:'😌', title:'Unclench + check-in',          body:'Jaw. Shoulders. Hands. Breathe.',                         action:'checkin', tab:'habits'},
-    {from:510, to:520, icon:'💧', title:'Drink water — Slot 4',         body:'One more glass.',                                         action:'water',   tab:'habits', fixed:true, fh:16, fm:30},
-    {from:520, to:540, icon:'🚶', title:'5-min walk — Slot 4',          body:'End of afternoon walk.',                                  action:'walk',    tab:'habits', fixed:true, fh:16, fm:40},
-    {from:540, to:660, icon:'✨', title:'Affirmation + check-in',       body:'Say one affirmation out loud. Mean it.',                  action:'affirm',  tab:'habits'},
-    {from:660, to:670, icon:'💧', title:'Last water push',              body:'Almost at 5L. Drink now.',                                action:'water',   tab:'habits'},
-    {from:670, to:690, icon:'🚶', title:'Evening walk',                 body:'Move before DMP. Clear everything.',                      action:'walk',    tab:'habits'},
-    {from:690, to:720, icon:'💛', title:'Time with Aaryan',             body:'Real conversation. Teach. Be present.',                   action:'plan',    tab:'plan'},
-    {from:720, to:780, icon:'🤍', title:"Ho'oponopono — Evening",       body:'Release the day. 4 rounds.',                              action:'hopo',    tab:'hopo'},
-    {from:780, to:840, icon:'🎯', title:'DMP — DO NOT SKIP',            body:'YOUR VISION. Phone silent. Full presence.',               action:'dmp',     tab:'evening'},
-    {from:840, to:870, icon:'🪞', title:'Mirror moment',               body:'Look at yourself. I am enough. Mean it.',                 action:'mirror',  tab:'morning'},
-    {from:870, to:900, icon:'✦',  title:'Evening Affirmations',         body:'Last thing the mind hears tonight.',                      action:'affirm',  tab:'evening'},
-    {from:900, to:960, icon:'📵', title:'Phone Away — Sleep now',       body:'Tomorrow is handled. Rest now.',                          action:'sleep',   tab:'evening'},
-  ];
-  // Match current time to task
-  for(const t of tasks){
-    if(diff>=t.from && diff<t.to) return t;
-  }
-  // Default based on time of day
-  if(h>=23||h<w) return {icon:'😴',title:'Rest time',body:'Sleep is your first act of manifestation.',action:'sleep',tab:'evening'};
-  return {icon:'📋',title:'Check your planner',body:'See what needs attention now.',action:'plan',tab:'plan'};
-}
-
-let _tapPromptShown=false;
-let _lastPromptTime=0;
-
-function showTimeAwarePrompt(){
-  // Don't show too frequently — max once per 30 mins
-  const now=Date.now();
-  if(now-_lastPromptTime < 30*60*1000 && _tapPromptShown) return;
-  const task=getTimeAwareTask();
-  if(!task) return;
-  // Don't show sleep prompt during day or ready/leave prompts at night
-  const h=new Date().getHours();
-  if(task.action==='sleep' && h>6 && h<21) return;
-  _lastPromptTime=now;
-  _tapPromptShown=true;
-  const existing=document.getElementById('tapPromptOv');
-  if(existing)existing.remove();
-  const ov=document.createElement('div');
-  ov.id='tapPromptOv';
-  ov.style.cssText='position:fixed;inset:0;z-index:3500;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center';
-  ov.innerHTML=`
-    <div style="background:var(--cream);border-radius:18px 18px 0 0;padding:1.4rem 1.1rem 2.5rem;width:100%;max-width:480px">
-      <div style="width:38px;height:4px;background:var(--border);border-radius:99px;margin:0 auto .9rem"></div>
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
-        <div style="font-size:36px;line-height:1">${task.icon}</div>
-        <div>
-          <div style="font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem">RIGHT NOW</div>
-          <div style="font-size:17px;font-weight:700;color:var(--ink);line-height:1.2">${task.title}</div>
-        </div>
-      </div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:1.2rem;padding-left:.2rem;line-height:1.5">${task.body}</div>
-      <button onclick="_tapPromptGo('${task.action}','${task.tab}')" style="width:100%;background:var(--wine);color:var(--cream);border:none;border-radius:12px;padding:.9rem;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:.5rem">
-        ${task.icon} Start now →
-      </button>
-      <button onclick="_tapPromptDismiss()" style="width:100%;background:var(--cream-2);color:var(--muted);border:.5px solid var(--border);border-radius:12px;padding:.7rem;font-size:13px;font-weight:600;cursor:pointer">
-        Already done — skip
-      </button>
-    </div>`;
-  document.body.appendChild(ov);
-  if(navigator.vibrate)navigator.vibrate([200,100,200]);
-}
-
-function _tapPromptGo(action, tab){
-  const ov=document.getElementById('tapPromptOv');
-  if(ov)ov.remove();
-  switchTab(tab);
-  setTimeout(()=>{
-    if(action==='water')     showWaterOv('💧 Time for water','One full glass right now.');
-    else if(action==='walk') showWalkOv('🚶 5-min walk','Move the body. Clear the mind.');
-    else if(action==='mirror')showMirrorOv();
-    else if(action==='hopo') showHopoChoice();
-    else if(action==='surya') showSuryaOv();
-    else if(action==='dmp')  showDmpOv();
-    else if(action==='affirm')showAffirmOv();
-    else if(action==='shloka')showShlokaOv();
-    else if(action==='checkin'){const slots=eftGetSlots();const h=new Date().getHours();const match=slots.find(s=>Math.abs(s.h-h)<=1)||slots[0];if(match)eftOpenSlot(match.h,match.label);}
-  },300);
-}
-
-function _tapPromptDismiss(){
-  const ov=document.getElementById('tapPromptOv');
-  if(ov)ov.remove();
-}
-
-
-// ═══════════════════════════════════════════════════════
-// DAILY CORE — Shloka system with 108 counter
+// SHLOKA LIBRARY + OVERLAY
 // ═══════════════════════════════════════════════════════
 const SHLOKAS=[
-  {id:'vakratunda',name:'Vakratunda Mahakaya',deity:'Ganesha',icon:'🐘',
-   purpose:'Remove obstacles. Begin with clarity.',
-   lines:[
-    {devanagari:'वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ',roman:'Vakratunda Mahakaya Suryakoti Samaprabha',meaning:'O Lord with a curved trunk and mighty body, radiant as a million suns'},
-    {devanagari:'निर्विघ्नं कुरु मे देव सर्वकार्येषु सर्वदा',roman:'Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada',meaning:'Please make all my work free of obstacles, always'}
-   ]},
-  {id:'yadevi',name:'Ya Devi Sarvabhuteshu',deity:'Durga',icon:'🌸',
-   purpose:'Invoke the goddess. Honour the divine feminine.',
-   lines:[
-    {devanagari:'या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता',roman:'Ya Devi Sarvabhuteshu Shaktiroopena Samsthita',meaning:'The goddess who resides in all beings as power and strength'},
-    {devanagari:'नमस्तस्यै नमस्तस्यै नमस्तस्यै नमो नमः',roman:'Namastasyai Namastasyai Namastasyai Namo Namah',meaning:'I bow to her, I bow to her, I bow to her again and again'}
-   ]},
-  {id:'mahamrityunjaya',name:'Maha Mrityunjaya',deity:'Shiva',icon:'🔱',
-   purpose:'Heal. Protect. Conquer fear.',
-   count108:true,
-   lines:[
-    {devanagari:'ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्',roman:'Om Tryambakam Yajamahe Sugandhim Pushtivardhanam',meaning:'We worship the three-eyed Lord Shiva, fragrant and nourishing'},
-    {devanagari:'उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय माऽमृतात्',roman:'Urvarukamiva Bandhanat Mrityormukshiya Mamritat',meaning:'May He liberate us from death as a ripened cucumber from its vine'}
-   ]},
-  {id:'shantakaram',name:'Shantakaram Bhujagashayanam',deity:'Vishnu',icon:'🪷',
-   purpose:'Invite peace. Rest in divine protection.',
-   lines:[
-    {devanagari:'शान्ताकारं भुजगशयनं पद्मनाभं सुरेशम्',roman:'Shantakaram Bhujagashayanam Padmanabham Suresham',meaning:'Peaceful, resting on the serpent, lotus-naveled, lord of gods'},
-    {devanagari:'विश्वाधारं गगनसदृशं मेघवर्णं शुभाङ्गम्',roman:'Vishvadharam Gaganasadrisham Meghavarnam Shubhangam',meaning:'Support of the universe, vast as the sky, cloud-coloured'},
-    {devanagari:'लक्ष्मीकान्तं कमलनयनं योगिभिर्ध्यानगम्यम्',roman:'Lakshmikantam Kamalanayanam Yogibhirdhyanagamyam',meaning:'Beloved of Lakshmi, lotus-eyed, meditated upon by yogis'},
-    {devanagari:'वन्दे विष्णुं भवभयहरं सर्वलोकैकनाथम्',roman:'Vande Vishnum Bhavabhayaharam Sarvalokaikanatham',meaning:'I bow to Vishnu, remover of worldly fears, lord of all worlds'}
-   ]}
+  {id:'vakratunda',name:'Vakratunda Mahakaya',deity:'Ganesha',icon:'🐘',purpose:'Remove obstacles. Recite before any task or temple visit.',count108:false,lines:[
+    {devanagari:'Vakratunda Mahakaya Suryakoti Samaprabha',roman:'Vakratunda Mahakaya Suryakoti Samaprabha',meaning:'O Lord with a curved trunk and mighty body, radiant as a million suns'},
+    {devanagari:'Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada',roman:'Nirvighnam Kuru Me Deva Sarvakaryeshu Sarvada',meaning:'Please make all my work free of obstacles, always and in everything I do'}
+  ]},
+  {id:'ganesha_temple',name:'Ganesha Dwadasha Nama',deity:'Ganesha',icon:'🐘',purpose:'Recite at Ganesha temple. 12 sacred names — each invokes a blessing.',count108:false,lines:[
+    {devanagari:'Sumukhashchaikadantashcha Kapilo Gajakarnakah',roman:'Sumukhashchaikadantashcha Kapilo Gajakarnakah',meaning:'Sumukha — beautiful face. Ekadanta — single tusk. Kapila — reddish. Gajakarnaka — elephant-eared'},
+    {devanagari:'Lambodarashcha Vikato Vighnanasho Ganadhipah',roman:'Lambodarashcha Vikato Vighnanasho Ganadhipah',meaning:'Lambodara — large belly. Vikata — fierce. Vighnanasha — destroyer of obstacles. Ganadhipa — lord of all'},
+    {devanagari:'Dhumraketurganadhyaksho Bhalacandro Gajananah',roman:'Dhumraketurganadhyaksho Bhalacandro Gajananah',meaning:'Dhumraketu — smoke-bannered. Ganadhyaksha — chief. Bhalacandra — moon-crested. Gajanana — elephant-faced'},
+    {devanagari:'Sangrame Sankate Chaiva Vighnastasya Na Jayate',roman:'Sangrame Sankate Chaiva Vighnastasya Na Jayate',meaning:'In battle, in crisis — no obstacle shall ever arise for that person'}
+  ]},
+  {id:'om_gam',name:'Om Gam Ganapataye Namaha',deity:'Ganesha',icon:'🐘',purpose:'Short powerful Ganesha beej mantra. Removes mental blocks instantly.',count108:true,lines:[
+    {devanagari:'Om Gam Ganapataye Namah',roman:'Om Gam Ganapataye Namah',meaning:'I bow to Ganesha — Gam is his seed syllable, activating his energy directly'},
+    {devanagari:'Om Gam Ganapataye Namah',roman:'Om Gam Ganapataye Namah',meaning:'Repeat 108 times for full effect. Use before anything new — a job, a day, a decision'}
+  ]},
+  {id:'mahamrityunjaya',name:'Maha Mrityunjaya Mantra',deity:'Shiva',icon:'🔱',purpose:'Conquer fear. Heal. Protect. Most powerful Shiva mantra.',count108:true,lines:[
+    {devanagari:'Om Tryambakam Yajamahe',roman:'Om Tryambakam Yajamahe',meaning:'We worship the three-eyed Lord Shiva — who sees past, present and future'},
+    {devanagari:'Sugandhim Pushtivardhanam',roman:'Sugandhim Pushtivardhanam',meaning:'Who is fragrant and who nourishes and nurtures all beings'},
+    {devanagari:'Urvarukamiva Bandhanat',roman:'Urvarukamiva Bandhanat',meaning:'As a ripened cucumber is severed from its vine — free me from all bondage'},
+    {devanagari:'Mrityormukshiya Maamritaat',roman:'Mrityormukshiya Maamritaat',meaning:'Liberate me from death — but never from immortality and moksha'}
+  ]},
+  {id:'om_namah_shivaya',name:'Om Namah Shivaya',deity:'Shiva',icon:'🔱',purpose:'Five sacred syllables. Complete surrender. The mantra of inner peace.',count108:true,lines:[
+    {devanagari:'Om Namah Shivaya',roman:'Om Namah Shivaya',meaning:'I bow to Shiva — the auspicious one, the true self within me'},
+    {devanagari:'Na — Earth element',roman:'Na — Earth element',meaning:'Na represents Earth — the physical body, stability, being grounded'},
+    {devanagari:'Ma — Water element',roman:'Ma — Water element',meaning:'Ma represents Water — emotions, fluidity, the ability to let go'},
+    {devanagari:'Shi — Fire element',roman:'Shi — Fire element',meaning:'Shi represents Fire — transformation, burning what no longer serves you'},
+    {devanagari:'Va — Air element',roman:'Va — Air element',meaning:'Va represents Air — breath, freedom, movement of life force'},
+    {devanagari:'Ya — Space element',roman:'Ya — Space element',meaning:'Ya represents Space — pure consciousness, the infinite within you'}
+  ]},
+  {id:'shiva_panchakshara',name:'Shiva Panchakshara Stotram',deity:'Shiva',icon:'🔱',purpose:'Nagendra Haraya — 5 powerful verses. Builds inner strength.',count108:false,lines:[
+    {devanagari:'Nagendraharaya Trilochanaya Bhasmaangaraagaya Maheshwaraya',roman:'Nagendraharaya Trilochanaya Bhasmaangaraagaya Maheshwaraya',meaning:'To the one who wears serpents as garlands, three-eyed, smeared with sacred ash'},
+    {devanagari:'Nityaya Shuddhaya Digambaraya Tasmai Na Karaya Namah Shivaya',roman:'Nityaya Shuddhaya Digambaraya Tasmai Na Karaya Namah Shivaya',meaning:'Eternal, pure, clothed by the sky — to that Na, I bow to Shiva'},
+    {devanagari:'Mandaarapushpabahupushpasupujitaya Tasmai Ma Karaya Namah Shivaya',roman:'Mandaarapushpabahupushpasupujitaya Tasmai Ma Karaya Namah Shivaya',meaning:'Worshipped with many flowers — to that Ma, I bow to Shiva'},
+    {devanagari:'Tasmai Shi Karaya Namah Shivaya',roman:'Tasmai Shi Karaya Namah Shivaya',meaning:'To that Shi — I bow to Shiva, the one who transforms all pain'}
+  ]},
+  {id:'shiva_tandava',name:'Shiva Tandava Stotram',deity:'Shiva',icon:'🔱',purpose:'Raw cosmic power. For days you need strength, not peace.',count108:false,lines:[
+    {devanagari:'Jatatavigalajjalapravahapavitasthale',roman:'Jatatavigalajjalapravahapavitasthale',meaning:'With the sacred river flowing through his matted hair, purifying everything'},
+    {devanagari:'Damaddamaddamaddamanninadavaddamarvayam',roman:'Damaddamaddamaddamanninadavaddamarvayam',meaning:'To the thunderous sound of the Damaru — dam dam dam — the cosmos vibrates'},
+    {devanagari:'Chakara Chandatandavam Tanotu Nah Shivah Shivam',roman:'Chakara Chandatandavam Tanotu Nah Shivah Shivam',meaning:'Shiva performed the fierce cosmic dance — may that Shiva bless us'},
+    {devanagari:'Kishoracandrashekhare Ratih Pratikshanam Mama',roman:'Kishoracandrashekhare Ratih Pratikshanam Mama',meaning:'With the crescent moon on his crown — may my devotion grow every moment'}
+  ]},
+  {id:'yadevi',name:'Ya Devi Sarvabhuteshu',deity:'Durga',icon:'🌸',purpose:'Invoke the goddess in all her forms. Builds shakti and self-worth.',count108:false,lines:[
+    {devanagari:'Ya Devi Sarvabhuteshu Shaktiroopena Samsthita',roman:'Ya Devi Sarvabhuteshu Shaktiroopena Samsthita',meaning:'The goddess who resides in all beings as power and energy'},
+    {devanagari:'Namastasyai Namastasyai Namastasyai Namo Namah',roman:'Namastasyai Namastasyai Namastasyai Namo Namah',meaning:'I bow to her, I bow to her, I bow to her again and again'},
+    {devanagari:'Ya Devi Sarvabhuteshu Buddhiroopena Samsthita',roman:'Ya Devi Sarvabhuteshu Buddhiroopena Samsthita',meaning:'The goddess who resides in all beings as intelligence and wisdom'},
+    {devanagari:'Ya Devi Sarvabhuteshu Lakshmiroopena Samsthita',roman:'Ya Devi Sarvabhuteshu Lakshmiroopena Samsthita',meaning:'The goddess who resides in all beings as prosperity and abundance'},
+    {devanagari:'Ya Devi Sarvabhuteshu Shantiroopena Samsthita',roman:'Ya Devi Sarvabhuteshu Shantiroopena Samsthita',meaning:'The goddess who resides in all beings as peace and tranquility'},
+    {devanagari:'Namastasyai Namastasyai Namastasyai Namo Namah',roman:'Namastasyai Namastasyai Namastasyai Namo Namah',meaning:'I bow to her, I bow to her, I bow to her again and again'}
+  ]},
+  {id:'aigiri_nandini',name:'Aigiri Nandini',deity:'Durga',icon:'🌸',purpose:'Mahishasura Mardini. Pure feminine power. For days you need to feel invincible.',count108:false,lines:[
+    {devanagari:'Ayi Girinandini Nanditamedini Vishvavinodini Nandanute',roman:'Ayi Girinandini Nanditamedini Vishvavinodini Nandanute',meaning:'O daughter of the mountain, who delights the earth, who brings joy to the universe'},
+    {devanagari:'Jaya Jaya He Mahishasuramardini Ramyakapardini Shailasute',roman:'Jaya Jaya He Mahishasuramardini Ramyakapardini Shailasute',meaning:'Victory to you O destroyer of Mahishasura — beautiful one, daughter of the mountain'},
+    {devanagari:'Suravaravarsini Durdharadharsini Raktabijaniddhane',roman:'Suravaravarsini Durdharadharsini Raktabijaniddhane',meaning:'You shower blessings, defeat the powerful, destroyed Raktabija'},
+    {devanagari:'Jaya Jaya He Mahishasuramardini Ramyakapardini Shailasute',roman:'Jaya Jaya He Mahishasuramardini Ramyakapardini Shailasute',meaning:'Victory, victory to you O Mahishasura Mardini — I bow to your infinite power'}
+  ]},
+  {id:'shantakaram',name:'Shantakaram Bhujagashayanam',deity:'Vishnu',icon:'🪷',purpose:'Invite deep peace. Surrender to what is. Trust the universe.',count108:false,lines:[
+    {devanagari:'Shantakaram Bhujagashayanam Padmanabham Suresham',roman:'Shantakaram Bhujagashayanam Padmanabham Suresham',meaning:'He who is peace itself, resting on the great serpent, lotus-naveled, lord of gods'},
+    {devanagari:'Vishvadharam Gaganasadrisham Meghavarnam Shubhangam',roman:'Vishvadharam Gaganasadrisham Meghavarnam Shubhangam',meaning:'He who supports the universe, vast as the sky, cloud-coloured, auspicious form'},
+    {devanagari:'Lakshmikantam Kamalanayanam Yogibhirdhyanagamyam',roman:'Lakshmikantam Kamalanayanam Yogibhirdhyanagamyam',meaning:'Beloved of Lakshmi, lotus-eyed, reached through deep meditation by yogis'},
+    {devanagari:'Vande Vishnum Bhavabhayaharam Sarvalokaikanatham',roman:'Vande Vishnum Bhavabhayaharam Sarvalokaikanatham',meaning:'I bow to Vishnu — remover of all worldly fears, the one true lord of all worlds'}
+  ]},
+  {id:'om_namo_narayanaya',name:'Om Namo Narayanaya',deity:'Vishnu',icon:'🪷',purpose:'Divine protection. Trust the universe. Surrender what you cannot control.',count108:true,lines:[
+    {devanagari:'Om Namo Narayanaya',roman:'Om Namo Narayanaya',meaning:'I bow to Narayana — the one who dwells in the hearts of all beings'},
+    {devanagari:'Namo — Surrender',roman:'Namo — Surrender',meaning:'I release my ego, I place myself at your feet, I trust the universe'},
+    {devanagari:'Narayanaya — All-pervading',roman:'Narayanaya — All-pervading',meaning:'To the one present in every atom of existence, who holds everything'}
+  ]},
+  {id:'gayatri',name:'Gayatri Mantra',deity:'Universal',icon:'☀️',purpose:'Mother of all mantras. Illuminates the mind. For mental strength and clarity.',count108:true,lines:[
+    {devanagari:'Om Bhur Bhuvah Swah',roman:'Om Bhur Bhuvah Swah',meaning:'Om — the primordial sound. Bhur — physical realm. Bhuvah — mental realm. Swah — spiritual realm'},
+    {devanagari:'Tat Savitur Varenyam',roman:'Tat Savitur Varenyam',meaning:'That divine reality — the Sun, source of all light — most worthy of worship'},
+    {devanagari:'Bhargo Devasya Dhimahi',roman:'Bhargo Devasya Dhimahi',meaning:'The radiant light that destroys ignorance — of the divine — we meditate upon'},
+    {devanagari:'Dhiyo Yo Nah Prachodayat',roman:'Dhiyo Yo Nah Prachodayat',meaning:'May that divine light illuminate our intellect and inspire us toward truth always'}
+  ]},
+  {id:'beej_mantras',name:'12 Beej Mantras',deity:'Universal',icon:'✨',purpose:'Seed syllables — each activates a specific energy. Most powerful form of mantra.',count108:false,lines:[
+    {devanagari:'Om — Universal seed',roman:'Om — Universal seed',meaning:'OM — sound of creation. Use for: consciousness, connecting to the divine'},
+    {devanagari:'Aim — Saraswati seed',roman:'Aim — Saraswati seed',meaning:'AIM — Use for: learning, clarity, focus, intelligence, creativity'},
+    {devanagari:'Hreem — Maya seed',roman:'Hreem — Maya seed',meaning:'HREEM — Use for: manifestation, inner power, divine feminine connection'},
+    {devanagari:'Kleem — Attraction seed',roman:'Kleem — Attraction seed',meaning:'KLEEM — Use for: drawing what you want, love, relationships, abundance'},
+    {devanagari:'Shreem — Lakshmi seed',roman:'Shreem — Lakshmi seed',meaning:'SHREEM — Use for: wealth, prosperity, abundance, self-worth, grace'},
+    {devanagari:'Kreem — Kali seed',roman:'Kreem — Kali seed',meaning:'KREEM — Use for: transformation, destroying fear, cutting attachments'},
+    {devanagari:'Dum — Durga seed',roman:'Dum — Durga seed',meaning:'DUM — Use for: protection, shakti, strength, defeating inner obstacles'},
+    {devanagari:'Gam — Ganesha seed',roman:'Gam — Ganesha seed',meaning:'GAM — Use for: removing obstacles, new beginnings, success in any work'},
+    {devanagari:'Hum — Shiva seed',roman:'Hum — Shiva seed',meaning:'HUM — Use for: protection, burning ego and attachments, fierce transformation'},
+    {devanagari:'Phat — Weapon seed',roman:'Phat — Weapon seed',meaning:'PHAT — Use for: destroying negative energy, cutting through illusion'},
+    {devanagari:'Soham — Soul seed',roman:'Soham — Soul seed',meaning:'SOHAM — I am That. Inhale So, Exhale Ham. Use for: self-identity, pure presence'},
+    {devanagari:'Namah — Surrender seed',roman:'Namah — Surrender seed',meaning:'NAMAH — Use for: releasing ego, gratitude, surrendering what you cannot control'}
+  ]}
 ];
 
 function getTodayShloka(){
   const start=new Date(new Date().getFullYear(),0,0);
   const dayOfYear=Math.floor((new Date()-start)/(1000*60*60*24));
-  return SHLOKAS[dayOfYear%4];
+  const rotation=['gayatri','ganesha_temple','mahamrityunjaya','yadevi','om_namah_shivaya','shantakaram','aigiri_nandini','beej_mantras'];
+  const rotId=rotation[dayOfYear%rotation.length];
+  return SHLOKAS.find(function(s){return s.id===rotId;})||SHLOKAS[0];
 }
 
 let _shlokaLineIdx=0,_currentShloka=null,_shloka108Count=0,_shloka108Mode=false;
 
 function showShlokaOv(forceId){
-  _currentShloka=forceId?SHLOKAS.find(s=>s.id===forceId)||getTodayShloka():getTodayShloka();
-  _shlokaLineIdx=0;
-  _shloka108Count=0;
-  _shloka108Mode=false;
+  _currentShloka=forceId?SHLOKAS.find(function(s){return s.id===forceId;})||getTodayShloka():getTodayShloka();
+  _shlokaLineIdx=0;_shloka108Count=0;_shloka108Mode=false;
   _renderShlokaOv();
   document.getElementById('shlokaOv').classList.add('active');
 }
 
 function _renderShlokaOv(){
-  const s=_currentShloka;
-  const isToday=s.id===getTodayShloka().id;
-  document.getElementById('shlokaOvIcon').textContent=s.icon;
-  document.getElementById('shlokaOvDeity').textContent=s.deity+' · '+s.name+(isToday?' · Today':'');
-  document.getElementById('shlokaOvPurpose').textContent=s.purpose;
+  var s=_currentShloka;
+  var isToday=s.id===getTodayShloka().id;
+  var iconEl=document.getElementById('shlokaOvIcon');
+  var deityEl=document.getElementById('shlokaOvDeity');
+  var purposeEl=document.getElementById('shlokaOvPurpose');
+  var devEl=document.getElementById('shlokaOvDevanagari');
+  var romEl=document.getElementById('shlokaOvRoman');
+  var meanEl=document.getElementById('shlokaOvMeaning');
+  var progEl=document.getElementById('shlokaOvProgress');
+  var barEl=document.getElementById('shlokaOvBar');
+  var nextBtn=document.getElementById('shlokaOvNext');
+  if(iconEl)iconEl.textContent=s.icon;
+  if(deityEl)deityEl.textContent=s.deity+' · '+s.name+(isToday?' · Today':'');
+  if(purposeEl)purposeEl.textContent=s.purpose;
   if(_shloka108Mode){
-    _render108Mode();
+    var pct=Math.round(_shloka108Count/108*100);
+    if(devEl)devEl.textContent=s.lines[0].devanagari;
+    if(romEl)romEl.textContent=s.lines[0].roman;
+    if(meanEl)meanEl.textContent='Tap each time you complete one full recitation';
+    if(progEl)progEl.textContent=_shloka108Count+' / 108';
+    if(barEl)barEl.style.width=pct+'%';
+    if(nextBtn){nextBtn.style.fontSize='22px';nextBtn.textContent=_shloka108Count>=108?'Complete ✓':'Tap — '+_shloka108Count+'/108';}
     return;
   }
-  const line=s.lines[_shlokaLineIdx];
-  const total=s.lines.length;
-  document.getElementById('shlokaOvDevanagari').textContent=line.devanagari;
-  document.getElementById('shlokaOvRoman').textContent=line.roman;
-  document.getElementById('shlokaOvMeaning').textContent=line.meaning;
-  document.getElementById('shlokaOvProgress').textContent='Line '+(_shlokaLineIdx+1)+' of '+total;
-  const bar=document.getElementById('shlokaOvBar');
-  if(bar)bar.style.width=((_shlokaLineIdx+1)/total*100)+'%';
-  const btn=document.getElementById('shlokaOvNext');
-  if(btn)btn.textContent=_shlokaLineIdx<total-1?'Next line →':s.count108?'Start 108 Jaap →':'Done — I recited it ✓';
-  // Browse buttons
-  const browse=document.getElementById('shlokaOvBrowse');
+  var line=s.lines[_shlokaLineIdx];
+  var total=s.lines.length;
+  if(devEl)devEl.textContent=line.devanagari;
+  if(romEl)romEl.textContent=line.roman;
+  if(meanEl)meanEl.textContent=line.meaning;
+  if(progEl)progEl.textContent='Line '+(_shlokaLineIdx+1)+' of '+total;
+  if(barEl)barEl.style.width=((_shlokaLineIdx+1)/total*100)+'%';
+  if(nextBtn){nextBtn.style.fontSize='15px';nextBtn.textContent=_shlokaLineIdx<total-1?'Next line →':s.count108?'Start 108 Jaap →':'Done ✓';}
+  var browse=document.getElementById('shlokaOvBrowse');
   if(browse){
-    browse.innerHTML=SHLOKAS.map(sh=>
-      '<button onclick="showShlokaOv(\''+sh.id+'\')" style="padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:.5px solid var(--border);background:'+(sh.id===s.id?'rgba(255,210,100,.3)':'rgba(255,255,255,.05)')+';color:rgba(255,255,255,.7);margin:.2rem">'+sh.icon+' '+sh.deity+'</button>'
-    ).join('');
-  }
-}
-
-function _render108Mode(){
-  const s=_currentShloka;
-  const pct=Math.round(_shloka108Count/108*100);
-  document.getElementById('shlokaOvDevanagari').textContent=s.lines[0].devanagari;
-  document.getElementById('shlokaOvRoman').textContent=s.lines[0].roman;
-  document.getElementById('shlokaOvMeaning').textContent='Tap the counter each time you complete one recitation';
-  document.getElementById('shlokaOvProgress').textContent=_shloka108Count+' / 108';
-  const bar=document.getElementById('shlokaOvBar');
-  if(bar)bar.style.width=pct+'%';
-  const btn=document.getElementById('shlokaOvNext');
-  if(btn){
-    btn.style.cssText='width:100%;padding:1.2rem;border-radius:12px;border:.5px solid rgba(255,210,100,.4);background:rgba(255,210,100,.15);color:rgba(255,210,100,.9);font-size:28px;font-weight:700;cursor:pointer;margin-bottom:.5rem';
-    btn.textContent=_shloka108Count>=108?'Complete ✓':'Tap — '+(_shloka108Count)+'/108';
+    var deities=[...new Set(SHLOKAS.map(function(sh){return sh.deity;}))];
+    browse.innerHTML=deities.map(function(d){
+      var dS=SHLOKAS.filter(function(sh){return sh.deity===d;});
+      return '<div style="margin-bottom:.2rem"><span style="font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase">'+dS[0].icon+' '+d+'</span><br>'+
+        dS.map(function(sh){
+          return '<button onclick="showShlokaOv(\''+sh.id+'\')" style="padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:.5px solid rgba(255,255,255,.15);background:'+(sh.id===s.id?'rgba(255,210,100,.3)':'rgba(255,255,255,.05)')+';color:rgba(255,255,255,.7);margin:.1rem">'+sh.name.split(' ').slice(0,2).join(' ')+'</button>';
+        }).join('')+'</div>';
+    }).join('');
   }
 }
 
@@ -5199,81 +5155,74 @@ function shlokaOvNext(){
     if(_shloka108Count<108){
       _shloka108Count++;
       if(navigator.vibrate)navigator.vibrate(40);
-      _render108Mode();
-      if(_shloka108Count===108){
-        const tk=todayKey();S.set('shloka_done_'+tk,true);
-        showToast('🔱 108 Mrityunjaya complete! Powerful.');
-        if(navigator.vibrate)navigator.vibrate([200,100,200,100,400]);
-      }
-    } else {
-      document.getElementById('shlokaOv').classList.remove('active');
-      if(currentTab==='plan')renderSchedule();
-    }
+      _renderShlokaOv();
+      if(_shloka108Count===108){S.set('shloka_done_'+todayKey(),true);showToast('🙏 108 complete!');if(navigator.vibrate)navigator.vibrate([200,100,200,100,400]);}
+    } else {document.getElementById('shlokaOv').classList.remove('active');if(currentTab==='plan')renderSchedule();}
     return;
   }
-  const total=_currentShloka.lines.length;
-  if(_shlokaLineIdx<total-1){
-    _shlokaLineIdx++;
-    _renderShlokaOv();
-  } else if(_currentShloka.count108){
-    _shloka108Mode=true;
-    _render108Mode();
-  } else {
-    const tk=todayKey();S.set('shloka_done_'+tk,true);
-    document.getElementById('shlokaOv').classList.remove('active');
-    showToast('🙏 '+_currentShloka.name+' complete');
-    if(currentTab==='plan')renderSchedule();
-  }
+  var total=_currentShloka.lines.length;
+  if(_shlokaLineIdx<total-1){_shlokaLineIdx++;_renderShlokaOv();}
+  else if(_currentShloka.count108){_shloka108Mode=true;_renderShlokaOv();}
+  else{S.set('shloka_done_'+todayKey(),true);document.getElementById('shlokaOv').classList.remove('active');showToast('🙏 '+_currentShloka.name+' complete');if(currentTab==='plan')renderSchedule();}
 }
 
-function closeShlokaOv(){
-  document.getElementById('shlokaOv').classList.remove('active');
+function closeShlokaOv(){document.getElementById('shlokaOv').classList.remove('active');}
+
+function _injectFaceMassage(blockId){
+  var sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  if(document.getElementById('inline-fm-'+blockId))return;
+  var div=document.createElement('div');div.id='inline-fm-'+blockId;div.style.cssText='padding:.75rem;border-top:1px solid var(--border)';
+  div.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:.6rem;line-height:1.6">10-15 minutes. Prop your phone up. Follow along.<br><em style="color:var(--wine)">Consistency is what works.</em></div>';
+  var openBtn=document.createElement('button');
+  openBtn.style.cssText='width:100%;margin-bottom:.4rem;background:linear-gradient(135deg,#8B0000,#C41E3A);color:white;border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:700;cursor:pointer';
+  openBtn.textContent='Open Face Massage Video →';
+  openBtn.onclick=function(){window.open('https://youtu.be/hB1MdRcKr8M?si=xnXZdZxwvqjYJtpp','_blank');};
+  var doneBtn=document.createElement('button');
+  doneBtn.style.cssText='width:100%;background:var(--green);color:white;border:none;border-radius:7px;padding:.6rem;font-size:13px;font-weight:600;cursor:pointer';
+  doneBtn.textContent='Done — massage complete';
+  doneBtn.onclick=function(){_markPlannerDone(blockId);};
+  div.appendChild(openBtn);div.appendChild(doneBtn);sub.appendChild(div);
 }
 
 function _injectShloka(blockId){
-  const sub=document.getElementById('sub_'+blockId);if(!sub)return;
+  var sub=document.getElementById('sub_'+blockId);if(!sub)return;
   if(document.getElementById('inline-shloka-'+blockId))return;
-  const s=getTodayShloka();
-  const tk=todayKey();
-  const done=S.get('shloka_done_'+tk);
-  const div=document.createElement('div');
-  div.id='inline-shloka-'+blockId;
-  div.style.cssText='padding:.75rem';
-  const hdr=document.createElement('div');
-  hdr.style.cssText='display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem';
+  var s=getTodayShloka();
+  var tk=todayKey();
+  var done=S.get('shloka_done_'+tk);
+  var div=document.createElement('div');div.id='inline-shloka-'+blockId;div.style.cssText='padding:.75rem';
+  var hdr=document.createElement('div');hdr.style.cssText='display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem';
   hdr.innerHTML='<div style="font-size:28px">'+s.icon+'</div><div><div style="font-size:13px;font-weight:700;color:var(--ink)">'+s.name+'</div><div style="font-size:11px;color:var(--muted)">'+s.deity+' · Today</div></div>';
-  const preview=document.createElement('div');
-  preview.style.cssText='background:var(--cream-2);border-radius:8px;padding:.6rem .8rem;margin-bottom:.5rem';
-  preview.innerHTML='<div style="font-size:17px;color:var(--ink);font-family:serif;line-height:1.6;margin-bottom:.3rem">'+s.lines[0].devanagari+'</div><div style="font-size:11px;color:var(--wine);font-style:italic;margin-bottom:.3rem">'+s.lines[0].roman+'</div><div style="font-size:11px;color:var(--muted)">'+s.lines[0].meaning+'</div>';
-  // Browse all shlokas row
-  const browseRow=document.createElement('div');
-  browseRow.style.cssText='display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem';
-  SHLOKAS.forEach(sh=>{
-    const btn=document.createElement('button');
-    btn.style.cssText='padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:.5px solid var(--border);background:'+(sh.id===s.id?'var(--wine)':'var(--cream-2)')+';color:'+(sh.id===s.id?'white':'var(--muted)');
-    btn.textContent=sh.icon+' '+sh.deity;
-    btn.addEventListener('click',function(){showShlokaOv(sh.id);});
-    browseRow.appendChild(btn);
-  });
-  const openBtn=document.createElement('button');
+  var preview=document.createElement('div');preview.style.cssText='background:var(--cream-2);border-radius:8px;padding:.6rem .8rem;margin-bottom:.5rem';
+  preview.innerHTML='<div style="font-size:14px;color:var(--ink);font-weight:700;line-height:1.5;margin-bottom:.3rem">'+s.lines[0].devanagari+'</div><div style="font-size:11px;color:var(--wine);font-style:italic;margin-bottom:.2rem">'+s.lines[0].roman+'</div><div style="font-size:11px;color:var(--muted)">'+s.lines[0].meaning+'</div>';
+  var openBtn=document.createElement('button');
   openBtn.style.cssText='width:100%;background:linear-gradient(135deg,#0A0A2A,#1A1A4A);color:rgba(255,210,100,.9);border:none;border-radius:7px;padding:.65rem;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:.4rem';
   openBtn.textContent='Open Full Shloka'+(s.count108?' + 108 Jaap':'');
-  openBtn.addEventListener('click',function(){showShlokaOv(s.id);});
-  const doneEl=document.createElement(done?'div':'button');
+  openBtn.onclick=function(){showShlokaOv(s.id);};
+  var doneEl;
   if(done){
+    doneEl=document.createElement('div');
     doneEl.style.cssText='font-size:11px;color:var(--green);text-align:center;padding:.3rem';
-    doneEl.textContent='Done today';
+    doneEl.textContent='Done today ✓';
   } else {
+    doneEl=document.createElement('button');
     doneEl.style.cssText='width:100%;background:var(--green);color:white;border:none;border-radius:7px;padding:.6rem;font-size:13px;font-weight:600;cursor:pointer';
     doneEl.textContent='Done — I recited it';
-    doneEl.addEventListener('click',function(){_markPlannerDone(blockId);});
+    doneEl.onclick=function(){_markPlannerDone(blockId);};
   }
-  div.appendChild(hdr);
-  div.appendChild(preview);
-  div.appendChild(browseRow);
-  div.appendChild(openBtn);
-  div.appendChild(doneEl);
-  sub.appendChild(div);
+  div.appendChild(hdr);div.appendChild(preview);div.appendChild(openBtn);div.appendChild(doneEl);sub.appendChild(div);
+}
+
+
+function scheduleNextDayAtMidnight(){
+  const now=new Date();
+  const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1,0,1,0);
+  const delay=midnight-now;
+  setTimeout(async function(){
+    console.log('[Notif] Midnight — scheduling fresh for today');
+    await scheduleNotifications();
+    scheduleNextDayAtMidnight();
+  }, delay);
 }
 
 async function scheduleNotifications(wakeHour){
@@ -5321,14 +5270,17 @@ async function scheduleNotifications(wakeHour){
     // Helper: fixed time
     function ft(h,m){return{hour:h,minute:m};}
     // Base notification entry
-    function n(id,title,body,schedule){
+    function n(id,title,body,sched){
+      const now=new Date();
+      const fireDate=new Date(now.getFullYear(),now.getMonth(),now.getDate(),sched.hour,sched.minute,0);
+      if(fireDate<=now)return null;
       return{
         id, title, body,
-        schedule:{on:schedule, repeats:true, allowWhileIdle:true},
+        schedule:{at:fireDate, repeats:false, allowWhileIdle:true},
         actionTypeId:'ASH_ALARM',
         channelId:'mybuttons-main',
         sound:'default',
-        extra:{v:'1', action: 'open'},
+        extra:{v:'1'},
         autoCancel:true,
         ongoing:false,
         // Samsung Android 16 — force heads-up popup
@@ -5383,7 +5335,6 @@ async function scheduleNotifications(wakeHour){
       // Night prep reminder — every night 10:10 PM
       n(53, 'Methi + Magic Water', 'Soak methi seeds. Fill magic water. 2 minutes.', {hour:22,minute:10}),
       // ── MINDSET + FREQUENCY NUDGES (wake-relative) ──
-      n(61, 'Daily Core — Shloka time',  'Your shloka for today. 10 minutes.',            wa(77)),
       n(54, 'Breathe',                   '4 counts in. 2 hold. 6 out. Three rounds.',    wa(60)),
       n(55, 'One gratitude',             'Name one thing. Say it out loud. Feel it.',    wa(270)),
       n(56, 'Unclench everything',       'Jaw. Shoulders. Hands. Breathe out slowly.',   wa(420)),
@@ -5396,8 +5347,12 @@ async function scheduleNotifications(wakeHour){
       n(51, 'Mitesh Audio not done yet', 'Still time — tune your frequency.',            ft(19,30)),
     ];
 
-    await LocalNotifications.schedule({notifications:notifs});
+    const validNotifs=notifs.filter(function(x){return x!==null;});
+    console.log('[Notif] Scheduling '+validNotifs.length+' notifications for today');
+    await LocalNotifications.schedule({notifications:validNotifs});
     localStorage.setItem('mb_notif_scheduled_date', new Date().toDateString());
+    localStorage.setItem('mb_notif_wake_hour', String(w));
+    console.log('[Notif] Scheduled for today at wake='+w);
     localStorage.setItem('mb_notif_wake_hour', String(w));
     localStorage.setItem('mb_wake_hour', String(w));
     console.log('[Notif] Scheduled '+notifs.length+' notifications for wake='+w+':00');
@@ -5689,11 +5644,15 @@ function _executePendingNotifAction(){
     // Step 2: After tab renders, show the action UI
     setTimeout(()=>{
       // Re-render planner if we landed on it
-      if(tab==='plan'){const el=document.getElementById('schedule');if(el&&el.children.length===0)renderSchedule();}
+      if(tab==='plan'){
+        initPlanner();
+        const el=document.getElementById('schedule');
+        if(el&&el.children.length===0)renderSchedule();
+      }
       if(action==='water'){
-        showWaterOv(title,body);
+        setTimeout(()=>showWaterOv(title,body),400);
       } else if(action==='walk'){
-        showWalkOv(title,body);
+        setTimeout(()=>showWalkOv(title,body),400);
       } else if(action==='checkin'){
         const h=new Date().getHours();
         const slots=eftGetSlots();
@@ -5716,6 +5675,18 @@ function _executePendingNotifAction(){
         switchTab('morning');
       } else if(action==='dmp'||action==='evening'||action==='sleep'){
         switchTab('evening');
+      } else if(action==='shloka'){
+        setTimeout(()=>showShlokaOv(),400);
+      } else if(action==='mirror'){
+        setTimeout(()=>showMirrorOv(),400);
+      } else if(action==='affirm'){
+        setTimeout(()=>showAffirmOv(),400);
+      } else if(action==='hopo'){
+        setTimeout(()=>showHopoChoice(),400);
+      } else if(action==='surya'){
+        setTimeout(()=>showSuryaOv(),400);
+      } else if(action==='dmp'){
+        setTimeout(()=>showDmpOv(),400);
       }
       // For plan/habits — switchTab already handled it
     }, 500);
@@ -6467,6 +6438,7 @@ function switchTab(tab){
   else if(tab==='vision')renderVision();
   else if(tab==='plan'){
   initPlanner();
+  // Fallback re-render after 400ms in case rAF wasn't enough (notification cold start)
   setTimeout(()=>{
     const el=document.getElementById('schedule');
     if(el&&el.children.length===0)renderSchedule();
@@ -6582,8 +6554,6 @@ _loadAll().then(()=>{
   }
   notifEnabled=S.get('notif_on')===true;
   updateNotifBtn();updateClock();if(notifEnabled)scheduleNextNotif();scheduleNudge();initCapacitorNotifs();currentDay=(new Date().getDay()===0||new Date().getDay()===6)?'weekend':'weekday';initPlanner();
-  // Show time-aware prompt after 1.5s delay
-  setTimeout(showTimeAwarePrompt, 1500);
 }).catch(()=>{
   clearTimeout(_loadTimeout);
   const _dow=new Date().getDay();currentDay=(_dow===0||_dow===6)?'weekend':'weekday';
@@ -7077,13 +7047,7 @@ setTimeout(function(){updateSOSBtn();},600);
 
 
 <!-- ══ MIRROR AFFIRMATIONS OVERLAY ══ -->
-<div class="ov" id="mirrorOv" style="z-index:2100">
-  <div style="font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(232,200,120,.6);margin-bottom:1.2rem">🪞 Mirror Talk</div>
-  <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:.5rem" id="mirrorOvStep">1 / 5</div>
-  <div style="font-size:26px;font-weight:700;color:white;text-align:center;line-height:1.4;margin-bottom:2rem;min-height:80px;display:flex;align-items:center;justify-content:center" id="mirrorOvLine">I've got this.</div>
-  <button class="ov-close solid" onclick="nextMirrorOv()" id="mirrorOvBtn" style="margin-bottom:.65rem">Next →</button>
-  <div class="ov-close" onclick="closeMirrorOv()">Skip</div>
-</div>
+
 
 <!-- ══ DUOLINGO OVERLAY ══ -->
 <div class="ov" id="duolingoOv" style="z-index:2100">
@@ -7250,29 +7214,28 @@ setTimeout(function(){updateSOSBtn();},600);
 </div>
 
 
-<!-- ══ DAILY CORE SHLOKA OVERLAY ══ -->
-<div class="ov" id="shlokaOv" style="z-index:2100;background:linear-gradient(160deg,#0A0A2A,#050515);overflow-y:auto;justify-content:flex-start;padding:2rem 1.2rem 3rem">
-  <div style="text-align:center;margin-bottom:.8rem">
-    <div style="font-size:48px;margin-bottom:.3rem" id="shlokaOvIcon">🐘</div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,210,100,.6);margin-bottom:.2rem" id="shlokaOvDeity">Ganesha</div>
-    <div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic" id="shlokaOvPurpose">Remove obstacles.</div>
+<!-- ══ SHLOKA OVERLAY ══ -->
+<div class="ov" id="shlokaOv" style="z-index:2100;background:linear-gradient(160deg,#0A0A2A,#050515);overflow-y:auto;justify-content:flex-start;padding:1.5rem 1.2rem 3rem">
+  <div style="text-align:center;margin-bottom:.7rem">
+    <div style="font-size:44px;margin-bottom:.3rem" id="shlokaOvIcon">🐘</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,210,100,.6);margin-bottom:.15rem" id="shlokaOvDeity">Ganesha</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);font-style:italic" id="shlokaOvPurpose">Remove obstacles.</div>
   </div>
-  <!-- Browse all shlokas -->
-  <div id="shlokaOvBrowse" style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;margin-bottom:.8rem"></div>
-  <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:.5rem">
+  <div id="shlokaOvBrowse" style="margin-bottom:.6rem"></div>
+  <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:.4rem">
     <div id="shlokaOvBar" style="height:3px;background:rgba(255,210,100,.7);border-radius:2px;width:50%;transition:width .3s"></div>
   </div>
-  <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:.8rem" id="shlokaOvProgress">Line 1 of 2</div>
-  <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.8rem;text-align:center">
-    <div style="font-size:22px;color:white;line-height:1.7;font-family:serif;margin-bottom:.6rem" id="shlokaOvDevanagari">वक्रतुण्ड महाकाय</div>
-    <div style="font-size:13px;color:rgba(255,210,100,.8);font-style:italic;line-height:1.5" id="shlokaOvRoman">Vakratunda Mahakaya</div>
+  <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;margin-bottom:.6rem" id="shlokaOvProgress">Line 1 of 2</div>
+  <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:.9rem 1rem;margin-bottom:.7rem;text-align:center">
+    <div style="font-size:16px;color:white;line-height:1.6;font-family:-apple-system,sans-serif;margin-bottom:.5rem;font-weight:600;letter-spacing:.01em" id="shlokaOvDevanagari">Vakratunda Mahakaya</div>
+    <div style="font-size:12px;color:rgba(255,210,100,.8);font-style:italic;line-height:1.5" id="shlokaOvRoman">Vakratunda Mahakaya</div>
   </div>
-  <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.2rem;border:.5px solid rgba(255,255,255,.08)">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.4rem">Meaning</div>
-    <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.6" id="shlokaOvMeaning">O Lord with a curved trunk</div>
+  <div style="background:rgba(255,255,255,.03);border-radius:9px;padding:.7rem .9rem;margin-bottom:1rem;border:.5px solid rgba(255,255,255,.08)">
+    <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.3rem">Meaning</div>
+    <div style="font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.6" id="shlokaOvMeaning">O Lord with a curved trunk</div>
   </div>
-  <button id="shlokaOvNext" onclick="shlokaOvNext()" style="width:100%;padding:.85rem;border-radius:10px;border:.5px solid rgba(255,210,100,.3);background:rgba(255,210,100,.15);color:rgba(255,210,100,.9);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:.5rem">Next line →</button>
-  <button onclick="closeShlokaOv()" style="width:100%;padding:.65rem;border-radius:10px;border:.5px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.3);font-size:12px;cursor:pointer">Close</button>
+  <button id="shlokaOvNext" onclick="shlokaOvNext()" style="width:100%;padding:.8rem;border-radius:10px;border:.5px solid rgba(255,210,100,.3);background:rgba(255,210,100,.15);color:rgba(255,210,100,.9);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:.5rem">Next line →</button>
+  <button onclick="closeShlokaOv()" style="width:100%;padding:.6rem;border-radius:10px;border:.5px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.3);font-size:12px;cursor:pointer">Close</button>
 </div>
 
 </body>
