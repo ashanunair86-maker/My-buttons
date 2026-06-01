@@ -703,8 +703,9 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
 
 
 /* ── Wake time selector ── */
-.wake-selector{background:var(--white);border:.5px solid var(--border);border-radius:11px;padding:.8rem .9rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
-.wake-selector .ws-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);flex:1}
+.wake-selector{background:var(--white);border:.5px solid var(--border);border-radius:11px;padding:.8rem .9rem;margin-bottom:.8rem}
+.wake-selector .ws-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem;display:block}
+.wake-selector .wake-btn{margin:.2rem .15rem;font-size:11.5px;padding:.3rem .55rem}
 .wake-btn{padding:.45rem .9rem;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--cream-2);color:var(--muted);transition:all .12s}
 .wake-btn.active{background:var(--wine);color:var(--cream);border-color:var(--wine)}
 
@@ -899,7 +900,6 @@ body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-u
   <div class="tab active" id="tab-plan"     onclick="switchTab('plan')">📋 Planner</div>
   <div class="tab"        id="tab-progress" onclick="switchTab('progress')">📈 Progress</div>
   <div class="tab"        id="tab-habits"   onclick="switchTab('habits')">🎯 Habits</div>
-  <div class="tab"        id="tab-insights" onclick="switchTab('insights')">🧠 Insights</div>
 </div></div>
 
 <!-- ══ DASHBOARD ══ -->
@@ -1420,6 +1420,7 @@ const WEEKDAY=[
   {id:'ww17',time:'Evening',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Clear the mind.',subs:['Walk 8,000 steps or 30-45 minutes','This is decompression time']},
   {id:'w19',time:'21:00',name:'DMP Session — 9 PM',cat:'spirit',bell:true,desc:'DO NOT SKIP. This is the appointment that changes your life.',subs:['Phone silent. 100% presence.','Feel the farmhouse — already real','Read DMP statement out loud','Close: "It is done. It is mine. I am grateful."']},
   {id:'w20',time:'22:00',name:'Dinner',cat:'wellness',bell:true,desc:'Light meal. Eat slowly.',subs:['Steak & veggies / dal khichdi 🍽️','2 glasses of water 💧']},
+  {id:'wFM',time:'22:10',name:'Face Massage — Self Care',cat:'self',bell:true,desc:'Watch the video. Take care of your face. 10-15 minutes.',subs:['Tap to open face massage video','Phone propped up, follow along','Consistency is what works']},
   {id:'w21',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the whole day. 4 rounds.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Let it all go. Sleep clean.']},
   {id:'w21a',time:'22:15',name:'Night Prep — Methi + Magic Water',cat:'wellness',bell:true,
     desc:'2 min. Do it before you forget.',
@@ -1447,7 +1448,7 @@ const WEEKEND=[
   {id:'e16',time:'19:00',name:'Evening Walk — 8,000 Steps',cat:'wellness',bell:true,desc:'Move the body. Family walk if possible.',subs:['Walk 8,000 steps or 40 minutes']},
   {id:'e17',time:'17:00',name:'DMP Session — 5 PM',cat:'spirit',bell:true,desc:'Weekend DMP — full presence.',subs:['Feel the farmhouse. Vivid. Real. Already yours.']},
   {id:'e18',time:'22:00',name:'Dinner + Water',cat:'wellness',bell:true,desc:'Light evening meal.',subs:['Steak & veggies / khichdi 🍽️','2 glasses 💧']},
-  {id:'eFM',time:'22:00',name:'Face Massage — Self Care',cat:'self',bell:true,desc:'Watch the video. Take care of your face. 10-15 minutes.',subs:['Tap to open face massage video','Phone propped up, follow along','Consistency is what works']},
+  {id:'eFM',time:'22:10',name:'Face Massage — Self Care',cat:'self',bell:true,desc:'Watch the video. Take care of your face. 10-15 minutes.',subs:['Tap to open face massage video','Phone propped up, follow along','Consistency is what works']},
   {id:'eMitesh',time:'22:15',name:'Mitesh Khatri — Weekend Session',cat:'spirit',bell:true,desc:'Full session. Tune your frequency before sleep.',subs:['Open Mitesh website or play uploaded audio','Full focus','Note 1 key insight']},
   {id:'e19',time:'22:30',name:"Ho'oponopono — Evening Close",cat:'spirit',bell:true,desc:'Release the week.',subs:["I'm sorry. Please forgive me. Thank you. I love you.",'Sleep clean.']},
   {id:'e21a',time:'22:15',name:'Night Prep — Methi + Magic Water',cat:'wellness',bell:true,
@@ -2967,6 +2968,39 @@ function _displayTime(t){
   return t;
 }
 
+// ── Time shift helpers ──
+function _shiftTime(t,offsetMins){
+  if(!offsetMins||!t||t==='Wake'||t==='Leave')return _displayTime(t);
+  // Parse base time to total minutes
+  const w=getWakeHour();
+  let baseMins=0;
+  const hourMatch=t.match(/^\+(\d+)h(\d+)?$/);
+  if(hourMatch){baseMins=w*60+parseInt(hourMatch[1])*60+parseInt(hourMatch[2]||'0');}
+  else{
+    const minMatch=t.match(/^\+(\d+)$/);
+    if(minMatch){baseMins=w*60+parseInt(minMatch[1]);}
+    else{
+      const fixedMatch=t.match(/^(\d{1,2}):(\d{2})$/);
+      if(fixedMatch){baseMins=parseInt(fixedMatch[1])*60+parseInt(fixedMatch[2]);}
+      else{return _displayTime(t);}
+    }
+  }
+  const total=(baseMins+offsetMins+1440)%1440;
+  const rh=Math.floor(total/60);const rm=total%60;
+  const ampm=rh<12?'AM':'PM';const h12=rh>12?rh-12:(rh===0?12:rh);
+  return h12+':'+(rm===0?'00':String(rm).padStart(2,'0'))+' '+ampm;
+}
+function shiftBlockTime(blockId,mins){
+  const{all,key,day}=getToday();
+  if(!day.timeOffsets)day.timeOffsets={};
+  const cur=day.timeOffsets[blockId]||0;
+  day.timeOffsets[blockId]=cur+mins;
+  saveTodayDay(all,key,day);
+  const dir=mins>0?'+'+mins:''+mins;
+  showToast('⏱ '+dir+' min — today only');
+  renderSchedule();
+}
+
 function renderSchedule(){
   const el=document.getElementById('schedule');
   if(!el){
@@ -2980,6 +3014,7 @@ function renderSchedule(){
     learn:'Learning & Study',self:'Self-care',rest:'Rest',checkin:'💧 Water + Walk Reminders'};
 
   blocks.forEach((b)=>{
+    if(!b||!b.id||!b.subs)return; // guard against malformed entries
     if(b.cat!==lastCat){
       const sl=document.createElement('div');sl.className='sec-hdr';
       sl.textContent=labels[b.cat]||b.cat;el.appendChild(sl);lastCat=b.cat;
@@ -3000,10 +3035,13 @@ function renderSchedule(){
     catBar.style.background=CAT_COLOR[b.cat]||'#888';
     div.appendChild(catBar);
 
-    // Block header
+    // Block header — with time offset support
     const hdr=document.createElement('div');
     hdr.className='block-hdr';hdr.id='bhdr_'+b.id;
-    hdr.innerHTML=`<div class="block-time">${_displayTime(b.time)}</div>
+    const timeOffset=(day.timeOffsets&&day.timeOffsets[b.id])||0;
+    const shiftedTime=_shiftTime(b.time,timeOffset);
+    const offsetTag=timeOffset!==0?`<span style="font-size:9px;color:${timeOffset>0?'#D97706':'var(--teal)'};font-weight:700;margin-left:3px">${timeOffset>0?'+'+timeOffset:''+timeOffset}m</span>`:'';
+    hdr.innerHTML=`<div class="block-time">${shiftedTime}${offsetTag}</div>
       <div class="block-info">
         <div class="block-name">${b.name}</div>
         <div class="block-desc">${b.desc}</div>
@@ -3030,7 +3068,39 @@ function renderSchedule(){
       });
       tsr.appendChild(btn);
     });
-    div.appendChild(tsr);
+
+    // ── Time shift row ──
+    const tshiftRow=document.createElement('div');
+    tshiftRow.className='task-status-row';
+    tshiftRow.style.cssText='padding:.3rem .85rem .4rem;border-top:none;gap:.4rem';
+    tshiftRow.addEventListener('click',e=>e.stopPropagation());
+    const shiftLabel=document.createElement('span');
+    shiftLabel.style.cssText='flex:1;font-size:10px;color:var(--muted);align-self:center';
+    shiftLabel.textContent='Move time:';
+    tshiftRow.appendChild(shiftLabel);
+    [[-30,'⏪ −30m'],[- 15,'⏪ −15m'],[15,'⏩ +15m'],[30,'⏩ +30m']].forEach(([mins,lbl])=>{
+      const b2=document.createElement('button');
+      b2.style.cssText='padding:.28rem .45rem;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:.5px solid var(--border);background:var(--cream-2);color:var(--muted)';
+      b2.textContent=lbl;
+      b2.addEventListener('click',e=>{
+        e.stopPropagation();
+        e.preventDefault();
+        shiftBlockTime(b.id,mins);
+      });
+      tshiftRow.appendChild(b2);
+    });
+    if(timeOffset!==0){
+      const resetBtn=document.createElement('button');
+      resetBtn.style.cssText='padding:.28rem .45rem;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:.5px solid var(--red-border);background:var(--red-bg);color:var(--red)';
+      resetBtn.textContent='↺ Reset';
+      resetBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        e.preventDefault();
+        shiftBlockTime(b.id,-timeOffset);
+      });
+      tshiftRow.appendChild(resetBtn);
+    }
+    div.appendChild(tshiftRow);
 
     // Sub-list
     const subList=document.createElement('div');
@@ -3202,7 +3272,7 @@ function toggleBlock(id){
     else if(id==='w6'||id==='e4') _injectSurya(id);
     else if(id==='w11') _injectPriority(id);
     else if(id==='wDC'||id==='eDC') _injectShloka(id);
-    else if(id==='eFM') _injectFaceMassage(id);
+    else if(id==='eFM'||id==='wFM') _injectFaceMassage(id);
     else if(id==='eMitesh') _injectMitesh(id);
     else if(id==='w7') _injectDuolingo(id);
     else if(id==='w8') _injectMitesh(id);
@@ -3876,7 +3946,7 @@ function showSwNotif(title, body){
   }
 }
 // ── Wake time preference ──
-function getWakeHour(){return parseInt(S.get('wake_hour')||localStorage.getItem('wake_hour')||localStorage.getItem('mb_wake_hour')||'6');}
+function getWakeHour(){return parseFloat(S.get('wake_hour')||localStorage.getItem('wake_hour')||localStorage.getItem('mb_wake_hour')||'6');}
 
 
 function showHopoChoice(){
@@ -3896,9 +3966,9 @@ function showWakeSheet(){
     <div style="width:38px;height:4px;background:var(--border);border-radius:99px;margin:0 auto .9rem"></div>
     <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:1rem;text-align:center">What time do you wake up?</div>
     <div style="display:flex;flex-direction:column;gap:.5rem">
-      ${[5,6,7,8].map(h=>`<button onclick="setWakeHour(${h});document.getElementById('wakeSheet').remove()" 
-        style="width:100%;padding:.75rem;border-radius:9px;border:.5px solid var(--border);background:${h===cur?'var(--wine)':'var(--white)'};color:${h===cur?'white':'var(--ink)'};font-size:14px;font-weight:600;cursor:pointer">
-        ${h}:00 AM${h===cur?' (current)':''}</button>`).join('')}
+      ${[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9].map(h=>{const hh=Math.floor(h);const mm=h%1===0.5?'30':'00';const label=hh+':'+mm+' AM';const active=h===cur;return`<button onclick="setWakeHour(${h});document.getElementById('wakeSheet').remove()" 
+        style="width:100%;padding:.75rem;border-radius:9px;border:.5px solid var(--border);background:${active?'var(--wine)':'var(--white)'};color:${active?'white':'var(--ink)'};font-size:14px;font-weight:600;cursor:pointer">
+        ${label}${active?' (current)':''}</button>`;}).join('')}
     </div>
     <button onclick="document.getElementById('wakeSheet').remove()" style="width:100%;margin-top:.75rem;padding:.65rem;border-radius:9px;border:.5px solid var(--border);background:var(--cream-2);color:var(--muted);font-size:13px;cursor:pointer">Cancel</button>
   </div>`;
@@ -3914,6 +3984,7 @@ function _updateWakeHdrLabel(){
   }
 }
 
+function _fmtWake(h){const hh=Math.floor(h);const mm=h%1===0.5?'30':'00';return hh+':'+mm+' AM';}
 function setWakeHour(h){
   const prev=S.get('wake_hour')||6;
   S.set('wake_hour',h);
@@ -3922,10 +3993,10 @@ function setWakeHour(h){
   if(notifEnabled)scheduleNextNotif();
   if(isNativeApp()){
     scheduleNotifications(h).then(ok=>{
-      if(ok)_updateWakeHdrLabel();scheduleDayOverlays();showToast('Wake time set to '+h+':00 AM — overlays + alarms updated');
+      if(ok)_updateWakeHdrLabel();scheduleDayOverlays();showToast('Wake time set to '+_fmtWake(h)+' — overlays + alarms updated');
     });
   } else {
-    _updateWakeHdrLabel();showToast('Wake time set to '+h+':00 AM');
+    _updateWakeHdrLabel();showToast('Wake time set to '+_fmtWake(h));
   }
   // Refresh any open EFT slots
   if(typeof renderEFT==='function')renderEFT();
@@ -4868,7 +4939,12 @@ function scheduleDayOverlays(){
   const nowMins=now.getHours()*60+now.getMinutes();
 
   function wa(addMins){
-    return((w*60+addMins)%(24*60));
+    // Returns total minutes from midnight — used by schedule() as a plain number
+    return(w*60+addMins)%(24*60);
+  }
+  function waH(addMins){
+    // Returns hour component — used for EFT slot matching
+    return Math.floor(wa(addMins)/60);
   }
 
   function schedule(slotMins, fn){
@@ -4889,7 +4965,7 @@ function scheduleDayOverlays(){
   // ── Wake+1h5: EFT check-in ──
   schedule(wa(65),()=>{
     buzz([200,100,200]);
-    const slots=eftGetSlots();const h=Math.floor(wa(65)/60);
+    const slots=eftGetSlots();const h=waH(65);
     const match=slots.find(s=>Math.abs(s.h-h)<=1)||slots[0];
     if(match)eftOpenSlot(match.h,match.label);
   });
@@ -4919,7 +4995,7 @@ function scheduleDayOverlays(){
   // ── Wake+6h: EFT check-in (2:00 PM) ──
   schedule(wa(360),()=>{
     buzz([200,100,200]);
-    const slots=eftGetSlots();const h=Math.floor(wa(360)/60);
+    const slots=eftGetSlots();const h=waH(360);
     const match=slots.find(s=>Math.abs(s.h-h)<=1)||slots[0];
     if(match)eftOpenSlot(match.h,match.label);
   });
@@ -4953,7 +5029,7 @@ function scheduleDayOverlays(){
   // ── Wake+10h: EFT check-in (6:00 PM) ──
   schedule(wa(600),()=>{
     buzz([200,100,200]);
-    const slots=eftGetSlots();const h=Math.floor(wa(600)/60);
+    const slots=eftGetSlots();const h=waH(600);
     const match=slots.find(s=>Math.abs(s.h-h)<=1)||slots[0];
     if(match)eftOpenSlot(match.h,match.label);
   });
@@ -5252,7 +5328,7 @@ function scheduleNextDayAtMidnight(){
 async function scheduleNotifications(wakeHour){
   if(!isNativeApp())return;
   const{LocalNotifications}=Capacitor.Plugins;
-  const w=parseInt(wakeHour||S.get('wake_hour')||localStorage.getItem('wake_hour')||localStorage.getItem('mb_wake_hour')||'6');
+  const w=parseFloat(wakeHour||S.get('wake_hour')||localStorage.getItem('wake_hour')||localStorage.getItem('mb_wake_hour')||'6');
   console.log('[Notif] Scheduling for wake='+w+':00');
 
   try{
@@ -5260,14 +5336,15 @@ async function scheduleNotifications(wakeHour){
       id:'mybuttons-main',
       name:'My Buttons Reminders',
       description:'Daily reminders for Ash',
-      importance:5,           // IMPORTANCE_HIGH — shows as heads-up
+      importance:5,           // IMPORTANCE_HIGH — forces heads-up
       visibility:1,           // VISIBILITY_PUBLIC — shows on lock screen
       vibration:true,
       lights:true,
       lightColor:'#B07830',
-      bypassDnd:true,         // bypass Do Not Disturb
-      lockScreenVisibility:1, // show on lock screen
+      bypassDnd:true,
+      lockScreenVisibility:1,
       sound:'default',
+      allowBubbles:true,
     });
 
     // Cancel ALL existing notifications — belt and braces
@@ -5305,8 +5382,9 @@ async function scheduleNotifications(wakeHour){
         channelId:'mybuttons-main',
         sound:'default',
         extra:{v:'1'},
-        autoCancel:true,
-        ongoing:false,
+        autoCancel:false,
+        ongoing:true,
+        fullScreenIntent:true,
         // Samsung Android 16 — force heads-up popup
         smallIcon:'ic_stat_icon_config_sample',
         iconColor:'#B07830',
@@ -6148,7 +6226,7 @@ function renderEFT(){
         <div class="eft-hero-sub">${loggedCount} of 7 check-ins done today</div>
       </div>
       <div class="eft-hero-right">
-        <div class="eft-wake-btn" onclick="eftChangeWake();event.stopPropagation()">⏰ Wake ${w}:00 AM ✎</div>
+        <div class="eft-wake-btn" onclick="eftChangeWake();event.stopPropagation()">⏰ Wake ${_fmtWake(w)} ✎</div>
       </div>
     </div>
     <div class="eft-progress-row">
@@ -6472,7 +6550,6 @@ function switchTab(tab){
   else if(tab==='history')renderHistory();
   else if(tab==='weekly')renderWeekly();
   else if(tab==='progress')renderProgress();
-  else if(tab==='insights')renderInsights();
   window.scrollTo(0,0);
 }
 function goBack(){
@@ -6740,119 +6817,6 @@ evExpandContent=function(i){
   return base;
 }
 
-// ── INSIGHTS ──
-let _insPer='week';
-function renderInsights(){
-  const el=document.getElementById('insights-content');if(!el)return;
-  const d=getDayData();
-  const emotions=d.emotions||[];
-  console.log('[Insights] emotions today:', emotions.length, 'water logs:', waterLogs.length);
-  const posCount=emotions.filter(e=>e.type==='pos').length;
-  const negCount=emotions.filter(e=>e.type==='neg').length;
-  const waterLogs=d.waterLogs||[];
-  const totalMl=waterLogs.reduce((s,l)=>s+(l.amount||0),0);
-  const steps=d.steps||0;
-  const walkSteps=d.walkSteps||0;
-  const tk=todayKey();
-  const all=loadAll();
-  // Last 7 days emotion ratio
-  let weekPos=0,weekNeg=0;
-  const allDayData=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-  for(let i=0;i<7;i++){
-    const d2=new Date();d2.setDate(d2.getDate()-i);
-    const dk=d2.toDateString();
-    const dd=allDayData[dk]||{};
-    const de=dd.emotions||[];
-    weekPos+=de.filter(e=>e.type==='pos').length;
-    weekNeg+=de.filter(e=>e.type==='neg').length;
-  }
-  const freqScore=weekPos+weekNeg>0?Math.round(weekPos/(weekPos+weekNeg)*100):0;
-
-  el.innerHTML=`
-    <!-- Today summary -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.6rem">
-      <div onclick="switchTab('habits')" style="background:linear-gradient(135deg,#0D3349,#061E2E);border-radius:10px;padding:.75rem;cursor:pointer">
-        <div style="font-size:9px;color:rgba(120,200,255,.6);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem">💧 Water today</div>
-        <div style="font-size:20px;font-weight:700;color:white">${Math.floor(totalMl/250)}<span style="font-size:11px;color:rgba(255,255,255,.4)">/20</span></div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35)">${totalMl}ml · tap to log</div>
-      </div>
-      <div onclick="switchTab('habits')" style="background:linear-gradient(135deg,#0D3320,#061508);border-radius:10px;padding:.75rem;cursor:pointer">
-        <div style="font-size:9px;color:rgba(120,255,160,.6);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem">🚶 Steps today</div>
-        <div style="font-size:20px;font-weight:700;color:white">${(steps/1000).toFixed(1)}<span style="font-size:11px;color:rgba(255,255,255,.4)">k</span></div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35)">${walkSteps.toLocaleString()} walk · tap to log</div>
-      </div>
-      <div onclick="switchTab('habits')" style="background:linear-gradient(135deg,#3D0A1A,#1A0510);border-radius:10px;padding:.75rem;cursor:pointer">
-        <div style="font-size:9px;color:rgba(255,120,150,.6);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem">⚡ Frequency today</div>
-        <div style="font-size:20px;font-weight:700;color:white">${posCount}<span style="font-size:11px;color:rgba(255,255,255,.4)"> pos</span></div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35)">${negCount} negative · tap EFT</div>
-      </div>
-      <div onclick="switchTab('progress')" style="background:linear-gradient(135deg,#1A1A3D,#080820);border-radius:10px;padding:.75rem;cursor:pointer">
-        <div style="font-size:9px;color:rgba(180,180,255,.6);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem">📈 Week frequency</div>
-        <div style="font-size:20px;font-weight:700;color:white">${freqScore}<span style="font-size:11px;color:rgba(255,255,255,.4)">%</span></div>
-        <div style="font-size:10px;color:rgba(255,255,255,.35)">positive ratio · tap streaks</div>
-      </div>
-    </div>
-
-    <!-- Quick links -->
-    <div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:.6rem">
-      <div style="background:var(--cream-2);padding:.5rem .85rem;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Quick Actions</div>
-      <div onclick="switchTab('plan')" style="padding:.6rem .85rem;border-bottom:.5px solid var(--border);font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">📋 Open Planner<span style="color:var(--muted)">→</span></div>
-      <div onclick="switchTab('habits')" style="padding:.6rem .85rem;border-bottom:.5px solid var(--border);font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">⚡ Log Emotion (EFT)<span style="color:var(--muted)">→</span></div>
-      <div onclick="switchTab('hopo')" style="padding:.6rem .85rem;border-bottom:.5px solid var(--border);font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">🤍 Hooponopono<span style="color:var(--muted)">→</span></div>
-      <div onclick="switchTab('streaks')" style="padding:.6rem .85rem;border-bottom:.5px solid var(--border);font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">📈 View Streaks<span style="color:var(--muted)">→</span></div>
-      <div onclick="switchTab('weekly')" style="padding:.6rem .85rem;border-bottom:.5px solid var(--border);font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">📊 Weekly Progress<span style="color:var(--muted)">→</span></div>
-      <div onclick="switchTab('history')" style="padding:.6rem .85rem;font-size:13px;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between">🗓 History<span style="color:var(--muted)">→</span></div>
-    </div>
-
-    <!-- Emotion breakdown -->
-    <div style="background:var(--white);border:.5px solid var(--border);border-radius:10px;padding:.75rem .85rem;margin-bottom:.6rem">
-      <div style="font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem">Today Emotions</div>
-      ${emotions.length?emotions.map(e=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-bottom:.5px solid var(--border-light)">
-        <div style="width:8px;height:8px;border-radius:50%;background:${e.type==='pos'?'var(--green)':'var(--red)'}"></div>
-        <div style="font-size:12px;color:var(--ink);flex:1">${e.label||e.emotion||''}</div>
-        <div style="font-size:10px;color:var(--muted)">${e.time||''}</div>
-      </div>`).join(''):'<div style="font-size:12px;color:var(--muted);font-style:italic">No emotions logged yet — go to Habits → EFT</div>'}
-    </div>
-  `;
-}
-
-function setInsPer(p,btn){_insPer=p;document.querySelectorAll('.ins-period-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');const d=document.getElementById('ins-data');if(d)d.innerHTML=_buildInsData();}
-function _buildInsData(){
-  const emlog=getEmotionLog();const now=new Date();let cut=new Date(now);
-  if(_insPer==='week')cut.setDate(now.getDate()-7);else if(_insPer==='month')cut.setDate(now.getDate()-30);else cut=new Date(2020,0,1);
-  const all=[];
-  Object.entries(emlog).forEach(([k,entries])=>{
-    const parts=k.split('-');const h=parseInt(parts[parts.length-1])||0;const dp=parts.slice(0,-1).join('-');
-    try{const d=new Date(dp);if(d>=cut&&d<=now)(entries||[]).forEach(e=>all.push(Object.assign({},e,{h:h})));}catch(ex){}
-  });
-  if(!all.length)return '<div class="ins-empty">No emotion data yet.<br><br>Go to Check-In and log emotions.<br>Your patterns appear here over time. ✦</div>';
-  const neg=all.filter(e=>e.type==='neg');const pos=all.filter(e=>e.type==='pos');
-  const total=all.length;const pp=Math.round((pos.length/total)*100);const np=100-pp;
-  const nc={},pc={};neg.forEach(e=>{nc[e.emotion]=(nc[e.emotion]||0)+1;});pos.forEach(e=>{pc[e.emotion]=(pc[e.emotion]||0)+1;});
-  const tn=Object.entries(nc).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const tp=Object.entries(pc).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const sc={};neg.forEach(e=>{if(!sc[e.h])sc[e.h]={};sc[e.h][e.emotion]=(sc[e.h][e.emotion]||0)+1;});
-  let hs=null,ht=0;Object.entries(sc).forEach(([h,ems])=>{const t=Object.values(ems).reduce((a,b)=>a+b,0);if(t>ht){ht=t;hs=h;}});
-  const sl=function(h){const m={6:'6-8AM',8:'8-10AM',10:'10AM',12:'12PM',14:'2PM',16:'4PM',18:'6PM',20:'8PM',22:'10PM'};return m[parseInt(h)]||h+':00';};
-  const ins=[];
-  if(tn.length){const em=tn[0][0];const ct=tn[0][1];const per=_insPer==='week'?'this week':_insPer==='month'?'this month':'overall';ins.push('You felt <strong>'+em+'</strong> '+ct+'× '+per+(hs?' — mostly in the '+sl(hs)+' slot':'')+'.');}
-  if(tp.length){const em=tp[0][0];const ct=tp[0][1];ins.push('Your strongest positive was <strong>'+em+'</strong> — logged '+ct+'× ✦');}
-  if(pp>=60)ins.push('<strong>Great frequency!</strong> '+pp+'% positive. Keep going.');
-  else if(pp<40)ins.push('Positive ratio is '+pp+'%. Use Emotions tab to shift this.');
-  const mn=tn.length?tn[0][1]:1;const mp=tp.length?tp[0][1]:1;
-  const nb=tn.map(function(x){const n=x[0];const c=x[1];return '<div class="ins-bar-row"><div class="ins-bar-name">'+n+'</div><div class="ins-bar-track"><div class="ins-bar-fill neg" style="width:'+Math.round(c/mn*100)+'%"></div></div><div class="ins-bar-count">'+c+'</div></div>';}).join('');
-  const pb=tp.map(function(x){const n=x[0];const c=x[1];return '<div class="ins-bar-row"><div class="ins-bar-name">'+n+'</div><div class="ins-bar-track"><div class="ins-bar-fill pos" style="width:'+Math.round(c/mp*100)+'%"></div></div><div class="ins-bar-count">'+c+'</div></div>';}).join('');
-  const sg=[8,10,12,14,16,18,20].map(function(h){const ems=sc[h]||{};const tops=Object.entries(ems).sort((a,b)=>b[1]-a[1]);const top=tops[0];const hot=parseInt(hs)===h;return '<div class="ins-slot-cell'+(hot?' hotspot':'')+'"><div class="ins-slot-time">'+sl(h)+'</div><div class="ins-slot-em">'+(top?top[0].split('/')[0].trim().substring(0,9):'—')+'</div></div>';}).join('');
-  const notes=S.get('em_notes')||{};
-  const ne=Object.entries(notes).slice(-3).reverse();
-  return '<div class="ins-card"><div class="ins-card-head">📊 FREQUENCY RATIO — '+total+' emotions logged</div><div class="ins-card-body"><div class="ins-ratio-wrap"><div class="ins-ratio-lbl pos">'+pp+'%</div><div class="ins-ratio-bar"><div class="ins-ratio-pos" style="width:'+pp+'%"></div><div class="ins-ratio-neg" style="width:'+np+'%"></div></div><div class="ins-ratio-lbl neg">'+np+'%</div></div><div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:.2rem"><span>🌱 Positive</span><span>⚡ Negative</span></div></div></div>'
-  +(ins.length?'<div class="ins-card"><div class="ins-card-head">💡 SMART INSIGHTS</div><div class="ins-card-body">'+ins.map(function(i){return '<div class="ins-insight">'+i+'</div>';}).join('')+'</div></div>':'')
-  +(tn.length?'<div class="ins-card"><div class="ins-card-head">🔴 TOP DIFFICULT EMOTIONS</div><div class="ins-card-body">'+nb+'</div></div>':'')
-  +(tp.length?'<div class="ins-card"><div class="ins-card-head">🌱 TOP POSITIVE EMOTIONS</div><div class="ins-card-body">'+pb+'</div></div>':'')
-  +'<div class="ins-card"><div class="ins-card-head">🕐 NEGATIVE BY TIME SLOT</div><div class="ins-card-body"><div style="font-size:11px;color:var(--muted);margin-bottom:.4rem">Which time of day is hardest?</div><div class="ins-slot-row">'+sg+'</div></div></div>'
-  +(ne.length?'<div class="ins-card"><div class="ins-card-head">💭 RECENT TRIGGER NOTES</div><div class="ins-card-body">'+ne.map(function(x){const k=x[0];const v=x[1];const p=k.split(':');return '<div style="margin-bottom:.5rem;padding:.5rem .7rem;background:var(--cream-2);border-radius:7px;border-left:3px solid var(--gold)"><div style="font-size:10px;color:var(--muted);margin-bottom:.2rem">'+(p[1]||'')+'</div><div style="font-size:12.5px;color:var(--ink);font-style:italic">"'+v+'"</div></div>';}).join('')+'</div></div>':'');
-}
-
 // ── CONTEXT-AWARE DASHBOARD BANNER ──
 function _ctxBanner(){
   const h=new Date().getHours();let icon,label,sub,tab;
@@ -6869,12 +6833,12 @@ function _ctxBanner(){
 // ── Wake time selector HTML ──
 function _wakeSelectorHTML(){
   const w=getWakeHour();
-  return `<div class="wake-selector">
-    <div class="ws-label">⏰ Wake time</div>
-    <button class="wake-btn${w===6?' active':''}" onclick="setWakeHour(6)">6 AM</button>
-    <button class="wake-btn${w===7?' active':''}" onclick="setWakeHour(7)">7 AM</button>
-    <button class="wake-btn${w===8?' active':''}" onclick="setWakeHour(8)">8 AM</button>
-  </div>`;
+  const btns=[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9].map(h=>{
+    const hh=Math.floor(h);const mm=h%1===0.5?'30':'00';
+    const lbl=hh+':'+mm;
+    return `<button class="wake-btn${w===h?' active':''}" onclick="setWakeHour(${h})">${lbl}</button>`;
+  }).join('');
+  return `<div class="wake-selector"><div class="ws-label">⏰ Wake time</div>${btns}</div>`;
 }
 const _origRD=renderDash;
 renderDash=function(){
@@ -6933,9 +6897,6 @@ setTimeout(function(){updateSOSBtn();},600);
 </div>
 
 <!-- ══ INSIGHTS ══ -->
-<div class="screen" id="screen-insights">
-  <div id="insights-content"></div>
-</div>
 
 <!-- ══ SOS FLOATING BUTTON ══ -->
 <div id="sos-btn" onclick="openSOS()" style="display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom)+1.5rem);right:1rem;z-index:200;width:52px;height:52px;border-radius:50%;background:#A32D2D;box-shadow:0 3px 12px rgba(163,45,45,.5);display:none;align-items:center;justify-content:center;cursor:pointer;font-size:22px;animation:sosPulse 2s infinite">⚡</div>
