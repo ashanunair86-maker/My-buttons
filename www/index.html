@@ -4780,8 +4780,13 @@ function _updateFreqOvQ(id){
 }
 
 function _fqNoInOv(id, noLabel){
-  // Mark as acknowledged with "no" answer
-  showToast(noLabel);
+  // Look up proper no-options and execute the first one (e.g. "Call him now")
+  const opts=_fqNoOptions(id);
+  if(opts&&opts.length){
+    _fqExecOpt(id,0);
+  } else {
+    showToast(noLabel);
+  }
 }
 function freqOvOpen(){
   closeFreqOv();
